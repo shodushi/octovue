@@ -21,21 +21,21 @@
               <div class="control" id="control_power">
                 <div class="tags has-addons">
                   <span class="tag">Power</span>
-                  <a class="tag is-danger" id="tag_printer_power" v-on:click="powerswitch">{{ powerState }}</a>
+                  <a class="tag" :class="{'is-success': isPower, 'is-danger': isNotPower}" id="tag_printer_power" v-on:click="powerswitch">{{ powerState }}</a>
                 </div>
               </div>
 
               <div class="control">
                 <div class="tags has-addons">
                   <span class="tag">Connection</span>
-                  <a class="tag is-danger" id="tag_btn_connect" onclick="printerConnection()">off</a>
+                  <a class="tag" :class="{'is-success': isConnection, 'is-danger': isNotConnection}" id="tag_btn_connect" onclick="printerConnection()">{{ connectionState }}</a>
                 </div>
               </div>
 
               <div class="control" id="control_light">
                 <div class="tags has-addons">
                   <span class="tag">Light</span>
-                  <a class="tag is-danger" id="tag_lightswitch" v-on:click="lightswitch">{{ lightState }}</a>
+                  <a class="tag" :class="{'is-success': isLight, 'is-danger': isNotLight}" id="tag_lightswitch" v-on:click="lightswitch">{{ lightState }}</a>
                 </div>
               </div>
             </div>
@@ -231,6 +231,16 @@ export default {
   mounted:function() {
     setTimeout(this.loadCam, 500)
     setTimeout(this.getPowerState, 1)
+    setTimeout(this.getLightState, 1)
+    if(this.printerState.payload.state_string != "Operational") {
+      this.isNotConnection = true;
+      this.isConnection = false;
+      this.connectionState = "off";
+    } else {
+      this.isNotConnection = false;
+      this.isConnection = true;
+      this.connectionState = "on";
+    }
     var self = this;
     var sock = new SockJS('http://192.168.120.244:5000/sockjs');
     const client = new StompJs.Client({
@@ -265,9 +275,18 @@ export default {
           if(msg.event.type != null) {
               if(msg.event.type == "PrinterStateChanged") {
                   self.printerState = msg.event;
+                  if(self.printerState.payload.state_string != "Operational") {
+                    self.isNotConnection = true;
+                    self.isConnection = false;
+                    self.connectionState = "off";
+                  } else {
+                    self.isNotConnection = false;
+                    self.isConnection = true;
+                    self.connectionState = "on";
+                  }
               }
               if(msg.event.type == "UpdatedFiles") {
-                  alert("files");
+                  //alert("files");
               }
           }
       }
@@ -282,6 +301,19 @@ export default {
             self.logs.push(msg.current.logs[i])
           }
         }
+        if(msg.current.state != null) {
+          self.printerState.payload.state_string = msg.current.state.text;
+          if(self.printerState.payload.state_string != "Operational") {
+            self.isNotConnection = true;
+            self.isConnection = false;
+            self.connectionState = "off";
+          } else {
+            self.isNotConnection = false;
+            self.isConnection = true;
+            self.connectionState = "on";
+          }
+        }
+
       }
       if(msg.history != null) {
         if(msg.history.logs != null) {
@@ -310,7 +342,14 @@ export default {
       logs: {},
       cam: "",
       powerState: "off",
-      lightState: "off"
+      lightState: "off",
+      connectionState: "off",
+      isPower: false,
+      isNotPower: true,
+      isLight: false,
+      isNotLight: true,
+      isConnection: false,
+      isNotConnection: true
     }
   },
   methods: {
@@ -325,7 +364,14 @@ export default {
     },
     powerswitch: function() {
       axios({ method: "GET", "url": this.$cors_proxy+"/"+this.$tasmota_ip+"/cm?cmnd=Power%20TOGGLE" }).then(result => {
-	      this.powerState = result.data.POWER.toLowerCase();
+        this.powerState = result.data.POWER.toLowerCase();
+        if(this.powerState == "off") {
+          this.isNotPower = true;
+          this.isPower = false;
+        } else {
+          this.isNotPower = false;
+          this.isPower = true;
+        }
       }, error => {
           console.error(error);
       });
@@ -335,8 +381,12 @@ export default {
         console.log(result);
         if(result.data.Status.Power == 0) {
           this.powerState = "off";
+          this.isNotPower = true;
+          this.isPower = false;
         } else {
           this.powerState = "on";
+          this.isNotPower = false;
+          this.isPower = true;
         }
 
       }, error => {
@@ -355,6 +405,13 @@ export default {
       axios({ method: "GET", "url": this.$cors_proxy+"/"+this.$led_ip+"/light/3d_drucker_led/state" }).then(result => {
         console.log(result);
         this.lightState = result.data.state.toLowerCase();
+        if(this.lightState == "off") {
+          this.isNotLight = true;
+          this.isLight = false;
+        } else {
+          this.isNotLight = false;
+          this.isLight = true;
+        }
       }, error => {
           console.error(error);
       });
