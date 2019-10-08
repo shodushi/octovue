@@ -21,7 +21,7 @@
               <div class="control" id="control_power">
                 <div class="tags has-addons">
                   <span class="tag">Power</span>
-                  <a class="tag is-danger" id="tag_printer_power" onclick="powerswitch()">off</a>
+                  <a class="tag is-danger" id="tag_printer_power" v-on:click="powerswitch">{{ powerState }}</a>
                 </div>
               </div>
 
@@ -35,7 +35,7 @@
               <div class="control" id="control_light">
                 <div class="tags has-addons">
                   <span class="tag">Light</span>
-                  <a class="tag is-danger" id="tag_lightswitch" onclick="lightswitch()">off</a>
+                  <a class="tag is-danger" id="tag_lightswitch" v-on:click="lightswitch">{{ lightState }}</a>
                 </div>
               </div>
             </div>
@@ -230,6 +230,7 @@ export default {
   },
   mounted:function() {
     setTimeout(this.loadCam, 500)
+    setTimeout(this.getPowerState, 1)
     var self = this;
     var sock = new SockJS('http://192.168.120.244:5000/sockjs');
     const client = new StompJs.Client({
@@ -289,8 +290,8 @@ export default {
           }
         }
         if(msg.history.temps != null) {
-          if(msg.history.temps.length != 0) {
-            self.temps = msg.history.temps[msg.history.temps.length-1]
+          if(msg.history.temps.length > 0) {
+            //self.temps = msg.history.temps[msg.history.temps.length-1]
           }
         }
         if(msg.history.state != null) {
@@ -308,6 +309,8 @@ export default {
       temps: {"bed":{"actual":"0","target":"0"}, "chamber":{"actual":"0","target":"0"}, "tool0":{"actual":"0","target":"0"}, "time": "0"},
       logs: {},
       cam: "",
+      powerState: "off",
+      lightState: "off"
     }
   },
   methods: {
@@ -316,6 +319,42 @@ export default {
         this.cam = ""+result.data.webcam.streamUrl;
         console.log(result);
         console.log(this.cam);
+      }, error => {
+          console.error(error);
+      });
+    },
+    powerswitch: function() {
+      axios({ method: "GET", "url": this.$cors_proxy+"/"+this.$tasmota_ip+"/cm?cmnd=Power%20TOGGLE" }).then(result => {
+	      this.powerState = result.data.POWER.toLowerCase();
+      }, error => {
+          console.error(error);
+      });
+    },
+    getPowerState: function() {
+      axios({ method: "GET", "url": this.$cors_proxy+"/"+this.$tasmota_ip+"/cm?cmnd=Status" }).then(result => {
+        console.log(result);
+        if(result.data.Status.Power == 0) {
+          this.powerState = "off";
+        } else {
+          this.powerState = "on";
+        }
+
+      }, error => {
+          console.error(error);
+      });
+    },
+    lightswitch: function() {
+      axios({ method: "POST", "url": this.$cors_proxy+"/"+this.$led_ip+"/light/3d_drucker_led/toggle" }).then(result => {
+	      this.getLightState();
+      }, error => {
+          console.error(error);
+      });
+      
+    },
+    getLightState: function() {
+      axios({ method: "GET", "url": this.$cors_proxy+"/"+this.$led_ip+"/light/3d_drucker_led/state" }).then(result => {
+        console.log(result);
+        this.lightState = result.data.state.toLowerCase();
       }, error => {
           console.error(error);
       });
