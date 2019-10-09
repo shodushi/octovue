@@ -43,7 +43,7 @@
           <div class="navbar-end">
             <div class="navbar-item">
               <div class="buttons">
-                <a class="button is-info is-small" v-on:click="handleClick">Test</a>
+                <a class="button is-info is-small" v-on:click="loadFiles">Test</a>
                 <a class="button is-info is-small" v-on:click="terminalmodal = !terminalmodal">Terminal</a>
                 <a class="button is-info is-small" v-on:click="infomodal = !infomodal">Info</a>
               </div>
@@ -126,8 +126,12 @@
               <table class="table is-fullwidth is-striped is-hoverable" id="filestable">
                 <tbody id="filesbody">
                 </tbody>
-                </table>
-              
+              </table>
+              <!--<ul id="example-1">
+                <li v-repeat="file in allFiles">
+                  {{ file.description }}
+                </li>
+              </ul>!-->
             </div>
 
 
@@ -218,6 +222,7 @@ import axios from "axios";
 
 import * as SockJS from 'sockjs-client';
 var StompJs = require('@stomp/stompjs');
+import jQuery from 'jquery';
 
 export default {
   name: 'mainPage',
@@ -232,6 +237,8 @@ export default {
     setTimeout(this.loadCam, 500)
     setTimeout(this.getPowerState, 1)
     setTimeout(this.getLightState, 1)
+    setTimeout(this.loadFiles, 1)
+    
     if(this.printerState.payload.state_string != "Operational") {
       this.isNotConnection = true;
       this.isConnection = false;
@@ -286,7 +293,7 @@ export default {
                   }
               }
               if(msg.event.type == "UpdatedFiles") {
-                  //alert("files");
+                  self.loadFiles();
               }
           }
       }
@@ -349,7 +356,12 @@ export default {
       isLight: false,
       isNotLight: true,
       isConnection: false,
-      isNotConnection: true
+      isNotConnection: true,
+      fileList: [],
+      selectedfolder: "",
+      files: [],
+      folders: [],
+      file_origin: "local"
     }
   },
   methods: {
@@ -424,12 +436,138 @@ export default {
       }, error => {
           console.error(error);
       });
+    },
+    loadFiles: function() {
+      var self = this;
+      axios({ method: "GET", "url": this.$octo_ip+"/api/files?recursive=true", headers: {'X-Api-Key': this.$apikey} }).then(result => {
+        this.fileList = result.data.files;
+        //console.log(result.data.files);
+        var self = this;
+        var files = [];
+        var folders = [];
+
+        var path = this.selectedfolder.split("/");
+        if(this.selectedfolder.length > 0 && path[0] != "") { // Subfolder
+            for(var i = 0; i<this.fileList.length;i++) {
+              if(this.fileList[i].path == path[0]) {
+                pathobj = this.fileList[i];
+              }
+            }
+            if(path.length > 1) {
+              for(n=1;n<path.length;n++) {
+                for(m=0;m<pathobj.children.length;m++) {
+                  if(pathobj.children[m].path == selectedfolder) {
+                    pathobj = pathobj.children[m];
+                  }
+                }
+              }
+            }
+            if(pathobj.children.length > 0) {
+              jQuery.each(pathobj.children, function(index, value) {
+                  if(value.type == "folder") {
+                    folders.push(value);
+                  } else {
+                    files.push(value);
+                  }
+              });
+              $('#filestable > tbody:last-child').append('<tr onclick=""><td colspan="3" onclick="folderup()">&#x2190; back</td></tr>');
+              jQuery.each(folders, function(index, value) {
+                  $('#filestable > tbody:last-child').append('<tr onclick="selectFolder(\''+value.path+'\')"><td><span class="icon">&#128193;</span></td><td>'+value.display+'</td><td></td></tr>');
+              });
+              jQuery.each(files, function(index, value) {
+                var img;
+                var download;
+                if(value.refs.resource != null) {
+                  if(self.file_origin == "local" && value.refs.resource.includes(".gcode")) {
+                    img = value.refs.download.replace(".gcode", ".png");
+                    download = value.refs.download;
+                  }
+
+                  if(self.file_origin == "sdcard" && value.refs.resource.includes(".gco")) {
+                    img = value.refs.resource.replace(".gco", ".png");
+                    download = value.refs.resource;
+                  }
+                  var imgid = value.display.replace(".", "");
+
+                  if(value.date != null) {
+                    var tstamp = new Date(value.date*1000);
+                    var day = "0"+tstamp.getDate();
+                    var month = "0"+tstamp.getMonth();
+                    var date = day.slice(-2)+"."+month.slice(-2)+"."+tstamp.getFullYear();
+                  } else {
+                    var date = "";
+                  }
+                  $('#filestable > tbody:last-child').append('<tr onclick="selectFile(this, { display: \''+value.display+'\', name: \''+value.name+'\', origin: \''+value.origin+'\', path: \''+value.path+'\', type: \''+value.type+'\', refs: { resource: \''+value.refs.resource+'\', download: \''+download+'\' } })"><td><figure class="image is-128x128"><img src="'+img+'" id="thumb_'+imgid+'" class="thumb" onmousemove="zoomIn(\''+imgid+'\', event)" onmouseout="zoomOut(\''+imgid+'\')" onerror="this.src=\'img/placeholder.png\'"></figure><div class="overlay_wrapper"><div id="overlay_'+imgid+'" class="zoomoverlay" style="background-image: url(\'' +img+ '\')"></div></div></td><td>'+value.display+'</td><td>'+date+'<div class="file_buttons" id="fb_'+imgid+'"><span id="btn_load" class="button is-warning is-small" disabled onclick="loadprintFile(false)">load</span> <span id="btn_print" class="button is-success is-small" disabled onclick="loadprintFile(true)">print</span> <span id="btn_delete" class="button is-danger is-small" disabled onclick="deleteFile()">delete</span></div></td></tr>');
+                }
+              });
+            }
+          } else { // Main folder
+            jQuery.each(this.fileList, function(index, value) {
+              if(value.origin == self.file_origin) {
+                  if(value.type == "folder") {
+                    folders.push(value);
+                  } else {
+                    files.push(value);
+                  }
+              }
+            });
+            if(folders.length > 0) {
+              jQuery.each(folders, function(index, value) {
+                  $('#filestable > tbody:last-child').append('<tr onclick="selectFolder(\''+value.path+'\')"><td><span class="icon">&#128193;</span></td><td>'+value.display+'</td><td></td></tr>');
+              });
+            }
+            if(files.length > 0) {
+              jQuery.each(files, function(index, value) {
+                var img;
+                var download;
+                if(value.refs.resource != null) {
+                  if(self.file_origin == "local" && value.refs.resource.includes(".gcode")) {
+                    img = value.refs.download.replace(".gcode", ".png");
+                    download = value.refs.download;
+                  }
+
+                  if(self.file_origin == "sdcard" && value.refs.resource.includes(".gco")) {
+                    img = value.refs.resource.replace(".gco", ".png");
+                    download = value.refs.resource;
+                  }
+                  var imgid = value.display.replace(".", "");
+
+                  if(value.date != null) {
+                    var tstamp = new Date(value.date*1000);
+                    var day = "0"+tstamp.getDate();
+                    var month = "0"+tstamp.getMonth();
+                    var date = day.slice(-2)+"."+month.slice(-2)+"."+tstamp.getFullYear();
+                  } else {
+                    var date = "";
+                  }
+                  $('#filestable > tbody:last-child').append('<tr onclick="selectFile(this, { display: \''+value.display+'\', name: \''+value.name+'\', origin: \''+value.origin+'\', path: \''+value.path+'\', type: \''+value.type+'\', refs: { resource: \''+value.refs.resource+'\', download: \''+download+'\' } })"><td><figure class="image is-128x128"><img src="'+img+'" id="thumb_'+imgid+'" class="thumb" onmousemove="zoomIn(\''+imgid+'\', event)" onmouseout="zoomOut(\''+imgid+'\')" onerror="this.src=\'img/placeholder.png\'"></figure><div class="overlay_wrapper"><div id="overlay_'+imgid+'" class="zoomoverlay" style="background-image: url(\'' +img+ '\')"></div></div></td><td>'+value.display+'</td><td>'+date+'<div class="file_buttons" id="fb_'+imgid+'"><span id="btn_load" class="button is-warning is-small" disabled onclick="loadprintFile(false)">load</span> <span id="btn_print" class="button is-success is-small" disabled onclick="loadprintFile(true)">print</span> <span id="btn_delete" class="button is-danger is-small" disabled onclick="deleteFile()">delete</span></div></td></tr>');
+                }
+              });
+            }
+          }
+          
+
+
+
+        
+      }, error => {
+          console.error(error);
+      });
     }
   },
   computed: {
     terminalLogs: {
       get() {
         return this.logs.join('\n')
+      }
+    },
+    allFiles: {
+      get() {
+        
+        
+
+
+
       }
     }
   }
