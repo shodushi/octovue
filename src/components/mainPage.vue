@@ -103,8 +103,8 @@
                     <td>
                       <div class="tabs is-centered is-boxed">
                         <ul>
-                          <li id="tab_local"><a onclick="browse('local')">local</a></li>
-                          <li id="tab_sdcard"><a onclick="browse('sdcard')">sdcard</a></li>
+                          <li id="tab_local"><a v-on:click="changeFileSource('local')">local</a></li>
+                          <li id="tab_sdcard"><a v-on:click="changeFileSource('sdcard')">sdcard</a></li>
                         </ul>
                       </div>
                     </td>
@@ -251,27 +251,27 @@ export default {
     var self = this;
     var sock = new SockJS('http://192.168.120.244:5000/sockjs');
     const client = new StompJs.Client({
-        brokerURL: "ws://192.168.120.244:5000/sockjs",
-        debug: function (data) {
-            console.log(data);
-        },
-        reconnectDelay: 2000,
-        heartbeatIncoming: 4000,
-        heartbeatOutgoing: 4000
+      brokerURL: "ws://192.168.120.244:5000/sockjs",
+      debug: function (data) {
+          console.log(data);
+      },
+      reconnectDelay: 2000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000
     });
     client.webSocketFactory = function () {
-        sock = new SockJS('http://192.168.120.244:5000/sockjs');
+      sock = new SockJS('http://192.168.120.244:5000/sockjs');
     };
     client.onConnect = function(frame) {
-        //console.log(frame.data);
+      //console.log(frame.data);
     };
     client.onStompError = function (frame) {
-        console.log('Broker reported error: ' + frame.headers['message']);
-        console.log('Additional details: ' + frame.body);
+      console.log('Broker reported error: ' + frame.headers['message']);
+      console.log('Additional details: ' + frame.body);
     };
     sock.onmessage = function(e) {
-        messageParser(e.data);
-        sock.close();
+      messageParser(e.data);
+      sock.close();
     };
     client.activate();
 
@@ -437,9 +437,19 @@ export default {
           console.error(error);
       });
     },
+    changeFileSource: function(src) {
+      this.file_origin = src;
+      this.loadFiles();
+    },
+    selectFolder: function(path) {
+      alert("h");
+      this.selectedfolder = path;
+    },
     loadFiles: function() {
       var self = this;
       axios({ method: "GET", "url": this.$octo_ip+"/api/files?recursive=true", headers: {'X-Api-Key': this.$apikey} }).then(result => {
+        this.fileList = [];
+        $('#filestable > tbody').empty();
         this.fileList = result.data.files;
         //console.log(result.data.files);
         var self = this;
@@ -472,7 +482,7 @@ export default {
               });
               $('#filestable > tbody:last-child').append('<tr onclick=""><td colspan="3" onclick="folderup()">&#x2190; back</td></tr>');
               jQuery.each(folders, function(index, value) {
-                  $('#filestable > tbody:last-child').append('<tr onclick="selectFolder(\''+value.path+'\')"><td><span class="icon">&#128193;</span></td><td>'+value.display+'</td><td></td></tr>');
+                  $('#filestable > tbody:last-child').append('<tr v-on:click="self.selectFolder(\''+value.path+'\')"><td><span class="icon">&#128193;</span></td><td>'+value.display+'</td><td></td></tr>');
               });
               jQuery.each(files, function(index, value) {
                 var img;
@@ -559,15 +569,6 @@ export default {
     terminalLogs: {
       get() {
         return this.logs.join('\n')
-      }
-    },
-    allFiles: {
-      get() {
-        
-        
-
-
-
       }
     }
   }
