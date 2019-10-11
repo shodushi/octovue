@@ -113,25 +113,27 @@
                 <tbody>
                   <tr>
                       <td colspan="3">
-                    <div class="buttons" id="fileoperations">
-                      <span id="btn_load" class="button is-warning" disabled onclick="loadprintFile(false)">load</span>
-                      <span id="btn_print" class="button is-success" disabled onclick="loadprintFile(true)">print</span>
-                      <span id="btn_cancel" class="button is-danger" disabled onclick="cancelJob()">cancel</span>
-                      <span id="btn_delete" class="button is-danger" disabled onclick="deleteFile()">delete</span>
-                    </div>
+                        <div class="buttons" id="fileoperations">
+                          <span id="btn_load" class="button is-warning" disabled onclick="loadprintFile(false)">load</span>
+                          <span id="btn_print" class="button is-success" disabled onclick="loadprintFile(true)">print</span>
+                          <span id="btn_cancel" class="button is-danger" disabled onclick="cancelJob()">cancel</span>
+                          <span id="btn_delete" class="button is-danger" disabled onclick="deleteFile()">delete</span>
+                        </div>
                       </td>
                     </tr>
                 </tbody>
               </table>
               <table class="table is-fullwidth is-striped is-hoverable" id="filestable">
-                <tbody id="filesbody">
+                <tr v-if="selectedfolder != ''" v-on:click="folderup()"><td colspan="3">&#x2190; back</td></tr>
+                <tbody id="filesbody" v-for="folder in folders">
+                  <tr v-on:click="selectFolder(folder.path)"><td><span class="icon">&#128193;</span></td><td>{{ folder.display }}</td><td></td></tr>
+                </tbody>
+
+                <tbody id="filesbody" v-for="file in files">
+                  <!--<tr v-on:click="selectFile(file.display, file.name, file.origin, file.path, file.type, file.refs.resource, file.download)"><td><figure class="image is-128x128"><img src="{ file.img }" id="thumb_'+imgid+'" class="thumb" onmousemove="zoomIn(\''+imgid+'\', event)" onmouseout="zoomOut(\''+imgid+'\')" onerror="this.src=\'img/placeholder.png\'"></figure><div class="overlay_wrapper"><div id="overlay_'+imgid+'" class="zoomoverlay" style="background-image: url(\'' +img+ '\')"></div></div></td><td>{{ file.display }}</td><td>'+date+'<div class="file_buttons" id="fb_'+imgid+'"><span id="btn_load" class="button is-warning is-small" disabled onclick="loadprintFile(false)">load</span> <span id="btn_print" class="button is-success is-small" disabled onclick="loadprintFile(true)">print</span> <span id="btn_delete" class="button is-danger is-small" disabled onclick="deleteFile()">delete</span></div></td></tr>!-->
+                  <tr><td><figure class="image is-128x128"><img :src="file.img" :id="file.thumbid" class="thumb" onmousemove="zoomIn(\''+imgid+'\', event)" onmouseout="zoomOut(\''+imgid+'\')" onerror="this.src=\'img/placeholder.png\'"></figure><div class="overlay_wrapper"><div id="overlay_'+imgid+'" class="zoomoverlay" style="background-image: url(\'' +img+ '\')"></div></div></td><td>{{ file.display }}</td><td>{{file.hr_date}}</td></tr>
                 </tbody>
               </table>
-              <!--<ul id="example-1">
-                <li v-repeat="file in allFiles">
-                  {{ file.description }}
-                </li>
-              </ul>!-->
             </div>
 
 
@@ -361,7 +363,9 @@ export default {
       selectedfolder: "",
       files: [],
       folders: [],
-      file_origin: "local"
+      file_origin: "local",
+      files: [],
+      folders: []
     }
   },
   methods: {
@@ -442,127 +446,126 @@ export default {
       this.loadFiles();
     },
     selectFolder: function(path) {
-      alert("h");
       this.selectedfolder = path;
+      this.listFiles();
+    },
+    folderup: function() {
+      this.selectedfolder = this.selectedfolder.substring(0, this.selectedfolder.lastIndexOf('/'))
+	    this.listFiles();
+    },
+    selectFile: function(file) {
+      console.log("selectedfile", file);
     },
     loadFiles: function() {
       var self = this;
       axios({ method: "GET", "url": this.$octo_ip+"/api/files?recursive=true", headers: {'X-Api-Key': this.$apikey} }).then(result => {
         this.fileList = [];
-        $('#filestable > tbody').empty();
         this.fileList = result.data.files;
-        //console.log(result.data.files);
-        var self = this;
-        var files = [];
-        var folders = [];
-
-        var path = this.selectedfolder.split("/");
-        if(this.selectedfolder.length > 0 && path[0] != "") { // Subfolder
-            for(var i = 0; i<this.fileList.length;i++) {
-              if(this.fileList[i].path == path[0]) {
-                pathobj = this.fileList[i];
-              }
-            }
-            if(path.length > 1) {
-              for(n=1;n<path.length;n++) {
-                for(m=0;m<pathobj.children.length;m++) {
-                  if(pathobj.children[m].path == selectedfolder) {
-                    pathobj = pathobj.children[m];
-                  }
-                }
-              }
-            }
-            if(pathobj.children.length > 0) {
-              jQuery.each(pathobj.children, function(index, value) {
-                  if(value.type == "folder") {
-                    folders.push(value);
-                  } else {
-                    files.push(value);
-                  }
-              });
-              $('#filestable > tbody:last-child').append('<tr onclick=""><td colspan="3" onclick="folderup()">&#x2190; back</td></tr>');
-              jQuery.each(folders, function(index, value) {
-                  $('#filestable > tbody:last-child').append('<tr v-on:click="self.selectFolder(\''+value.path+'\')"><td><span class="icon">&#128193;</span></td><td>'+value.display+'</td><td></td></tr>');
-              });
-              jQuery.each(files, function(index, value) {
-                var img;
-                var download;
-                if(value.refs.resource != null) {
-                  if(self.file_origin == "local" && value.refs.resource.includes(".gcode")) {
-                    img = value.refs.download.replace(".gcode", ".png");
-                    download = value.refs.download;
-                  }
-
-                  if(self.file_origin == "sdcard" && value.refs.resource.includes(".gco")) {
-                    img = value.refs.resource.replace(".gco", ".png");
-                    download = value.refs.resource;
-                  }
-                  var imgid = value.display.replace(".", "");
-
-                  if(value.date != null) {
-                    var tstamp = new Date(value.date*1000);
-                    var day = "0"+tstamp.getDate();
-                    var month = "0"+tstamp.getMonth();
-                    var date = day.slice(-2)+"."+month.slice(-2)+"."+tstamp.getFullYear();
-                  } else {
-                    var date = "";
-                  }
-                  $('#filestable > tbody:last-child').append('<tr onclick="selectFile(this, { display: \''+value.display+'\', name: \''+value.name+'\', origin: \''+value.origin+'\', path: \''+value.path+'\', type: \''+value.type+'\', refs: { resource: \''+value.refs.resource+'\', download: \''+download+'\' } })"><td><figure class="image is-128x128"><img src="'+img+'" id="thumb_'+imgid+'" class="thumb" onmousemove="zoomIn(\''+imgid+'\', event)" onmouseout="zoomOut(\''+imgid+'\')" onerror="this.src=\'img/placeholder.png\'"></figure><div class="overlay_wrapper"><div id="overlay_'+imgid+'" class="zoomoverlay" style="background-image: url(\'' +img+ '\')"></div></div></td><td>'+value.display+'</td><td>'+date+'<div class="file_buttons" id="fb_'+imgid+'"><span id="btn_load" class="button is-warning is-small" disabled onclick="loadprintFile(false)">load</span> <span id="btn_print" class="button is-success is-small" disabled onclick="loadprintFile(true)">print</span> <span id="btn_delete" class="button is-danger is-small" disabled onclick="deleteFile()">delete</span></div></td></tr>');
-                }
-              });
-            }
-          } else { // Main folder
-            jQuery.each(this.fileList, function(index, value) {
-              if(value.origin == self.file_origin) {
-                  if(value.type == "folder") {
-                    folders.push(value);
-                  } else {
-                    files.push(value);
-                  }
-              }
-            });
-            if(folders.length > 0) {
-              jQuery.each(folders, function(index, value) {
-                  $('#filestable > tbody:last-child').append('<tr onclick="selectFolder(\''+value.path+'\')"><td><span class="icon">&#128193;</span></td><td>'+value.display+'</td><td></td></tr>');
-              });
-            }
-            if(files.length > 0) {
-              jQuery.each(files, function(index, value) {
-                var img;
-                var download;
-                if(value.refs.resource != null) {
-                  if(self.file_origin == "local" && value.refs.resource.includes(".gcode")) {
-                    img = value.refs.download.replace(".gcode", ".png");
-                    download = value.refs.download;
-                  }
-
-                  if(self.file_origin == "sdcard" && value.refs.resource.includes(".gco")) {
-                    img = value.refs.resource.replace(".gco", ".png");
-                    download = value.refs.resource;
-                  }
-                  var imgid = value.display.replace(".", "");
-
-                  if(value.date != null) {
-                    var tstamp = new Date(value.date*1000);
-                    var day = "0"+tstamp.getDate();
-                    var month = "0"+tstamp.getMonth();
-                    var date = day.slice(-2)+"."+month.slice(-2)+"."+tstamp.getFullYear();
-                  } else {
-                    var date = "";
-                  }
-                  $('#filestable > tbody:last-child').append('<tr onclick="selectFile(this, { display: \''+value.display+'\', name: \''+value.name+'\', origin: \''+value.origin+'\', path: \''+value.path+'\', type: \''+value.type+'\', refs: { resource: \''+value.refs.resource+'\', download: \''+download+'\' } })"><td><figure class="image is-128x128"><img src="'+img+'" id="thumb_'+imgid+'" class="thumb" onmousemove="zoomIn(\''+imgid+'\', event)" onmouseout="zoomOut(\''+imgid+'\')" onerror="this.src=\'img/placeholder.png\'"></figure><div class="overlay_wrapper"><div id="overlay_'+imgid+'" class="zoomoverlay" style="background-image: url(\'' +img+ '\')"></div></div></td><td>'+value.display+'</td><td>'+date+'<div class="file_buttons" id="fb_'+imgid+'"><span id="btn_load" class="button is-warning is-small" disabled onclick="loadprintFile(false)">load</span> <span id="btn_print" class="button is-success is-small" disabled onclick="loadprintFile(true)">print</span> <span id="btn_delete" class="button is-danger is-small" disabled onclick="deleteFile()">delete</span></div></td></tr>');
-                }
-              });
-            }
-          }
-          
-
-
-
-        
+        console.log(result.data.files);
+        this.listFiles();
       }, error => {
           console.error(error);
       });
+    },
+    listFiles: function() {
+      var self = this;
+      this.files = [];
+      this.folders = [];
+
+      var path = this.selectedfolder.split("/");
+      var pathobj;
+      if(this.selectedfolder.length > 0 && path[0] != "") { // Subfolder
+        for(var i = 0; i<this.fileList.length;i++) {
+          if(this.fileList[i].path == path[0]) {
+            pathobj = this.fileList[i];
+          }
+        }
+        if(path.length > 1) {
+          for(n=1;n<path.length;n++) {
+            for(m=0;m<pathobj.children.length;m++) {
+              if(pathobj.children[m].path == selectedfolder) {
+                pathobj = pathobj.children[m];
+              }
+            }
+          }
+        }
+        if(pathobj.children.length > 0) {
+          for(var i = 0; i<pathobj.children.length;i++) {
+            if(pathobj.children[i].type == "folder") {
+              this.folders.push(this.fileList[i]);
+            } else {
+              var img;
+              var download;
+              if(pathobj.children[i].refs.resource != null) {
+                if(self.file_origin == "local" && pathobj.children[i].refs.resource.includes(".gcode")) {
+                  img = pathobj.children[i].refs.download.replace(".gcode", ".png");
+                  download = pathobj.children[i].refs.download;
+                }
+
+                if(self.file_origin == "sdcard" && pathobj.children[i].refs.resource.includes(".gco")) {
+                  img = pathobj.children[i].refs.resource.replace(".gco", ".png");
+                  download = pathobj.children[i].refs.resource;
+                }
+                var imgid = pathobj.children[i].display.replace(".", "");
+
+                if(pathobj.children[i].date != null) {
+                  var tstamp = new Date(pathobj.children[i].date*1000);
+                  var day = "0"+tstamp.getDate();
+                  var month = "0"+tstamp.getMonth();
+                  var date = day.slice(-2)+"."+month.slice(-2)+"."+tstamp.getFullYear();
+                } else {
+                  var date = "";
+                }
+                pathobj.children[i].download = download;
+                pathobj.children[i].img = img;
+                pathobj.children[i].imgid = imgid;
+                pathobj.children[i].thumbid = "thumb_"+imgid;
+                pathobj.children[i].hr_date = date;
+              }
+              this.files.push(pathobj.children[i]);
+            }
+          }
+          //$('#filestable > tbody:last-child').append('<tr onclick="selectFile(this, { display: \''+value.display+'\', name: \''+value.name+'\', origin: \''+value.origin+'\', path: \''+value.path+'\', type: \''+value.type+'\', refs: { resource: \''+value.refs.resource+'\', download: \''+download+'\' } })"><td><figure class="image is-128x128"><img src="'+img+'" id="thumb_'+imgid+'" class="thumb" onmousemove="zoomIn(\''+imgid+'\', event)" onmouseout="zoomOut(\''+imgid+'\')" onerror="this.src=\'img/placeholder.png\'"></figure><div class="overlay_wrapper"><div id="overlay_'+imgid+'" class="zoomoverlay" style="background-image: url(\'' +img+ '\')"></div></div></td><td>'+value.display+'</td><td>'+date+'<div class="file_buttons" id="fb_'+imgid+'"><span id="btn_load" class="button is-warning is-small" disabled onclick="loadprintFile(false)">load</span> <span id="btn_print" class="button is-success is-small" disabled onclick="loadprintFile(true)">print</span> <span id="btn_delete" class="button is-danger is-small" disabled onclick="deleteFile()">delete</span></div></td></tr>');
+        }
+      } else { // Main folder
+        for (i = 0; i < this.fileList.length; i++) {
+          if(this.fileList[i].origin == this.file_origin) {
+            if(this.fileList[i].type == "folder") {
+              self.folders.push(this.fileList[i]);
+            } else {
+              var img;
+              var download;
+              if(this.fileList[i].refs.resource != null) {
+                if(self.file_origin == "local" && this.fileList[i].refs.resource.includes(".gcode")) {
+                  img = this.fileList[i].refs.download.replace(".gcode", ".png");
+                  download = this.fileList[i].refs.download;
+                }
+
+                if(self.file_origin == "sdcard" && this.fileList[i].refs.resource.includes(".gco")) {
+                  img = this.fileList[i].refs.resource.replace(".gco", ".png");
+                  download = this.fileList[i].refs.resource;
+                }
+                var imgid = this.fileList[i].display.replace(".", "");
+
+                if(this.fileList[i].date != null) {
+                  var tstamp = new Date(this.fileList[i].date*1000);
+                  var day = "0"+tstamp.getDate();
+                  var month = "0"+tstamp.getMonth();
+                  var date = day.slice(-2)+"."+month.slice(-2)+"."+tstamp.getFullYear();
+                } else {
+                  var date = "";
+                }
+                this.fileList[i].download = download;
+                this.fileList[i].img = img;
+                this.fileList[i].imgid = imgid;
+                this.fileList[i].thumbid = "thumb_"+imgid;
+                this.fileList[i].hr_date = date;
+              }
+              this.files.push(this.fileList[i]);
+            }
+          }
+        }
+      }
     }
   },
   computed: {
