@@ -134,7 +134,7 @@
                     <tr v-on:click="selectFile(file.display, file.name, file.origin, file.path, file.type, file.refs.resource, file.download)"><td><figure class="image is-128x128"><img src="{ file.img }" id="thumb_'+imgid+'" class="thumb" onmousemove="zoomIn(\''+imgid+'\', event)" onmouseout="zoomOut(\''+imgid+'\')" onerror="this.src=\'img/placeholder.png\'"></figure><div class="overlay_wrapper"><div id="overlay_'+imgid+'" class="zoomoverlay" style="background-image: url(\'' +img+ '\')"></div></div></td><td>{{ file.display }}</td><td>'+date+'<div class="file_buttons" id="fb_'+imgid+'"><span id="btn_load" class="button is-warning is-small" disabled onclick="loadprintFile(false)">load</span> <span id="btn_print" class="button is-success is-small" disabled onclick="loadprintFile(true)">print</span> <span id="btn_delete" class="button is-danger is-small" disabled onclick="deleteFile()">delete</span></div></td></tr>
                     <tr onclick="selectFile(this, { display: \''+value.display+'\', name: \''+value.name+'\', origin: \''+value.origin+'\', path: \''+value.path+'\', type: \''+value.type+'\', refs: { resource: \''+value.refs.resource+'\', download: \''+download+'\' } })"><td><figure class="image is-128x128"><img src="'+img+'" id="thumb_'+imgid+'" class="thumb" onmousemove="zoomIn(\''+imgid+'\', event)" onmouseout="zoomOut(\''+imgid+'\')" onerror="this.src=\'img/placeholder.png\'"></figure><div class="overlay_wrapper"><div id="overlay_'+imgid+'" class="zoomoverlay" style="background-image: url(\'' +img+ '\')"></div></div></td><td>'+value.display+'</td><td>'+date+'<div class="file_buttons" id="fb_'+imgid+'"><span id="btn_load" class="button is-warning is-small" disabled onclick="loadprintFile(false)">load</span> <span id="btn_print" class="button is-success is-small" disabled onclick="loadprintFile(true)">print</span> <span id="btn_delete" class="button is-danger is-small" disabled onclick="deleteFile()">delete</span></div></td></tr>
                     !-->
-                  <tr><td><figure class="image is-128x128"><img :src="file.img" :id="file.thumbid" class="thumb" @error="imgUrlAlt"></figure><div class="overlay_wrapper"><div id="overlay_'+imgid+'" class="zoomoverlay" style="background-image: url(\'' +img+ '\')"></div></div></td><td>{{ file.display }}</td><td>{{file.hr_date}}</td></tr>
+                  <tr v-on:click="selectFile($event, file)"><td><figure class="image is-128x128"><img :src="file.img" :id="file.thumbid" class="thumb" @error="imgFallback" v-on:mousemove="zoomIn($event, file.imgid)" v-on:mouseleave="zoomOut(''+file.imgid)"></figure><div class="overlay_wrapper"><div :id="'overlay_'+file.imgid" class="zoomoverlay" v-bind:style="{'background-image': 'url(' + file.img + ')' }"></div></div></td><td>{{ file.display }}</td><td>{{file.hr_date}} <div class="file_buttons" :id="'fb_'+file.imgid"><span id="btn_load" class="button is-warning is-small" disabled onclick="loadprintFile(false)">load</span> <span id="btn_print" class="button is-success is-small" disabled onclick="loadprintFile(true)">print</span> <span id="btn_delete" class="button is-danger is-small" disabled onclick="deleteFile()">delete</span></div></td></tr>
                 </tbody>
               </table>
             </div>
@@ -145,7 +145,7 @@
             <div class="card">
               <div class="card-image">
                 <figure class="image is-4by3">
-                  <img :src="cam" alt="Printer image">
+                  <img :src="cam"  @error="imgFallback" alt="Printer image">
                 </figure>
               </div>
               <div class="card-content">
@@ -456,8 +456,18 @@ export default {
       this.selectedfolder = this.selectedfolder.substring(0, this.selectedfolder.lastIndexOf('/'))
 	    this.listFiles();
     },
-    selectFile: function(file) {
-      console.log("selectedfile", file);
+    selectFile: function(event, file) {
+      $("#filestable tr").removeClass("is-selected");
+      $(".file_buttons span").css("display", "none");
+      $(event.srcElement.parentElement).addClass("is-selected");
+      
+      this.selectedfile = file;
+      console.log("selectedfile", event);
+      var imgid = file.display.replace(".", "");
+      $("#fb_"+imgid+" span").css("display", "block");
+      $("#fb_"+imgid+" span").removeAttr("disabled");
+      $("#fileoperations span").removeAttr("disabled");
+      $('#btn_cancel').attr("disabled", true);
     },
     loadFiles: function() {
       var self = this;
@@ -470,7 +480,7 @@ export default {
           console.error(error);
       });
     },
-    imgUrlAlt(event) {
+    imgFallback(event) {
       event.target.src = "img/placeholder.png"
     },
     listFiles: function() {
@@ -572,6 +582,18 @@ export default {
           }
         }
       }
+    },
+    zoomIn: function(event, id) {
+      var element = document.getElementById("overlay_"+id);
+      element.style.display = "inline-block";
+      var img = document.getElementById("imgZoom");
+      var posX = event.offsetX ? (event.offsetX) : event.pageX - img.offsetLeft;
+      var posY = event.offsetY ? (event.offsetY) : event.pageY - img.offsetTop;
+      element.style.backgroundPosition=(-posX*3.5)+"px "+(-posY*4)+"px";
+    },
+    zoomOut: function(id) {
+      var element = document.getElementById("overlay_"+id);
+        element.style.display = "none";
     }
   },
   computed: {
