@@ -28,7 +28,7 @@
               <div class="control">
                 <div class="tags has-addons">
                   <span class="tag">Connection</span>
-                  <a class="tag" :class="{'is-success': isConnection, 'is-danger': isNotConnection}" id="tag_btn_connect" onclick="printerConnection()">{{ connectionState }}</a>
+                  <a class="tag" :class="{'is-success': isConnection, 'is-danger': isNotConnection}" id="tag_btn_connect" v-on:click="printerConnection()">{{ connectionState }}</a>
                 </div>
               </div>
 
@@ -43,7 +43,6 @@
           <div class="navbar-end">
             <div class="navbar-item">
               <div class="buttons">
-                <a class="button is-info is-small" v-on:click="loadFiles">Test</a>
                 <a class="button is-info is-small" v-on:click="terminalmodal = !terminalmodal">Terminal</a>
                 <a class="button is-info is-small" v-on:click="infomodal = !infomodal">Info</a>
               </div>
@@ -114,10 +113,10 @@
                   <tr>
                       <td colspan="3">
                         <div class="buttons" id="fileoperations">
-                          <span id="btn_load" class="button is-warning" disabled onclick="loadprintFile(false)">load</span>
-                          <span id="btn_print" class="button is-success" disabled onclick="loadprintFile(true)">print</span>
-                          <span id="btn_cancel" class="button is-danger" disabled onclick="cancelJob()">cancel</span>
-                          <span id="btn_delete" class="button is-danger" disabled onclick="deleteFile()">delete</span>
+                          <span id="btn_load" class="button is-warning" disabled v-on:click="loadprintFile(false)">load</span>
+                          <span id="btn_print" class="button is-success" disabled v-on:click="loadprintFile(true)">print</span>
+                          <span id="btn_cancel" class="button is-danger" disabled v-on:click="cancelJob()">cancel</span>
+                          <span id="btn_delete" class="button is-danger" disabled v-on:click="deleteFile()">delete</span>
                         </div>
                       </td>
                     </tr>
@@ -128,13 +127,8 @@
                 <tbody id="filesbody" v-for="folder in folders">
                   <tr v-on:click="selectFolder(folder.path)"><td><span class="icon">&#128193;</span></td><td>{{ folder.display }}</td><td></td></tr>
                 </tbody>
-
                 <tbody id="filesbody" v-for="file in files">
-                  <!--
-                    <tr v-on:click="selectFile(file.display, file.name, file.origin, file.path, file.type, file.refs.resource, file.download)"><td><figure class="image is-128x128"><img src="{ file.img }" id="thumb_'+imgid+'" class="thumb" onmousemove="zoomIn(\''+imgid+'\', event)" onmouseout="zoomOut(\''+imgid+'\')" onerror="this.src=\'img/placeholder.png\'"></figure><div class="overlay_wrapper"><div id="overlay_'+imgid+'" class="zoomoverlay" style="background-image: url(\'' +img+ '\')"></div></div></td><td>{{ file.display }}</td><td>'+date+'<div class="file_buttons" id="fb_'+imgid+'"><span id="btn_load" class="button is-warning is-small" disabled onclick="loadprintFile(false)">load</span> <span id="btn_print" class="button is-success is-small" disabled onclick="loadprintFile(true)">print</span> <span id="btn_delete" class="button is-danger is-small" disabled onclick="deleteFile()">delete</span></div></td></tr>
-                    <tr onclick="selectFile(this, { display: \''+value.display+'\', name: \''+value.name+'\', origin: \''+value.origin+'\', path: \''+value.path+'\', type: \''+value.type+'\', refs: { resource: \''+value.refs.resource+'\', download: \''+download+'\' } })"><td><figure class="image is-128x128"><img src="'+img+'" id="thumb_'+imgid+'" class="thumb" onmousemove="zoomIn(\''+imgid+'\', event)" onmouseout="zoomOut(\''+imgid+'\')" onerror="this.src=\'img/placeholder.png\'"></figure><div class="overlay_wrapper"><div id="overlay_'+imgid+'" class="zoomoverlay" style="background-image: url(\'' +img+ '\')"></div></div></td><td>'+value.display+'</td><td>'+date+'<div class="file_buttons" id="fb_'+imgid+'"><span id="btn_load" class="button is-warning is-small" disabled onclick="loadprintFile(false)">load</span> <span id="btn_print" class="button is-success is-small" disabled onclick="loadprintFile(true)">print</span> <span id="btn_delete" class="button is-danger is-small" disabled onclick="deleteFile()">delete</span></div></td></tr>
-                    !-->
-                  <tr v-on:click="selectFile($event, file)"><td><figure class="image is-128x128"><img :src="file.img" :id="file.thumbid" class="thumb" @error="imgFallback" v-on:mousemove="zoomIn($event, file.imgid)" v-on:mouseleave="zoomOut(''+file.imgid)"></figure><div class="overlay_wrapper"><div :id="'overlay_'+file.imgid" class="zoomoverlay" v-bind:style="{'background-image': 'url(' + file.img + ')' }"></div></div></td><td>{{ file.display }}</td><td>{{file.hr_date}} <div class="file_buttons" :id="'fb_'+file.imgid"><span id="btn_load" class="button is-warning is-small" disabled onclick="loadprintFile(false)">load</span> <span id="btn_print" class="button is-success is-small" disabled onclick="loadprintFile(true)">print</span> <span id="btn_delete" class="button is-danger is-small" disabled onclick="deleteFile()">delete</span></div></td></tr>
+                  <tr v-on:click="selectFile($event, file)"><td><figure class="image is-128x128"><img :src="file.img" :id="file.thumbid" class="thumb" @error="imgFallback" v-on:mousemove="zoomIn($event, file.imgid)" v-on:mouseleave="zoomOut(''+file.imgid)"></figure><div class="overlay_wrapper"><div :id="'overlay_'+file.imgid" class="zoomoverlay" v-bind:style="{'background-image': 'url(' + file.img + ')' }"></div></div></td><td>{{ file.display }}</td><td>{{file.hr_date}} <div class="file_buttons" :id="'fb_'+file.imgid"><span id="btn_load" class="button is-warning is-small" disabled v-on:click="loadprintFile(false)">load</span> <span id="btn_print" class="button is-success is-small" disabled v-on:click="loadprintFile(true)">print</span> <span id="btn_delete" class="button is-danger is-small" disabled v-on:click="deleteFile()">delete</span></div></td></tr>
                 </tbody>
               </table>
             </div>
@@ -255,6 +249,7 @@ export default {
     }
     var self = this;
     var sock = new SockJS('http://192.168.120.244:5000/sockjs');
+    console.log("1");
     const client = new StompJs.Client({
       brokerURL: "ws://192.168.120.244:5000/sockjs",
       debug: function (data) {
@@ -264,6 +259,7 @@ export default {
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000
     });
+    console.log("2");
     client.webSocketFactory = function () {
       sock = new SockJS('http://192.168.120.244:5000/sockjs');
     };
@@ -278,7 +274,9 @@ export default {
       messageParser(e.data);
       sock.close();
     };
+    console.log("3");
     client.activate();
+    console.log("4");
 
 //-----------------------------------------------------------------------------------------
     var messageParser = function(msg) {
@@ -364,6 +362,7 @@ export default {
       isNotConnection: true,
       fileList: [],
       selectedfolder: "",
+      selectedfile: "",
       files: [],
       folders: [],
       file_origin: "local",
@@ -375,8 +374,6 @@ export default {
     handleClick: function() {
       axios({ method: "GET", "url": this.$octo_ip+"/api/settings", headers: {'X-Api-Key': this.$apikey} }).then(result => {
         this.cam = ""+result.data.webcam.streamUrl;
-        console.log(result);
-        console.log(this.cam);
       }, error => {
           console.error(error);
       });
@@ -397,7 +394,6 @@ export default {
     },
     getPowerState: function() {
       axios({ method: "GET", "url": this.$cors_proxy+"/"+this.$tasmota_ip+"/cm?cmnd=Status" }).then(result => {
-        console.log(result);
         if(result.data.Status.Power == 0) {
           this.powerState = "off";
           this.isNotPower = true;
@@ -422,7 +418,6 @@ export default {
     },
     getLightState: function() {
       axios({ method: "GET", "url": this.$cors_proxy+"/"+this.$led_ip+"/light/3d_drucker_led/state" }).then(result => {
-        console.log(result);
         this.lightState = result.data.state.toLowerCase();
         if(this.lightState == "off") {
           this.isNotLight = true;
@@ -435,11 +430,27 @@ export default {
           console.error(error);
       });
     },
+    printerConnection: function() {
+      var obj = {};
+      if(this.isNotConnection) {
+        obj.command = "connect";
+        obj.port = "/dev/ttyACM0";
+        obj.baudrate = 115200;
+        obj.printerProfile = "_default";
+        obj.save = true;
+        obj.autoconnect = false;
+      } else {
+        obj.command = "disconnect";
+      }
+      axios({ method: "POST", url: this.$octo_ip+"/api/connection", headers: {'X-Api-Key': this.$apikey, 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
+      }, error => {
+          console.error(error);
+      });
+    },
     loadCam: function() {
       var self = this;
       axios({ method: "GET", "url": this.$octo_ip+"/api/settings", headers: {'X-Api-Key': this.$apikey} }).then(result => {
         self.cam = result.data.webcam.streamUrl;
-        console.log(result);
       }, error => {
           console.error(error);
       });
@@ -457,13 +468,11 @@ export default {
 	    this.listFiles();
     },
     selectFile: function(event, file) {
+      this.selectedfile = file;
+      var imgid = file.display.replace(".", "");
       $("#filestable tr").removeClass("is-selected");
       $(".file_buttons span").css("display", "none");
-      $(event.srcElement.parentElement).addClass("is-selected");
-      
-      this.selectedfile = file;
-      console.log("selectedfile", event);
-      var imgid = file.display.replace(".", "");
+      $(event.srcElement.parentElement).addClass("is-selected");      
       $("#fb_"+imgid+" span").css("display", "block");
       $("#fb_"+imgid+" span").removeAttr("disabled");
       $("#fileoperations span").removeAttr("disabled");
@@ -541,7 +550,6 @@ export default {
               this.files.push(pathobj.children[i]);
             }
           }
-          //$('#filestable > tbody:last-child').append('<tr onclick="selectFile(this, { display: \''+value.display+'\', name: \''+value.name+'\', origin: \''+value.origin+'\', path: \''+value.path+'\', type: \''+value.type+'\', refs: { resource: \''+value.refs.resource+'\', download: \''+download+'\' } })"><td><figure class="image is-128x128"><img src="'+img+'" id="thumb_'+imgid+'" class="thumb" onmousemove="zoomIn(\''+imgid+'\', event)" onmouseout="zoomOut(\''+imgid+'\')" onerror="this.src=\'img/placeholder.png\'"></figure><div class="overlay_wrapper"><div id="overlay_'+imgid+'" class="zoomoverlay" style="background-image: url(\'' +img+ '\')"></div></div></td><td>'+value.display+'</td><td>'+date+'<div class="file_buttons" id="fb_'+imgid+'"><span id="btn_load" class="button is-warning is-small" disabled onclick="loadprintFile(false)">load</span> <span id="btn_print" class="button is-success is-small" disabled onclick="loadprintFile(true)">print</span> <span id="btn_delete" class="button is-danger is-small" disabled onclick="deleteFile()">delete</span></div></td></tr>');
         }
       } else { // Main folder
         for (i = 0; i < this.fileList.length; i++) {
@@ -593,7 +601,49 @@ export default {
     },
     zoomOut: function(id) {
       var element = document.getElementById("overlay_"+id);
-        element.style.display = "none";
+      element.style.display = "none";
+    },
+    loadprintFile: function(print) {
+      var url = this.$octo_ip+"/api/files/"+this.selectedfile.origin+"/"+this.selectedfile.display;
+      var obj = {};
+      obj.command = "select";
+      obj.print = print;
+
+      axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$apikey}, data: JSON.stringify(obj) }).then(result => {
+        if(print) {
+          $('#btn_cancel').attr("disabled", false);
+        }
+      }, error => {
+          console.error(error);
+      });
+      /*
+            axios.post(url, JSON.stringify(obj), { headers: {'X-Api-Key': this.$apikey} }).then(result => {
+              if(print) {
+                $('#btn_cancel').attr("disabled", false);
+              }
+            }, error => {
+                console.error(error);
+            });
+      */
+    },
+    deleteFile: function() {
+      var url = "";
+      if(this.selectedfolder == "") {
+        url = this.$octo_ip+"/api/files/local/"+this.selectedfile.display;
+      } else {
+        url = this.$octo_ip+"/api/files/local/"+this.selectedfolder+"/"+this.selectedfile.display;
+      }
+      axios({ method: "DELETE", "url": url, headers: {'X-Api-Key': this.$apikey} }).then(result => {
+        this.selectedfile = null;
+        $("#fileoperations span").attr("disabled", true);
+        this.loadFiles();
+        console.log(result);
+      }, error => {
+          console.error(error);
+      });
+    },
+    cancelJob: function() {
+
     }
   },
   computed: {
