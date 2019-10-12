@@ -9,7 +9,8 @@ import mainPage from './components/mainPage.vue'
 import 'bulma/css/bulma.css'
 import Router from 'vue-router'
 
-
+import 'bulma-extensions/bulma-slider/dist/js/bulma-slider.min.js'
+import 'bulma-extensions/bulma-slider/dist/css/bulma-slider.min.css'
 
 
 

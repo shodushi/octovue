@@ -28,7 +28,7 @@
               <div class="control">
                 <div class="tags has-addons">
                   <span class="tag">Connection</span>
-                  <a class="tag" :class="{'is-success': isConnection, 'is-danger': isNotConnection}" id="tag_btn_connect" v-on:click="printerConnection()">{{ connectionState }}</a>
+                  <a class="tag" :class="{'is-success': isConnection, 'is-danger': isNotConnection, 'is-warning': isConnecting}" id="tag_btn_connect" v-on:click="printerConnection()">{{ connectionState }}</a>
                 </div>
               </div>
 
@@ -159,7 +159,7 @@
                 <div class="content" id="cardtools" style="border-top: 1px solid #C0C0C0; height: 270px;" v-if="printerState.payload.state_string != 'Offline'">
                 <div style="width: 25%; float: left; text-align: center;">
                   <p>Extruder:</p>
-                  <input id="sliderExtruder" class="slider is-fullwidth is-danger is-small is-circle has-output" step="1" min="0" max="250" value="0" type="range" orient="vertical" onmouseup="setExtruderTemp(document.getElementById('sliderExtruder').value)"><output id="sliderextruderoutput" for="sliderExtruder">0</output> &deg;C
+                  <input id="sliderExtruder" class="slider is-fullwidth is-danger is-small is-circle has-output" step="1" min="0" max="250" value="0" type="range" orient="vertical" v-on:mouseup="setExtruderTemp()"><output id="sliderextruderoutput" for="sliderExtruder">{{ temps.tool0.target }}</output> &deg;C
                 </div>
                 <div style="width: 25%; float: left; text-align: center;">
                   <p>&nbsp;</p>
@@ -167,7 +167,7 @@
                 </div>
                 <div style="width: 25%; float: left; text-align: center;">
                   <p>Bed:</p>
-                  <input id="sliderBed" class="slider is-fullwidth is-info is-small is-circle has-output" step="1" min="0" max="90" value="0" type="range" orient="vertical" onmouseup="setBedTemp(document.getElementById('sliderBed').value)"><output id="sliderbedoutput" for="sliderBed">0</output> &deg;C
+                  <input id="sliderBed" class="slider is-fullwidth is-info is-small is-circle has-output" step="1" min="0" max="90" value="0" type="range" orient="vertical" v-on:mouseup="setBedTemp()"><output id="sliderbedoutput" for="sliderBed">{{temps.bed.target}}</output> &deg;C
                 </div>
                 <div style="width: 25%; float: left; text-align: center;">
                   <p>&nbsp;</p>
@@ -186,7 +186,8 @@
                   </div>
                   <div class="dropdown-menu" role="menu">
                     <div class="dropdown-content">
-                      <div class="dropdown-item" id="dropdown-item_printer_commands">
+                      <div class="dropdown-item" id="dropdown-item_printer_commands" v-for="value in $gcodes[$printer_firmware]">
+                        <a class="dropdown-item" v-bind:data-id="value.cmd" v-on:click="pcmds($event)"><i class="fas" v-bind:class="value.icon"></i> {{ value.label }}</a>
                       </div>
                     </div>
                   </div>
@@ -285,13 +286,20 @@ export default {
           if(msg.event.type != null) {
               if(msg.event.type == "PrinterStateChanged") {
                   self.printerState = msg.event;
-                  if(self.printerState.payload.state_string != "Operational") {
+                  if(self.printerState.payload.state_string != "Operational" && self.printerState.payload.state_string != "Connecting") {
                     self.isNotConnection = true;
                     self.isConnection = false;
+                    self.isConnecting = false;
                     self.connectionState = "off";
+                  } else if(self.printerState.payload.state_string == "Connecting") {
+                    self.isNotConnection = false;
+                    self.isConnection = true;
+                    self.isConnecting = true;
+                    self.connectionState = "...";
                   } else {
                     self.isNotConnection = false;
                     self.isConnection = true;
+                    self.isConnecting = false;
                     self.connectionState = "on";
                   }
               }
@@ -303,7 +311,13 @@ export default {
       if(msg.current != null) {
         if(msg.current.temps != null) {
           if(msg.current.temps.length != 0) {
-            self.temps = msg.current.temps[0]
+            if(msg.current.temps.tool0 != null) {
+              self.temps = msg.current.temps[0];
+              var temptool0_ist = (100/self.temps.tool0.target)*self.temps.tool0.actual;
+              $("#temp_tool0_actual").css("height", temptool0_ist+"%");
+              var tempbed_ist = (100/self.temps.bed.target)*self.temps.bed.actual;
+              $("#temp_bed_actual").css("height", tempbed_ist+"%");
+            }
           }
         }
         if(msg.current.logs != null) {
@@ -360,6 +374,7 @@ export default {
       isNotLight: true,
       isConnection: false,
       isNotConnection: true,
+      isConnecting: false,
       fileList: [],
       selectedfolder: "",
       selectedfile: "",
@@ -644,6 +659,33 @@ export default {
     },
     cancelJob: function() {
 
+    },
+    setExtruderTemp: function(temp) {
+      var temp = $("#sliderExtruder").val();
+      var url = this.$octo_ip+"/api/printer/tool";
+      var obj = {};
+      obj.command = "target";
+      obj.targets = {};
+      obj.targets.tool0 = parseInt(temp);
+      axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$apikey, 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
+        var temptool0_ist = (100/this.temps.tool0.target)*this.temps.tool0.actual;
+        $("#temp_tool0_actual").css("height", temptool0_ist+"%");
+      }, error => {
+          console.error(error);
+      });
+    },
+    setBedTemp: function() {
+      var temp = $("#sliderBed").val();
+      var url = this.$octo_ip+"/api/printer/bed";
+      var obj = {};
+      obj.command = "target";
+      obj.target = parseInt(temp);
+      axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$apikey, 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
+        var tempbed_ist = (100/this.temps.bed.target)*this.temps.bed.actual;
+        $("#temp_bed_actual").css("height", tempbed_ist+"%");
+      }, error => {
+          console.error(error);
+      });
     }
   },
   computed: {
