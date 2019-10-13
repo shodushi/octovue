@@ -120,15 +120,15 @@
                   </tr>
                   <tr>
                     <td>Printtime:</td>
-                    <td>{{job.estimatedPrintTime}}</td>
+                    <td>{{ formatTime(job.estimatedPrintTime) }}</td>
                   </tr>
                   <tr>
                     <td>Time elapsed:</td>
-                    <td>{{job.progress.printTime}}</td>
+                    <td>{{ formatTime(job.progress.printTime) }}</td>
                   </tr>
                   <tr>
                     <td>Time left:</td>
-                    <td>{{job.progress.printTimeLeft}}</td>
+                    <td>{{ formatTime(job.progress.printTimeLeft) }}</td>
                   </tr>
                   <tr>
                     <td>Filament</td>
@@ -163,31 +163,33 @@
                     </td>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td colspan="3">
-                      <div class="columns">
-                        <div class="column">
-                          <div class="buttons" id="fileoperations" v-if="selectedfile != ''">
-                            <span id="btn_load" class="button is-warning" disabled v-on:click="loadprintFile(false)">load</span>
-                            <span id="btn_print" class="button is-success" disabled v-on:click="loadprintFile(true)">print</span>
-                            <span id="btn_delete" class="button is-danger" disabled v-on:click="deleteFile()">delete</span>
-                          </div>
-                        </div>
-                        <div class="is-divider-vertical" data-content="OR"></div>
-                        <div class="column">
-                          
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
               </table>
               <div v-if="selectedfolder != ''" v-on:click="folderup()" style="text-align: left">&#x2190; back</div>
               <table class="table is-fullwidth is-striped is-hoverable" id="filestable">
                 <tbody id="filesbody">
                   <tr v-on:click="selectFolder(folder.path)" v-for="folder in folders"><td><span class="icon">&#128193;</span></td><td>{{ folder.display }}</td><td></td></tr>
-                  <tr v-on:click="selectFile($event, file)" v-for="file in files"><td><figure class="image is-128x128"><img :src="file.img" :id="file.thumbid" class="thumb" @error="imgFallback" v-on:mousemove="zoomIn($event, file.imgid)" v-on:mouseleave="zoomOut(''+file.imgid)"></figure><div class="overlay_wrapper"><div :id="'overlay_'+file.imgid" class="zoomoverlay" v-bind:style="{'background-image': 'url(' + file.img + ')' }"></div></div></td><td>{{ file.display }}</td><td>{{file.hr_date}} <div class="file_buttons" :id="'fb_'+file.imgid"><span id="btn_load" class="button is-warning is-small" disabled v-on:click="loadprintFile(false)">load</span> <span id="btn_print" class="button is-success is-small" disabled v-on:click="loadprintFile(true)">print</span> <span id="btn_delete" class="button is-danger is-small" disabled v-on:click="deleteFile()">delete</span></div></td></tr>
+                  <tr v-on:click="selectFile($event, file)" v-for="file in files">
+                    <td>
+                      <figure class="image is-128x128"><img :src="file.img" :id="file.thumbid" class="thumb" @error="imgFallback" v-on:mousemove="zoomIn($event, file.imgid)" v-on:mouseleave="zoomOut(''+file.imgid)"></figure>
+                      <div class="overlay_wrapper">
+                        <div :id="'overlay_'+file.imgid" class="zoomoverlay" v-bind:style="{'background-image': 'url(' + file.img + ')' }"></div>
+                      </div>
+                    </td>
+                    <td>
+                      {{ file.display }}<br />
+                      <table class="noborder">
+                        <tr v-if="file.gcodeAnalysis.dimensions"><td>Dimensions:</td><td>x: {{ file.gcodeAnalysis.dimensions.width }} y: {{ file.gcodeAnalysis.dimensions.depth }} z: {{ file.gcodeAnalysis.dimensions.height }}</td></tr>
+                        <tr v-if="file.gcodeAnalysis.estimatedPrintTime"><td>PrintTime</td><td>{{ formatTime(file.gcodeAnalysis.estimatedPrintTime) }}</td></tr>
+                      </table>
+                    </td>
+                    <td>{{file.hr_date}} 
+                      <div class="file_buttons" :id="'fb_'+file.imgid">
+                        <!-- <span id="btn_load" class="button is-warning is-small" disabled v-on:click="loadprintFile(false)">load</span> !-->
+                        <span id="btn_print" class="button is-success is-small" disabled v-on:click="loadprintFile(true)">print</span> 
+                        <span id="btn_delete" class="button is-danger is-small" disabled v-on:click="deleteFile()">delete</span>
+                      </div>
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -203,7 +205,7 @@
                   <div class="media">
 
                     <div class="media-content">
-                      <p class="title is-4" id="printername">{{ connectionSettings.options.printerProfiles[0].name }}</p>
+                      <p class="title is-4" id="printername" v-if="connectionSettings.options.printerProfiles.length">{{ connectionSettings.options.printerProfiles[0].name }}</p>
                       <p class="subtitle is-6" id="connectionstatus">{{ printerState.payload.state_string }}</p>
                     </div>
                   </div>
@@ -328,7 +330,7 @@ export default {
       powerState: "off",
       lightState: "off",
       connectionState: "off",
-      connectionSettings: [],
+      connectionSettings: {"options": {"printerProfiles": []}},
       isPower: false,
       isNotPower: true,
       isLight: false,
@@ -350,6 +352,11 @@ export default {
   methods: {
     formatPercent(value) {
         let val = (value/1).toFixed(2).replace('.', ',')
+        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+    },
+    formatTime(value) {
+        value=value/60/60
+        let val = (value/1).toFixed(2).replace(',', ':').replace('.', ':')+" h"
         return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
     },
     sockConnection: function() {
@@ -620,7 +627,7 @@ export default {
           for(var i = 0; i<pathobj.children.length;i++) {
             if(pathobj.children[i].type == "folder") {
               this.folders.push(pathobj.children[i]);
-            } else {
+            } else if(pathobj.children[i].type == "machinecode") {
               var img;
               var download;
               if(pathobj.children[i].refs.resource != null) {
@@ -650,6 +657,7 @@ export default {
                 pathobj.children[i].hr_date = date;
               }
               this.files.push(pathobj.children[i]);
+              console.log(pathobj.children[i]);
             }
           }
         }
@@ -658,7 +666,7 @@ export default {
           if(this.fileList[i].origin == this.file_origin) {
             if(this.fileList[i].type == "folder") {
               self.folders.push(this.fileList[i]);
-            } else {
+            } else if(this.fileList[i].type == "machinecode") {
               var img;
               var download;
               if(this.fileList[i].refs.resource != null) {
