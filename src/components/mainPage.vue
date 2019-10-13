@@ -102,8 +102,8 @@
                     <td>
                       <div class="tabs is-centered is-boxed">
                         <ul>
-                          <li id="tab_local"><a v-on:click="changeFileSource('local')">local</a></li>
-                          <li id="tab_sdcard"><a v-on:click="changeFileSource('sdcard')">sdcard</a></li>
+                          <li id="tab_local" v-bind:class="{ 'is-active' : file_origin == 'local' }"><a v-on:click="changeFileSource('local')"> <i class="fas fa-hdd"></i>&nbsp;local</a></li>
+                          <li id="tab_sdcard" v-bind:class="{ 'is-active' : file_origin == 'sdcard' }"><a v-on:click="changeFileSource('sdcard')"><i class="fas fa-sd-card"></i>&nbsp;sdcard</a></li>
                         </ul>
                       </div>
                     </td>
@@ -112,23 +112,32 @@
                 <tbody>
                   <tr>
                       <td colspan="3">
-                        <div class="buttons" id="fileoperations">
-                          <span id="btn_load" class="button is-warning" disabled v-on:click="loadprintFile(false)">load</span>
-                          <span id="btn_print" class="button is-success" disabled v-on:click="loadprintFile(true)">print</span>
-                          <span id="btn_cancel" class="button is-danger" disabled v-on:click="cancelJob()">cancel</span>
-                          <span id="btn_delete" class="button is-danger" disabled v-on:click="deleteFile()">delete</span>
+                        <div class="columns">
+                          <div class="column">
+                            <div class="buttons" id="fileoperations" v-if="selectedfile != ''">
+                              <span id="btn_load" class="button is-warning" disabled v-on:click="loadprintFile(false)">load</span>
+                              <span id="btn_print" class="button is-success" disabled v-on:click="loadprintFile(true)">print</span>
+                              <span id="btn_delete" class="button is-danger" disabled v-on:click="deleteFile()">delete</span>
+                            </div>
+                          </div>
+                          <div class="is-divider-vertical" data-content="OR"></div>
+                          <div class="column">
+                            <div class="buttons" id="fileoperations" v-if="printerState.payload.state_string == 'Printing'">
+                              <span id="btn_pause" class="button is-warning"  v-on:click="pauseJob()">pause print</span>
+                              <span id="btn_resume" class="button is-success"  v-on:click="resumeJob()">resume print</span>
+                              <span id="btn_cancel" class="button is-danger"  v-on:click="cancelJob()">cancel print</span>
+                            </div>
+                          </div>
                         </div>
                       </td>
                     </tr>
                 </tbody>
               </table>
+              <div v-if="selectedfolder != ''" v-on:click="folderup()" style="text-align: left">&#x2190; back</div>
               <table class="table is-fullwidth is-striped is-hoverable" id="filestable">
-                <tr v-if="selectedfolder != ''" v-on:click="folderup()"><td colspan="3">&#x2190; back</td></tr>
-                <tbody id="filesbody" v-for="folder in folders">
-                  <tr v-on:click="selectFolder(folder.path)"><td><span class="icon">&#128193;</span></td><td>{{ folder.display }}</td><td></td></tr>
-                </tbody>
-                <tbody id="filesbody" v-for="file in files">
-                  <tr v-on:click="selectFile($event, file)"><td><figure class="image is-128x128"><img :src="file.img" :id="file.thumbid" class="thumb" @error="imgFallback" v-on:mousemove="zoomIn($event, file.imgid)" v-on:mouseleave="zoomOut(''+file.imgid)"></figure><div class="overlay_wrapper"><div :id="'overlay_'+file.imgid" class="zoomoverlay" v-bind:style="{'background-image': 'url(' + file.img + ')' }"></div></div></td><td>{{ file.display }}</td><td>{{file.hr_date}} <div class="file_buttons" :id="'fb_'+file.imgid"><span id="btn_load" class="button is-warning is-small" disabled v-on:click="loadprintFile(false)">load</span> <span id="btn_print" class="button is-success is-small" disabled v-on:click="loadprintFile(true)">print</span> <span id="btn_delete" class="button is-danger is-small" disabled v-on:click="deleteFile()">delete</span></div></td></tr>
+                <tbody id="filesbody">
+                  <tr v-on:click="selectFolder(folder.path)" v-for="folder in folders"><td><span class="icon">&#128193;</span></td><td>{{ folder.display }}</td><td></td></tr>
+                  <tr v-on:click="selectFile($event, file)" v-for="file in files"><td><figure class="image is-128x128"><img :src="file.img" :id="file.thumbid" class="thumb" @error="imgFallback" v-on:mousemove="zoomIn($event, file.imgid)" v-on:mouseleave="zoomOut(''+file.imgid)"></figure><div class="overlay_wrapper"><div :id="'overlay_'+file.imgid" class="zoomoverlay" v-bind:style="{'background-image': 'url(' + file.img + ')' }"></div></div></td><td>{{ file.display }}</td><td>{{file.hr_date}} <div class="file_buttons" :id="'fb_'+file.imgid"><span id="btn_load" class="button is-warning is-small" disabled v-on:click="loadprintFile(false)">load</span> <span id="btn_print" class="button is-success is-small" disabled v-on:click="loadprintFile(true)">print</span> <span id="btn_delete" class="button is-danger is-small" disabled v-on:click="deleteFile()">delete</span></div></td></tr>
                 </tbody>
               </table>
             </div>
@@ -159,7 +168,7 @@
                 <div class="content" id="cardtools" style="border-top: 1px solid #C0C0C0; height: 270px;" v-if="printerState.payload.state_string != 'Offline'">
                 <div style="width: 25%; float: left; text-align: center;">
                   <p>Extruder:</p>
-                  <input id="sliderExtruder" class="slider is-fullwidth is-danger is-small is-circle has-output" step="1" min="0" max="250" value="0" type="range" orient="vertical" v-on:mouseup="setExtruderTemp()"><output id="sliderextruderoutput" for="sliderExtruder">{{ temps.tool0.target }}</output> &deg;C
+                  <input id="sliderExtruder" class="slider is-fullwidth is-danger is-small is-circle has-output" step="1" min="0" max="250" v-bind:value="temps.tool0.target" type="range" orient="vertical" v-on:mouseup="setExtruderTemp()"><output id="sliderextruderoutput" for="sliderExtruder">{{ temps.tool0.target }}</output> &deg;C
                 </div>
                 <div style="width: 25%; float: left; text-align: center;">
                   <p>&nbsp;</p>
@@ -167,7 +176,7 @@
                 </div>
                 <div style="width: 25%; float: left; text-align: center;">
                   <p>Bed:</p>
-                  <input id="sliderBed" class="slider is-fullwidth is-info is-small is-circle has-output" step="1" min="0" max="90" value="0" type="range" orient="vertical" v-on:mouseup="setBedTemp()"><output id="sliderbedoutput" for="sliderBed">{{temps.bed.target}}</output> &deg;C
+                  <input id="sliderBed" class="slider is-fullwidth is-info is-small is-circle has-output" step="1" min="0" max="90" v-bind:value="temps.bed.target" type="range" orient="vertical" v-on:mouseup="setBedTemp()"><output id="sliderbedoutput" for="sliderBed">{{temps.bed.target}}</output> &deg;C
                 </div>
                 <div style="width: 25%; float: left; text-align: center;">
                   <p>&nbsp;</p>
@@ -186,8 +195,8 @@
                   </div>
                   <div class="dropdown-menu" role="menu">
                     <div class="dropdown-content">
-                      <div class="dropdown-item" id="dropdown-item_printer_commands" v-for="value in $gcodes[$printer_firmware]">
-                        <a class="dropdown-item" v-bind:data-id="value.cmd" v-on:click="pcmds(value.gcmd)"><i class="fas" v-bind:class="value.icon"></i> {{ value.label }}</a>
+                      <div class="dropdown-item" id="dropdown-item_printer_commands">
+                        <a v-for="value in $gcodes[$printer_firmware]" class="dropdown-item" v-bind:data-id="value.cmd" v-on:click="pcmds(value.gcmd)"><i class="fas" v-bind:class="value.icon"></i> {{ value.label }}</a>
                       </div>
                     </div>
                   </div>
@@ -203,7 +212,8 @@
       <footer class="footer">
       <div class="content has-text-centered">
         <p>
-          <strong>Octo^^in</strong>
+          <strong>OctoVue</strong>
+          <a href="https://github.com/shodushi/octovue" target="_blank"> -&gt; GitHub</a>
         </p>
         </div>
       </footer>
@@ -242,10 +252,17 @@ export default {
     if(this.printerState.payload.state_string != "Operational") {
       this.isNotConnection = true;
       this.isConnection = false;
+      this.isConnecting = false;
       this.connectionState = "off";
+    } else if(self.printerState.payload.state_string == "Connecting") {
+      this.isNotConnection = false;
+      this.isConnection = true;
+      this.isConnecting = true;
+      this.connectionState = "...";
     } else {
       this.isNotConnection = false;
       this.isConnection = true;
+      this.isConnecting = false;
       this.connectionState = "on";
     }
     var self = this;
@@ -330,10 +347,17 @@ export default {
           if(self.printerState.payload.state_string != "Operational") {
             self.isNotConnection = true;
             self.isConnection = false;
+            self.isConnecting = false;
             self.connectionState = "off";
+          } else if(self.printerState.payload.state_string == "Connecting") {
+            self.isNotConnection = false;
+            self.isConnection = true;
+            self.isConnecting = true;
+            self.connectionState = "...";
           } else {
             self.isNotConnection = false;
             self.isConnection = true;
+            self.isConnecting = false;
             self.connectionState = "on";
           }
         }
@@ -658,7 +682,33 @@ export default {
       });
     },
     cancelJob: function() {
-
+      var url = this.$octo_ip+"/api/job";
+      var obj = {};
+      obj.command = "cancel";
+      axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$apikey, 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
+      }, error => {
+          console.error(error);
+      });
+    },
+    pauseJob: function() {
+      var url = this.$octo_ip+"/api/job";
+      var obj = {};
+      obj.command = "pause";
+      obj.action = "pause";
+      axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$apikey, 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
+      }, error => {
+          console.error(error);
+      });
+    },
+    resumeJob: function() {
+      var url = this.$octo_ip+"/api/job";
+      var obj = {};
+      obj.command = "pause";
+      obj.action = "resume";
+      axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$apikey, 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
+      }, error => {
+          console.error(error);
+      });
     },
     setExtruderTemp: function(temp) {
       var temp = $("#sliderExtruder").val();
@@ -667,8 +717,9 @@ export default {
       obj.command = "target";
       obj.targets = {};
       obj.targets.tool0 = parseInt(temp);
+      this.temps.tool0.target = temp;
       axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$apikey, 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
-        var temptool0_ist = (100/this.temps.tool0.target)*this.temps.tool0.actual;
+        var temptool0_ist = (100/temp)*this.temps.tool0.actual;
         $("#temp_tool0_actual").css("height", temptool0_ist+"%");
       }, error => {
           console.error(error);
@@ -680,8 +731,9 @@ export default {
       var obj = {};
       obj.command = "target";
       obj.target = parseInt(temp);
+      this.temps.bed.target = temp;
       axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$apikey, 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
-        var tempbed_ist = (100/this.temps.bed.target)*this.temps.bed.actual;
+        var tempbed_ist = (100/temp)*this.temps.bed.actual;
         $("#temp_bed_actual").css("height", tempbed_ist+"%");
       }, error => {
           console.error(error);
