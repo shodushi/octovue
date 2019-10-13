@@ -16,4 +16,6 @@ npm run build
 ```
 
 ### Customize configuration
+```
 edit src/main.js
+```
