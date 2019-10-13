@@ -533,9 +533,9 @@ export default {
           }
         }
         if(path.length > 1) {
-          for(n=1;n<path.length;n++) {
-            for(m=0;m<pathobj.children.length;m++) {
-              if(pathobj.children[m].path == selectedfolder) {
+          for(var n=1;n<path.length;n++) {
+            for(var m=0;m<pathobj.children.length;m++) {
+              if(pathobj.children[m].path == this.selectedfolder) {
                 pathobj = pathobj.children[m];
               }
             }
@@ -544,7 +544,7 @@ export default {
         if(pathobj.children.length > 0) {
           for(var i = 0; i<pathobj.children.length;i++) {
             if(pathobj.children[i].type == "folder") {
-              this.folders.push(this.fileList[i]);
+              this.folders.push(pathobj.children[i]);
             } else {
               var img;
               var download;
