@@ -89,13 +89,63 @@
         </div>
       </transition>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       <section class="section">
-        <div class="container is-fullhd">
+        <div class="">
 
           <div class="columns">
 
-            <div class="column is-one-fifth" v-if="printerState.payload.state_string != 'Printing'">
-              
+            <div class="column is-one-fifth" v-if="printerState.payload.state_string == 'Printing' || printerState.payload.state_string == 'Paused' || printerState.payload.state_string == 'Pausing' || printerState.payload.state_string == 'Resuming'">
+              <h2>{{job.printfile}}</h2>
+              <progress class="progress is-link" v-bind:value="job.progress.completion" max="100"></progress>
+
+              <table class="table is-fullwidth">
+                <tbody>
+                  <tr>
+                    <td>Progress:</td>
+                    <td>{{ formatPercent(job.progress.completion) }}%</td>
+                  </tr>
+                  <tr>
+                    <td>Printtime:</td>
+                    <td>{{job.estimatedPrintTime}}</td>
+                  </tr>
+                  <tr>
+                    <td>Time elapsed:</td>
+                    <td>{{job.progress.printTime}}</td>
+                  </tr>
+                  <tr>
+                    <td>Time left:</td>
+                    <td>{{job.progress.printTimeLeft}}</td>
+                  </tr>
+                  <tr>
+                    <td>Filament</td>
+                    <td>{{ formatPercent(job.filament.tool0.length ) }}</td>
+                  </tr>
+                  <tr>
+                    <td>Height</td>
+                    <td>{{ job.currentZ }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="buttons" id="fileoperations">
+                <span id="btn_pause" class="button"  v-on:click="pauseJob()">pause</span>
+                <span id="btn_resume" class="button"  v-on:click="resumeJob()">resume</span>
+                <span id="btn_cancel" class="button"  v-on:click="cancelJob()">cancel</span>
+              </div>
+
             </div>
             
             <div class="column is-three-fifth">
@@ -126,11 +176,7 @@
                         </div>
                         <div class="is-divider-vertical" data-content="OR"></div>
                         <div class="column">
-                          <div class="buttons" id="fileoperations" v-if="printerState.payload.state_string == 'Printing'">
-                            <span id="btn_pause" class="button is-warning"  v-on:click="pauseJob()">pause print</span>
-                            <span id="btn_resume" class="button is-success"  v-on:click="resumeJob()">resume print</span>
-                            <span id="btn_cancel" class="button is-danger"  v-on:click="cancelJob()">cancel print</span>
-                          </div>
+                          
                         </div>
                       </div>
                     </td>
@@ -297,10 +343,15 @@ export default {
       folders: [],
       file_origin: "local",
       files: [],
-      folders: []
+      folders: [],
+      job: {"printfile": "", "estimatedPrintTime": "", "currentZ": "", "progress":{"completion": "", "filepos": "", "printTime": "", "printTimeLeft": "", "printTimeLeft": "", "filament": {"tool0": {"length": "", "volume": ""}}}}
     }
   },
   methods: {
+    formatPercent(value) {
+        let val = (value/1).toFixed(2).replace('.', ',')
+        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+    },
     sockConnection: function() {
       var self = this;
       var sock = new SockJS(this.$octo_ip+'/sockjs');
@@ -371,7 +422,7 @@ export default {
         }
         if(msg.current.state != null) {
           this.printerState.payload.state_string = msg.current.state.text;
-          if(this.printerState.payload.state_string != "Operational" && this.printerState.payload.state_string != "Connecting") {
+          if(this.printerState.payload.state_string != "Operational" && this.printerState.payload.state_string != "Connecting" && this.printerState.payload.state_string != "Cancelling") {
             this.isNotConnection = true;
             this.isConnection = false;
             this.isConnecting = false;
@@ -388,7 +439,13 @@ export default {
             this.connectionState = "on";
           }
         }
-
+        if(msg.current.state.text == "Printing" && msg.current.busyFiles.length > 0) {
+          this.job.printfile = msg.current.busyFiles[0].path;
+          this.job.progress = msg.current.progress;
+          this.job.filament = msg.current.job.filament;
+          this.job.estimatedPrintTime = msg.current.job.estimatedPrintTime;
+          this.job.currentZ = msg.current.currentZ;
+        }
       }
       if(msg.history != null) {
         if(msg.history.logs != null) {
