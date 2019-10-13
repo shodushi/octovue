@@ -187,7 +187,7 @@
                   <div class="dropdown-menu" role="menu">
                     <div class="dropdown-content">
                       <div class="dropdown-item" id="dropdown-item_printer_commands" v-for="value in $gcodes[$printer_firmware]">
-                        <a class="dropdown-item" v-bind:data-id="value.cmd" v-on:click="pcmds($event)"><i class="fas" v-bind:class="value.icon"></i> {{ value.label }}</a>
+                        <a class="dropdown-item" v-bind:data-id="value.cmd" v-on:click="pcmds(value.gcmd)"><i class="fas" v-bind:class="value.icon"></i> {{ value.label }}</a>
                       </div>
                     </div>
                   </div>
@@ -311,7 +311,7 @@ export default {
       if(msg.current != null) {
         if(msg.current.temps != null) {
           if(msg.current.temps.length != 0) {
-            if(msg.current.temps.tool0 != null) {
+            if(msg.current.temps[0].tool0 != null) {
               self.temps = msg.current.temps[0];
               var temptool0_ist = (100/self.temps.tool0.target)*self.temps.tool0.actual;
               $("#temp_tool0_actual").css("height", temptool0_ist+"%");
@@ -624,7 +624,7 @@ export default {
       obj.command = "select";
       obj.print = print;
 
-      axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$apikey}, data: JSON.stringify(obj) }).then(result => {
+      axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$apikey, 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
         if(print) {
           $('#btn_cancel').attr("disabled", false);
         }
@@ -683,6 +683,15 @@ export default {
       axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$apikey, 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
         var tempbed_ist = (100/this.temps.bed.target)*this.temps.bed.actual;
         $("#temp_bed_actual").css("height", tempbed_ist+"%");
+      }, error => {
+          console.error(error);
+      });
+    },
+    pcmds: function(gcmd) {
+      var url = this.$octo_ip+"/api/printer/command";
+      var obj = {};
+      obj.command = gcmd;
+      axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$apikey, 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
       }, error => {
           console.error(error);
       });
