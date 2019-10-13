@@ -217,13 +217,6 @@
         </p>
         </div>
       </footer>
-
-
-
-
-
-
-
   </div>
 </template>
 
@@ -248,7 +241,7 @@ export default {
     setTimeout(this.getPowerState, 1)
     setTimeout(this.getLightState, 1)
     setTimeout(this.loadFiles, 1)
-    
+    setTimeout(this.sockConnection, 2);
     if(this.printerState.payload.state_string != "Operational") {
       this.isNotConnection = true;
       this.isConnection = false;
@@ -265,120 +258,10 @@ export default {
       this.isConnecting = false;
       this.connectionState = "on";
     }
-    var self = this;
-    var sock = new SockJS('http://192.168.120.244:5000/sockjs');
-    console.log("1");
-    const client = new StompJs.Client({
-      brokerURL: "ws://192.168.120.244:5000/sockjs",
-      debug: function (data) {
-          console.log(data);
-      },
-      reconnectDelay: 2000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000
-    });
-    console.log("2");
-    client.webSocketFactory = function () {
-      sock = new SockJS('http://192.168.120.244:5000/sockjs');
-    };
-    client.onConnect = function(frame) {
-      //console.log(frame.data);
-    };
-    client.onStompError = function (frame) {
-      console.log('Broker reported error: ' + frame.headers['message']);
-      console.log('Additional details: ' + frame.body);
-    };
-    sock.onmessage = function(e) {
-      messageParser(e.data);
-      sock.close();
-    };
-    console.log("3");
-    client.activate();
-    console.log("4");
+    
 
 //-----------------------------------------------------------------------------------------
-    var messageParser = function(msg) {
-      console.log(msg);
-      if(msg.event != null) {
-          if(msg.event.type != null) {
-              if(msg.event.type == "PrinterStateChanged") {
-                  self.printerState = msg.event;
-                  if(self.printerState.payload.state_string != "Operational" && self.printerState.payload.state_string != "Connecting") {
-                    self.isNotConnection = true;
-                    self.isConnection = false;
-                    self.isConnecting = false;
-                    self.connectionState = "off";
-                  } else if(self.printerState.payload.state_string == "Connecting") {
-                    self.isNotConnection = false;
-                    self.isConnection = true;
-                    self.isConnecting = true;
-                    self.connectionState = "...";
-                  } else {
-                    self.isNotConnection = false;
-                    self.isConnection = true;
-                    self.isConnecting = false;
-                    self.connectionState = "on";
-                  }
-              }
-              if(msg.event.type == "UpdatedFiles") {
-                  self.loadFiles();
-              }
-          }
-      }
-      if(msg.current != null) {
-        if(msg.current.temps != null) {
-          if(msg.current.temps.length != 0) {
-            if(msg.current.temps[0].tool0 != null) {
-              self.temps = msg.current.temps[0];
-              var temptool0_ist = (100/self.temps.tool0.target)*self.temps.tool0.actual;
-              $("#temp_tool0_actual").css("height", temptool0_ist+"%");
-              var tempbed_ist = (100/self.temps.bed.target)*self.temps.bed.actual;
-              $("#temp_bed_actual").css("height", tempbed_ist+"%");
-            }
-          }
-        }
-        if(msg.current.logs != null) {
-          for(var i=0;i<msg.current.logs.length;i++) {
-            self.logs.push(msg.current.logs[i])
-          }
-        }
-        if(msg.current.state != null) {
-          self.printerState.payload.state_string = msg.current.state.text;
-          if(self.printerState.payload.state_string != "Operational") {
-            self.isNotConnection = true;
-            self.isConnection = false;
-            self.isConnecting = false;
-            self.connectionState = "off";
-          } else if(self.printerState.payload.state_string == "Connecting") {
-            self.isNotConnection = false;
-            self.isConnection = true;
-            self.isConnecting = true;
-            self.connectionState = "...";
-          } else {
-            self.isNotConnection = false;
-            self.isConnection = true;
-            self.isConnecting = false;
-            self.connectionState = "on";
-          }
-        }
-
-      }
-      if(msg.history != null) {
-        if(msg.history.logs != null) {
-          if(msg.history.logs.length != 0) {
-            self.logs = msg.history.logs
-          }
-        }
-        if(msg.history.temps != null) {
-          if(msg.history.temps.length > 0) {
-            //self.temps = msg.history.temps[msg.history.temps.length-1]
-          }
-        }
-        if(msg.history.state != null) {
-          self.printerState = {"type": "PrinterStateChanged", "payload":{"state_string": msg.history.state.text,"state_id":""}}
-        }
-      }
-    }
+    
 //-----------------------------------------------------------------------------------------
   },
   data() {
@@ -410,6 +293,111 @@ export default {
     }
   },
   methods: {
+    sockConnection: function() {
+      var self = this;
+      var sock = new SockJS(this.$octo_ip+'/sockjs');
+      const client = new StompJs.Client({
+        brokerURL: "ws://127.0.0.1/sockjs", //dummy
+        debug: function (data) {
+            //console.log(data);
+        },
+        reconnectDelay: 2000,
+        heartbeatIncoming: 4000,
+        heartbeatOutgoing: 4000
+      });
+      client.webSocketFactory = function () {
+        sock = new SockJS(self.$octo_ip+'/sockjs');
+      };
+      client.onConnect = function(frame) {};
+      client.onStompError = function (frame) {};
+      sock.onmessage = function(e) {
+        self.messageParser(e.data);
+        sock.close();
+      };
+      client.activate();
+    },
+    messageParser: function(msg) {
+      console.log(msg);
+      if(msg.event != null) {
+          if(msg.event.type != null) {
+              if(msg.event.type == "PrinterStateChanged") {
+                  this.printerState = msg.event;
+                  if(this.printerState.payload.state_string != "Operational" && this.printerState.payload.state_string != "Connecting") {
+                    this.isNotConnection = true;
+                    this.isConnection = false;
+                    this.isConnecting = false;
+                    this.connectionState = "off";
+                  } else if(this.printerState.payload.state_string == "Connecting") {
+                    this.isNotConnection = false;
+                    this.isConnection = true;
+                    this.isConnecting = true;
+                    this.connectionState = "...";
+                  } else {
+                    this.isNotConnection = false;
+                    this.isConnection = true;
+                    this.isConnecting = false;
+                    this.connectionState = "on";
+                  }
+              }
+              if(msg.event.type == "UpdatedFiles") {
+                  this.loadFiles();
+              }
+          }
+      }
+      if(msg.current != null) {
+        if(msg.current.temps != null) {
+          if(msg.current.temps.length != 0) {
+            if(msg.current.temps[0].tool0 != null) {
+              this.temps = msg.current.temps[0];
+              var temptool0_ist = (100/this.temps.tool0.target)*this.temps.tool0.actual;
+              $("#temp_tool0_actual").css("height", temptool0_ist+"%");
+              var tempbed_ist = (100/this.temps.bed.target)*this.temps.bed.actual;
+              $("#temp_bed_actual").css("height", tempbed_ist+"%");
+            }
+          }
+        }
+        if(msg.current.logs != null) {
+          for(var i=0;i<msg.current.logs.length;i++) {
+            this.logs.push(msg.current.logs[i])
+          }
+        }
+        if(msg.current.state != null) {
+          this.printerState.payload.state_string = msg.current.state.text;
+          if(this.printerState.payload.state_string != "Operational" && this.printerState.payload.state_string != "Connecting") {
+            this.isNotConnection = true;
+            this.isConnection = false;
+            this.isConnecting = false;
+            this.connectionState = "off";
+          } else if(this.printerState.payload.state_string == "Connecting") {
+            this.isNotConnection = false;
+            this.isConnection = true;
+            this.isConnecting = true;
+            this.connectionState = "...";
+          } else {
+            this.isNotConnection = false;
+            this.isConnection = true;
+            this.isConnecting = false;
+            this.connectionState = "on";
+          }
+        }
+
+      }
+      if(msg.history != null) {
+        if(msg.history.logs != null) {
+          if(msg.history.logs.length != 0) {
+            this.logs = msg.history.logs
+          }
+        }
+        if(msg.history.temps != null) {
+          if(msg.history.temps.length > 0) {
+            //this.temps = msg.history.temps[msg.history.temps.length-1]
+          }
+        }
+        if(msg.history.state != null) {
+          this.printerState = {"type": "PrinterStateChanged", "payload":{"state_string": msg.history.state.text,"state_id":""}}
+        }
+      }
+    },
     handleClick: function() {
       axios({ method: "GET", "url": this.$octo_ip+"/api/settings", headers: {'X-Api-Key': this.$apikey} }).then(result => {
         this.cam = ""+result.data.webcam.streamUrl;
