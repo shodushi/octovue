@@ -155,12 +155,12 @@
                 <div class="media">
 
                   <div class="media-content">
-                    <p class="title is-4" id="printername"></p>
+                    <p class="title is-4" id="printername">{{ connectionSettings.options.printerProfiles[0].name }}</p>
                     <p class="subtitle is-6" id="connectionstatus">{{ printerState.payload.state_string }}</p>
                   </div>
                 </div>
 
-                <div class="content" id="cardprinterstatus">
+                <div class="content" id="cardprinterstatus" v-if="printerState.payload.state_string != 'Offline'">
                   <p>Tool-0 Temp: <span id="tool0tempactual">{{ temps.tool0.actual }}</span>&deg; C / <span id="tool0temptarget">{{ temps.tool0.target }}</span>&deg; C</p>
                   <p>Bed Temp: <span id="bedtempactual">{{ temps.bed.actual }}</span>&deg; C / <span id="bedtemptarget">{{ temps.bed.target }}</span>&deg; C</p>
                 </div>
@@ -241,6 +241,7 @@ export default {
     setTimeout(this.getPowerState, 1)
     setTimeout(this.getLightState, 1)
     setTimeout(this.loadFiles, 1)
+    setTimeout(this.getOctoprintConnection, 1)
     setTimeout(this.sockConnection, 2);
     if(this.printerState.payload.state_string != "Operational") {
       this.isNotConnection = true;
@@ -275,6 +276,7 @@ export default {
       powerState: "off",
       lightState: "off",
       connectionState: "off",
+      connectionSettings: [],
       isPower: false,
       isNotPower: true,
       isLight: false,
@@ -478,6 +480,16 @@ export default {
       var self = this;
       axios({ method: "GET", "url": this.$octo_ip+"/api/settings", headers: {'X-Api-Key': this.$apikey} }).then(result => {
         self.cam = result.data.webcam.streamUrl;
+      }, error => {
+          console.error(error);
+      });
+    },
+    getOctoprintConnection: function() {
+      var self = this;
+      axios({ method: "GET", "url": this.$octo_ip+"/api/connection", headers: {'X-Api-Key': this.$apikey} }).then(result => {
+        console.log("getOctoprintConnection");
+        console.log(result.data);
+        self.connectionSettings = result.data;
       }, error => {
           console.error(error);
       });
