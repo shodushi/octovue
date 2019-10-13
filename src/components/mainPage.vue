@@ -90,15 +90,19 @@
       </transition>
 
       <section class="section">
-        <div class="container">
+        <div class="container is-fullhd">
 
           <div class="columns">
 
-            <div class="column is-three-quarters">
+            <div class="column is-one-fifth" v-if="printerState.payload.state_string != 'Printing'">
+              
+            </div>
+            
+            <div class="column is-three-fifth">
               <h2>Files & Folders</h2>
-                <table id="filebrowser_head" class="table is-fullwidth">
-                  <thead>
-                    <tr colspan="3">
+              <table id="filebrowser_head" class="table is-fullwidth">
+                <thead>
+                  <tr colspan="3">
                     <td>
                       <div class="tabs is-centered is-boxed">
                         <ul>
@@ -111,26 +115,26 @@
                 </thead>
                 <tbody>
                   <tr>
-                      <td colspan="3">
-                        <div class="columns">
-                          <div class="column">
-                            <div class="buttons" id="fileoperations" v-if="selectedfile != ''">
-                              <span id="btn_load" class="button is-warning" disabled v-on:click="loadprintFile(false)">load</span>
-                              <span id="btn_print" class="button is-success" disabled v-on:click="loadprintFile(true)">print</span>
-                              <span id="btn_delete" class="button is-danger" disabled v-on:click="deleteFile()">delete</span>
-                            </div>
-                          </div>
-                          <div class="is-divider-vertical" data-content="OR"></div>
-                          <div class="column">
-                            <div class="buttons" id="fileoperations" v-if="printerState.payload.state_string == 'Printing'">
-                              <span id="btn_pause" class="button is-warning"  v-on:click="pauseJob()">pause print</span>
-                              <span id="btn_resume" class="button is-success"  v-on:click="resumeJob()">resume print</span>
-                              <span id="btn_cancel" class="button is-danger"  v-on:click="cancelJob()">cancel print</span>
-                            </div>
+                    <td colspan="3">
+                      <div class="columns">
+                        <div class="column">
+                          <div class="buttons" id="fileoperations" v-if="selectedfile != ''">
+                            <span id="btn_load" class="button is-warning" disabled v-on:click="loadprintFile(false)">load</span>
+                            <span id="btn_print" class="button is-success" disabled v-on:click="loadprintFile(true)">print</span>
+                            <span id="btn_delete" class="button is-danger" disabled v-on:click="deleteFile()">delete</span>
                           </div>
                         </div>
-                      </td>
-                    </tr>
+                        <div class="is-divider-vertical" data-content="OR"></div>
+                        <div class="column">
+                          <div class="buttons" id="fileoperations" v-if="printerState.payload.state_string == 'Printing'">
+                            <span id="btn_pause" class="button is-warning"  v-on:click="pauseJob()">pause print</span>
+                            <span id="btn_resume" class="button is-success"  v-on:click="resumeJob()">resume print</span>
+                            <span id="btn_cancel" class="button is-danger"  v-on:click="cancelJob()">cancel print</span>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
                 </tbody>
               </table>
               <div v-if="selectedfolder != ''" v-on:click="folderup()" style="text-align: left">&#x2190; back</div>
@@ -142,68 +146,70 @@
               </table>
             </div>
 
-
-            <div class="column">
-
-            <div class="card">
-              <div class="card-image">
-                <figure class="image is-4by3">
-                  <img :src="cam"  @error="imgFallback" alt="Printer image">
-                </figure>
-              </div>
-              <div class="card-content">
-                <div class="media">
-
-                  <div class="media-content">
-                    <p class="title is-4" id="printername">{{ connectionSettings.options.printerProfiles[0].name }}</p>
-                    <p class="subtitle is-6" id="connectionstatus">{{ printerState.payload.state_string }}</p>
-                  </div>
+            <div class="column is-one-fifth">
+              <div class="card">
+                <div class="card-image">
+                  <figure class="image is-4by3">
+                    <img :src="cam"  @error="imgFallback" alt="Printer image">
+                  </figure>
                 </div>
+                <div class="card-content">
+                  <div class="media">
 
-                <div class="content" id="cardprinterstatus" v-if="printerState.payload.state_string != 'Offline'">
-                  <p>Tool-0 Temp: <span id="tool0tempactual">{{ temps.tool0.actual }}</span>&deg; C / <span id="tool0temptarget">{{ temps.tool0.target }}</span>&deg; C</p>
-                  <p>Bed Temp: <span id="bedtempactual">{{ temps.bed.actual }}</span>&deg; C / <span id="bedtemptarget">{{ temps.bed.target }}</span>&deg; C</p>
-                </div>
-
-                <div class="content" id="cardtools" style="border-top: 1px solid #C0C0C0; height: 270px;" v-if="printerState.payload.state_string != 'Offline'">
-                <div style="width: 25%; float: left; text-align: center;">
-                  <p>Extruder:</p>
-                  <input id="sliderExtruder" class="slider is-fullwidth is-danger is-small is-circle has-output" step="1" min="0" max="250" v-bind:value="temps.tool0.target" type="range" orient="vertical" v-on:mouseup="setExtruderTemp()"><output id="sliderextruderoutput" for="sliderExtruder">{{ temps.tool0.target }}</output> &deg;C
-                </div>
-                <div style="width: 25%; float: left; text-align: center;">
-                  <p>&nbsp;</p>
-                  <div class="temp_ist"><div id="temp_tool0_actual"></div></div>
-                </div>
-                <div style="width: 25%; float: left; text-align: center;">
-                  <p>Bed:</p>
-                  <input id="sliderBed" class="slider is-fullwidth is-info is-small is-circle has-output" step="1" min="0" max="90" v-bind:value="temps.bed.target" type="range" orient="vertical" v-on:mouseup="setBedTemp()"><output id="sliderbedoutput" for="sliderBed">{{temps.bed.target}}</output> &deg;C
-                </div>
-                <div style="width: 25%; float: left; text-align: center;">
-                  <p>&nbsp;</p>
-                  <div class="temp_ist"><div id="temp_bed_actual"></div></div>
-                </div>
-
-                <div class="dropdown is-hoverable is-up" style="margin: 20px 0px 0px 0px;">
-                  <div class="dropdown-trigger">
-                    <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
-                      <span>Printer commands</span>
-
-                      <span class="icon is-small">
-                        <i class="fas fa-angle-up" aria-hidden="true"></i>
-                      </span>
-                    </button>
-                  </div>
-                  <div class="dropdown-menu" role="menu">
-                    <div class="dropdown-content">
-                      <div class="dropdown-item" id="dropdown-item_printer_commands">
-                        <a v-for="value in $gcodes[$printer_firmware]" class="dropdown-item" v-bind:data-id="value.cmd" v-on:click="pcmds(value.gcmd)"><i class="fas" v-bind:class="value.icon"></i> {{ value.label }}</a>
-                      </div>
+                    <div class="media-content">
+                      <p class="title is-4" id="printername">{{ connectionSettings.options.printerProfiles[0].name }}</p>
+                      <p class="subtitle is-6" id="connectionstatus">{{ printerState.payload.state_string }}</p>
                     </div>
                   </div>
-                </div>
+
+                  <transition name="slide">
+                    <div id="transitionWrapper">
+                      <div class="content" id="cardprinterstatus" v-if="printerState.payload.state_string != 'Offline'">
+                        <p>Tool-0 Temp: <span id="tool0tempactual">{{ temps.tool0.actual }}</span>&deg; C / <span id="tool0temptarget">{{ temps.tool0.target }}</span>&deg; C</p>
+                        <p>Bed Temp: <span id="bedtempactual">{{ temps.bed.actual }}</span>&deg; C / <span id="bedtemptarget">{{ temps.bed.target }}</span>&deg; C</p>
+                      </div>
+                    
+                      <div class="content" id="cardtools" style="border-top: 1px solid #C0C0C0; height: 270px;" v-if="printerState.payload.state_string != 'Offline'">
+                        <div style="width: 25%; float: left; text-align: center;">
+                          <p>Extruder:</p>
+                          <input id="sliderExtruder" class="slider is-fullwidth is-danger is-small is-circle has-output" step="1" min="0" max="250" v-bind:value="temps.tool0.target" type="range" orient="vertical" v-on:mouseup="setExtruderTemp()"><output id="sliderextruderoutput" for="sliderExtruder">{{ temps.tool0.target }}</output> &deg;C
+                        </div>
+                        <div style="width: 25%; float: left; text-align: center;">
+                          <p>&nbsp;</p>
+                          <div class="temp_ist"><div id="temp_tool0_actual"></div></div>
+                        </div>
+                        <div style="width: 25%; float: left; text-align: center;">
+                          <p>Bed:</p>
+                          <input id="sliderBed" class="slider is-fullwidth is-info is-small is-circle has-output" step="1" min="0" max="90" v-bind:value="temps.bed.target" type="range" orient="vertical" v-on:mouseup="setBedTemp()"><output id="sliderbedoutput" for="sliderBed">{{temps.bed.target}}</output> &deg;C
+                        </div>
+                        <div style="width: 25%; float: left; text-align: center;">
+                          <p>&nbsp;</p>
+                          <div class="temp_ist"><div id="temp_bed_actual"></div></div>
+                        </div>
+
+                        <div class="dropdown is-hoverable is-up" style="margin: 20px 0px 0px 0px;">
+                          <div class="dropdown-trigger">
+                            <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
+                              <span>Printer commands</span>
+
+                              <span class="icon is-small">
+                                <i class="fas fa-angle-up" aria-hidden="true"></i>
+                              </span>
+                            </button>
+                          </div>
+                          <div class="dropdown-menu" role="menu">
+                            <div class="dropdown-content">
+                              <div class="dropdown-item" id="dropdown-item_printer_commands">
+                                <a v-for="value in $gcodes[$printer_firmware]" class="dropdown-item" v-bind:data-id="value.cmd" v-on:click="pcmds(value.gcmd)"><i class="fas" v-bind:class="value.icon"></i> {{ value.label }}</a>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </transition>
                 </div>
               </div>
-            </div>
             </div>
           </div>
         </div>

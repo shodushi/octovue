@@ -121,3 +121,11 @@ tr.is-selected {
 {
   opacity: 0
 }
+.slide-enter-active, .slide-leave-active  {
+  transition: all .6s ease;
+}
+.slide-enter, .slide-leave-to
+{
+  transform: translateX(-100%), translateY(-100%);
+  opacity: 0;
+}
