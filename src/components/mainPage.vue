@@ -61,13 +61,13 @@
           <section class="modal-card-body">
             <div class="content">
               <h3>General</h3>
-              <p>Octoprint installation is required for octo^^in to work and control your printer. Just edit &quot;config.js&quot;, set &quot;octo_ip&quot; to your octoprint ipaddress:port and set &quot;apikey&quot; to your octoprint's api key.</p>
+              <p>Octoprint installation is required for octo^^in to work and control your printer. Just edit &quot;main.js&quot;, set &quot;Vue.prototype.$octo_ip&quot; to your octoprint ipaddress:port and set &quot;Vue.prototype.$apikey&quot; to your octoprint's api key.</p>
               <h3>Uploading files</h3>
               <p>Navigate to the destination folder and just drag and drop the gcode file into this browser window.<br />For now, only uploading to octoprint's local storage is used.</p>
               <h3>Printer power</h3>
-              <p>For switching the printer on/off I use a &quot;Sonoff POW with tasmota firmware&quot;. If you plan the same/similar setup, edit &quot;config.js&quot;, set your sonoff's ip-address and set &quot;var powerhandling = yes&quot;.</p>
+              <p>For switching the printer on/off I use a &quot;Sonoff POW with tasmota firmware&quot;. If you plan the same/similar setup, edit &quot;main.js&quot;, set your sonoff's ip-address and set &quot;Vue.prototype.$powerhandling = yes&quot;.</p>
               <h3>Light control</h3>
-              <p>For switching the enclosure lights on/off I use a &quot;nodemcu flashed with esphome&quot;, integrated into homeassistant. If you plan the same/similar setup, edit &quot;config.js&quot;, set your led-controlling-device's ip-address and set &quot;var lighthandling = yes&quot;.</p>
+              <p>For switching the enclosure lights on/off I use a &quot;nodemcu flashed with esphome&quot;, integrated into homeassistant. If you plan the same/similar setup, edit &quot;main.js&quot;, set your led-controlling-device's ip-address and set &quot;Vue.prototype.$lighthandling = yes&quot;.</p>
             </div>
           </section>
           <footer class="modal-card-foot">
