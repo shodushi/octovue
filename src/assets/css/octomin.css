@@ -129,6 +129,3 @@ tr.is-selected {
   transform: translateX(-100%), translateY(-100%);
   opacity: 0;
 }
-.noborder, .noborder tr, .noborder td {
-  border: none !important; background-color: none !important;
-}

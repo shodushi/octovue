@@ -177,10 +177,8 @@
                     </td>
                     <td>
                       {{ file.display }}<br />
-                      <table class="noborder">
-                        <tr v-if="file.gcodeAnalysis.dimensions"><td>Dimensions:</td><td>x: {{ file.gcodeAnalysis.dimensions.width }} y: {{ file.gcodeAnalysis.dimensions.depth }} z: {{ file.gcodeAnalysis.dimensions.height }}</td></tr>
-                        <tr v-if="file.gcodeAnalysis.estimatedPrintTime"><td>PrintTime</td><td>{{ formatTime(file.gcodeAnalysis.estimatedPrintTime) }}</td></tr>
-                      </table>
+                      <div style="width: 100px; float:left; margin-left: 20px;" v-if="file.gcodeAnalysis.dimensions.width != null">Dimensions:</div><div v-if="file.gcodeAnalysis.dimensions.width != null">x: {{ file.gcodeAnalysis.dimensions.width }} y: {{ file.gcodeAnalysis.dimensions.depth }} z: {{ file.gcodeAnalysis.dimensions.height }}</div>
+                      <div style="width: 100px; float:left; margin-left: 20px;" v-if="file.gcodeAnalysis.estimatedPrintTime != null">PrintTime</div><div v-if="file.gcodeAnalysis.estimatedPrintTime != null">{{ formatTime(file.gcodeAnalysis.estimatedPrintTime) }}</div>
                     </td>
                     <td>{{file.hr_date}} 
                       <div class="file_buttons" :id="'fb_'+file.imgid">
@@ -655,9 +653,17 @@ export default {
                 pathobj.children[i].imgid = imgid;
                 pathobj.children[i].thumbid = "thumb_"+imgid;
                 pathobj.children[i].hr_date = date;
+                if(pathobj.children[i].gcodeAnalysis == null) {
+                  pathobj.children[i].gcodeAnalysis = {};
+                  pathobj.children[i].gcodeAnalysis.estimatedPrintTime = null;
+                  pathobj.children[i].gcodeAnalysis.filament = {"tool0": {"length": null, "volume": null}};
+                  pathobj.children[i].gcodeAnalysis.printingArea = {"maxX": null, "maxY": null, "maxZ": null, "minX": null, "minY": null, "minZ": null};
+                }
+                if(pathobj.children[i].gcodeAnalysis.dimensions == null) {
+                  pathobj.children[i].gcodeAnalysis.dimensions = {"width": null, "depth": null, "height": null};
+                }
               }
               this.files.push(pathobj.children[i]);
-              console.log(pathobj.children[i]);
             }
           }
         }
