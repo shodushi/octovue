@@ -19,4 +19,4 @@ edit src/main.js
 ```
 
 ## Preview
-![screen.png][screenshot]
+![screen.png](screenshot)
