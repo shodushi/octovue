@@ -92,17 +92,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
       <section class="section">
         <div class="">
 
@@ -116,7 +105,7 @@
                 <tbody>
                   <tr>
                     <td>Progress:</td>
-                    <td>{{ formatPercent(job.progress.completion) }}%</td>
+                    <td>{{ formatDecimal(job.progress.completion) }}%</td>
                   </tr>
                   <tr>
                     <td>Printtime:</td>
@@ -132,7 +121,7 @@
                   </tr>
                   <tr>
                     <td>Filament</td>
-                    <td>{{ formatPercent(job.filament.tool0.length ) }}</td>
+                    <td>{{ formatLenght(job.filament.tool0.length ) }}</td>
                   </tr>
                   <tr>
                     <td>Height</td>
@@ -177,8 +166,10 @@
                     </td>
                     <td>
                       {{ file.display }}<br />
-                      <div style="width: 100px; float:left; margin-left: 20px;" v-if="file.gcodeAnalysis.dimensions.width != null">Dimensions:</div><div v-if="file.gcodeAnalysis.dimensions.width != null">x: {{ file.gcodeAnalysis.dimensions.width }} y: {{ file.gcodeAnalysis.dimensions.depth }} z: {{ file.gcodeAnalysis.dimensions.height }}</div>
-                      <div style="width: 100px; float:left; margin-left: 20px;" v-if="file.gcodeAnalysis.estimatedPrintTime != null">PrintTime</div><div v-if="file.gcodeAnalysis.estimatedPrintTime != null">{{ formatTime(file.gcodeAnalysis.estimatedPrintTime) }}</div>
+                      <div style="width: 130px; float:left; margin-left: 20px;" v-if="file.gcodeAnalysis.dimensions.width != null">Dimensions:</div><div v-if="file.gcodeAnalysis.dimensions.width != null">x: {{ formatLenght(file.gcodeAnalysis.dimensions.width) }} y: {{ formatLenght(file.gcodeAnalysis.dimensions.depth) }} z: {{ formatLenght(file.gcodeAnalysis.dimensions.height) }}</div>
+                      <div style="width: 130px; float:left; margin-left: 20px;" v-if="file.gcodeAnalysis.estimatedPrintTime != null">PrintTime:</div><div v-if="file.gcodeAnalysis.estimatedPrintTime != null">{{ formatTime(file.gcodeAnalysis.estimatedPrintTime) }}</div>
+                      <div style="width: 130px; float:left; margin-left: 20px;" v-if="file.gcodeAnalysis.filament.tool0.length != null">Filament:</div><div v-if="file.gcodeAnalysis.filament.tool0.length != null">{{ formatLenght(file.gcodeAnalysis.filament.tool0.length) }}</div>
+                      <div style="width: 130px; float:left; margin-left: 20px;" v-if="file.prints != null">Prints ok/nok:</div><div v-if="file.prints != null">{{ file.prints.success }} / {{ file.prints.failure }}</div>
                     </td>
                     <td>{{file.hr_date}} 
                       <div class="file_buttons" :id="'fb_'+file.imgid">
@@ -348,13 +339,26 @@ export default {
     }
   },
   methods: {
-    formatPercent(value) {
-        let val = (value/1).toFixed(2).replace('.', ',')
-        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
-    },
     formatTime(value) {
         value=value/60/60
         let val = (value/1).toFixed(2).replace(',', ':').replace('.', ':')+" h"
+        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+    },
+    formatDecimal(value) {
+        let val = (value/1).toFixed(2).replace(',', ':')
+        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+    },
+    formatLenght(value) {
+        value=value/10;
+        var val = ""
+        if(value > 100) {
+          val = (value/100).toFixed(2).replace('.', ',')+"m"
+        } else if(value > 10) {
+          val = (value/1).toFixed(2).replace('.', ',')+"cm"
+        } else {
+          val = (value*10).toFixed(2).replace('.', ',')+"mm"
+        }
+        
         return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
     },
     sockConnection: function() {
@@ -381,7 +385,7 @@ export default {
       client.activate();
     },
     messageParser: function(msg) {
-      console.log(msg);
+      //console.log(msg);
       if(msg.event != null) {
           if(msg.event.type != null) {
               if(msg.event.type == "PrinterStateChanged") {
@@ -468,13 +472,6 @@ export default {
         }
       }
     },
-    handleClick: function() {
-      axios({ method: "GET", "url": this.$octo_ip+"/api/settings", headers: {'X-Api-Key': this.$apikey} }).then(result => {
-        this.cam = ""+result.data.webcam.streamUrl;
-      }, error => {
-          console.error(error);
-      });
-    },
     powerswitch: function() {
       axios({ method: "GET", "url": this.$cors_proxy+"/"+this.$tasmota_ip+"/cm?cmnd=Power%20TOGGLE" }).then(result => {
         this.powerState = result.data.POWER.toLowerCase();
@@ -500,7 +497,6 @@ export default {
           this.isNotPower = false;
           this.isPower = true;
         }
-
       }, error => {
           console.error(error);
       });
@@ -555,8 +551,6 @@ export default {
     getOctoprintConnection: function() {
       var self = this;
       axios({ method: "GET", "url": this.$octo_ip+"/api/connection", headers: {'X-Api-Key': this.$apikey} }).then(result => {
-        console.log("getOctoprintConnection");
-        console.log(result.data);
         self.connectionSettings = result.data;
       }, error => {
           console.error(error);
