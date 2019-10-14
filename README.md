@@ -1,21 +1,22 @@
-# octovue
+# OctoVue
 
-## Project setup
+An alternative UI for octoprint based on vue.js and bulma css framework
+
+## Installation
 ```
-npm install
+clone repository & npm install
 ```
 
-### Compiles and hot-reloads for development
+## Run
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
-```
-npm run build
-```
 
 ### Customize configuration
 ```
 edit src/main.js
 ```
+
+## Preview
+![screen.png][screenshot]

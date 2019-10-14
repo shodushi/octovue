@@ -12,7 +12,7 @@
         <div class="navbar-brand">
           <a class="navbar-item" href="https://bulma.io">
             <!-- <img src="https://bulma.io/images/bulma-logo.png" alt="Bulma: Free, open source, & modern CSS framework based on Flexbox" width="112" height="28"> !-->
-            Octo^^in
+            OctoVue
           </a>
         </div>
         <div id="navbarBasicExample" class="navbar-menu">
@@ -61,7 +61,7 @@
           <section class="modal-card-body">
             <div class="content">
               <h3>General</h3>
-              <p>Octoprint installation is required for octo^^in to work and control your printer. Just edit &quot;main.js&quot;, set &quot;Vue.prototype.$octo_ip&quot; to your octoprint ipaddress:port and set &quot;Vue.prototype.$apikey&quot; to your octoprint's api key.</p>
+              <p>Octoprint installation is required for OctoVue to work and control your printer. Just edit &quot;main.js&quot;, set &quot;Vue.prototype.$octo_ip&quot; to your octoprint ipaddress:port and set &quot;Vue.prototype.$apikey&quot; to your octoprint's api key.</p>
               <h3>Uploading files</h3>
               <p>Navigate to the destination folder and just drag and drop the gcode file into this browser window.<br />For now, only uploading to octoprint's local storage is used.</p>
               <h3>Printer power</h3>
@@ -137,7 +137,7 @@
 
             </div>
             
-            <div class="column is-three-fifth">
+            <div class="column is-three-fifth" v-if="file_origin == 'local' || file_origin == 'sdcard' || file_origin == 'thingiverse'">
               <h2>Files & Folders</h2>
               <table id="filebrowser_head" class="table is-fullwidth">
                 <thead>
@@ -147,40 +147,50 @@
                         <ul>
                           <li id="tab_local" v-bind:class="{ 'is-active' : file_origin == 'local' }"><a v-on:click="changeFileSource('local')"> <i class="fas fa-hdd"></i>&nbsp;local</a></li>
                           <li id="tab_sdcard" v-bind:class="{ 'is-active' : file_origin == 'sdcard' }"><a v-on:click="changeFileSource('sdcard')"><i class="fas fa-sd-card"></i>&nbsp;sdcard</a></li>
+                          <li id="tab_thingiverse" v-bind:class="{ 'is-active' : file_origin == 'thingiverse' }"><a v-on:click="changeFileSource('thingiverse')"><span class="thingiverse">T</span>&nbsp;thingiverse</a></li>
                         </ul>
                       </div>
                     </td>
                   </tr>
                 </thead>
               </table>
-              <div v-if="selectedfolder != ''" v-on:click="folderup()" style="text-align: left">&#x2190; back</div>
-              <table class="table is-fullwidth is-striped is-hoverable" id="filestable">
-                <tbody id="filesbody">
-                  <tr v-on:click="selectFolder(folder.path)" v-for="folder in folders"><td><span class="icon">&#128193;</span></td><td>{{ folder.display }}</td><td></td></tr>
-                  <tr v-on:click="selectFile($event, file)" v-for="file in files">
-                    <td>
-                      <figure class="image is-128x128"><img :src="file.img" :id="file.thumbid" class="thumb" @error="imgFallback" v-on:mousemove="zoomIn($event, file.imgid)" v-on:mouseleave="zoomOut(''+file.imgid)"></figure>
-                      <div class="overlay_wrapper">
-                        <div :id="'overlay_'+file.imgid" class="zoomoverlay" v-bind:style="{'background-image': 'url(' + file.img + ')' }"></div>
-                      </div>
-                    </td>
-                    <td>
-                      {{ file.display }}<br />
-                      <div style="width: 130px; float:left; margin-left: 20px;" v-if="file.gcodeAnalysis.dimensions.width != null">Dimensions:</div><div v-if="file.gcodeAnalysis.dimensions.width != null">x: {{ formatLenght(file.gcodeAnalysis.dimensions.width) }} y: {{ formatLenght(file.gcodeAnalysis.dimensions.depth) }} z: {{ formatLenght(file.gcodeAnalysis.dimensions.height) }}</div>
-                      <div style="width: 130px; float:left; margin-left: 20px;" v-if="file.gcodeAnalysis.estimatedPrintTime != null">PrintTime:</div><div v-if="file.gcodeAnalysis.estimatedPrintTime != null">{{ formatTime(file.gcodeAnalysis.estimatedPrintTime) }}</div>
-                      <div style="width: 130px; float:left; margin-left: 20px;" v-if="file.gcodeAnalysis.filament.tool0.length != null">Filament:</div><div v-if="file.gcodeAnalysis.filament.tool0.length != null">{{ formatLenght(file.gcodeAnalysis.filament.tool0.length) }}</div>
-                      <div style="width: 130px; float:left; margin-left: 20px;" v-if="file.prints != null">Prints ok/nok:</div><div v-if="file.prints != null">{{ file.prints.success }} / {{ file.prints.failure }}</div>
-                    </td>
-                    <td>{{file.hr_date}} 
-                      <div class="file_buttons" :id="'fb_'+file.imgid">
-                        <!-- <span id="btn_load" class="button is-warning is-small" disabled v-on:click="loadprintFile(false)">load</span> !-->
-                        <span id="btn_print" class="button is-success is-small" disabled v-on:click="loadprintFile(true)">print</span> 
-                        <span id="btn_delete" class="button is-danger is-small" disabled v-on:click="deleteFile()">delete</span>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+
+              <div v-if="file_origin == 'local' || file_origin == 'sdcard'">
+
+                <div v-if="selectedfolder != ''" v-on:click="folderup()" style="text-align: left">&#x2190; back</div>
+                <table class="table is-fullwidth is-striped is-hoverable" id="filestable">
+                  <tbody id="filesbody">
+                    <tr v-on:click="selectFolder(folder.path)" v-for="folder in folders"><td><span class="icon">&#128193;</span></td><td>{{ folder.display }}</td><td></td></tr>
+                    <tr v-on:click="selectFile($event, file)" v-for="file in files">
+                      <td>
+                        <figure class="image is-128x128"><img :src="file.img" :id="file.thumbid" class="thumb" @error="imgFallback" v-on:mousemove="zoomIn($event, file.imgid)" v-on:mouseleave="zoomOut(''+file.imgid)"></figure>
+                        <div class="overlay_wrapper">
+                          <div :id="'overlay_'+file.imgid" class="zoomoverlay" v-bind:style="{'background-image': 'url(' + file.img + ')' }"></div>
+                        </div>
+                      </td>
+                      <td>
+                        {{ file.display }}<br />
+                        <div style="width: 130px; float:left; margin-left: 20px;" v-if="file.gcodeAnalysis.dimensions.width != null">Dimensions:</div><div v-if="file.gcodeAnalysis.dimensions.width != null">x: {{ formatLenght(file.gcodeAnalysis.dimensions.width) }} y: {{ formatLenght(file.gcodeAnalysis.dimensions.depth) }} z: {{ formatLenght(file.gcodeAnalysis.dimensions.height) }}</div>
+                        <div style="width: 130px; float:left; margin-left: 20px;" v-if="file.gcodeAnalysis.estimatedPrintTime != null">PrintTime:</div><div v-if="file.gcodeAnalysis.estimatedPrintTime != null">{{ formatTime(file.gcodeAnalysis.estimatedPrintTime) }}</div>
+                        <div style="width: 130px; float:left; margin-left: 20px;" v-if="file.gcodeAnalysis.filament.tool0.length != null">Filament:</div><div v-if="file.gcodeAnalysis.filament.tool0.length != null">{{ formatLenght(file.gcodeAnalysis.filament.tool0.length) }}</div>
+                        <div style="width: 130px; float:left; margin-left: 20px;" v-if="file.prints != null">Prints ok/nok:</div><div v-if="file.prints != null">{{ file.prints.success }} / {{ file.prints.failure }}</div>
+                      </td>
+                      <td>{{file.hr_date}} 
+                        <div class="file_buttons" :id="'fb_'+file.imgid">
+                          <!-- <span id="btn_load" class="button is-warning is-small" disabled v-on:click="loadprintFile(false)">load</span> !-->
+                          <span id="btn_print" class="button is-success is-small" disabled v-on:click="loadprintFile(true)">print</span> 
+                          <span id="btn_delete" class="button is-danger is-small" disabled v-on:click="deleteFile()">delete</span>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div v-if="file_origin == 'thingiverse'">
+                <h2>thingiverse - work in progress</h2>
+              </div>
+
             </div>
 
             <div class="column is-one-fifth">
@@ -815,6 +825,14 @@ export default {
       var obj = {};
       obj.command = gcmd;
       axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$apikey, 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
+      }, error => {
+          console.error(error);
+      });
+    },
+    thingiverse_search: function(q) {
+      var url = "https://api.thingiverse.com/search/"+q;
+      axios({ method: "GET", url: url, headers: {'Access-Control-Allow-Origin': '*'}}).then(result => {
+        console.log(result);
       }, error => {
           console.error(error);
       });

@@ -129,3 +129,12 @@ tr.is-selected {
   transform: translateX(-100%), translateY(-100%);
   opacity: 0;
 }
+.thingiverse {
+  font-weight: bold;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+  border: 1px solid #000;
+  text-align: center;
+  width: 20px;
+  height: 20px;
+}
