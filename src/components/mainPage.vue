@@ -43,6 +43,7 @@
           <div class="navbar-end">
             <div class="navbar-item">
               <div class="buttons">
+                <a class="button is-info is-small" v-on:click="thingiverse_search()">Thingiverse</a>
                 <a class="button is-info is-small" v-on:click="terminalmodal = !terminalmodal">Terminal</a>
                 <a class="button is-info is-small" v-on:click="infomodal = !infomodal">Info</a>
               </div>
@@ -147,7 +148,7 @@
                         <ul>
                           <li id="tab_local" v-bind:class="{ 'is-active' : file_origin == 'local' }"><a v-on:click="changeFileSource('local')"> <i class="fas fa-hdd"></i>&nbsp;local</a></li>
                           <li id="tab_sdcard" v-bind:class="{ 'is-active' : file_origin == 'sdcard' }"><a v-on:click="changeFileSource('sdcard')"><i class="fas fa-sd-card"></i>&nbsp;sdcard</a></li>
-                          <li id="tab_thingiverse" v-bind:class="{ 'is-active' : file_origin == 'thingiverse' }"><a v-on:click="changeFileSource('thingiverse')"><span class="thingiverse">T</span>&nbsp;thingiverse</a></li>
+                          <li id="tab_thingiverse" v-bind:class="{ 'is-active' : file_origin == 'thingiverse' }"><a v-on:click="changeFileSource('thingiverse');thingiverse_search()"><span class="thingiverse">T</span>&nbsp;thingiverse</a></li>
                         </ul>
                       </div>
                     </td>
@@ -188,7 +189,42 @@
               </div>
 
               <div v-if="file_origin == 'thingiverse'">
-                <h2>thingiverse - work in progress</h2>
+                <div class="columns is-vcentered">
+                  <div class="field has-addons" style="margin: 0 auto;">
+                    <div class="control">
+                      <input class="input" type="text" placeholder="search thingiverse" v-model="q">
+                    </div>
+                    <div class="control" v-on:click="thingiverse_search()">
+                      <a class="button is-info">
+                        Search
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                <table class="table is-fullwidth is-striped is-hoverable" id="filestable">
+                  <tbody id="filesbody">
+                    <tr v-if="thingiverse_results.length" v-for="file in thingiverse_results">
+                      <td>
+                        <figure class="image is-128x128"><img :src="file.thumbnail" :id="file.id" class="thumb" @error="imgFallback" v-on:mousemove="zoomIn($event, file.id)" v-on:mouseleave="zoomOut(''+file.id)"></figure>
+                        <div class="overlay_wrapper">
+                          <div :id="'overlay_'+file.id" class="zoomoverlay" v-bind:style="{'background-image': 'url(' + file.thumbnail + ')' }"></div>
+                        </div>
+                      </td>
+                      <td>
+                        {{ file.name }}<br />
+                        Creator: <a v-bind:href="file.creator.public_url" target="_blank">{{ file.creator.name }} ({{ file.creator.first_name }} {{ file.creator.last_name }})</a>
+                      </td>
+                      <td>
+                        <div class="file_buttons_thingiverse" :id="'fb_'+file.id">
+                          <span id="btn_download" class="button is-success is-small" v-on:click="windowOpen(file.public_url)">show</span> 
+                          <span id="btn_download" class="button is-success is-small" v-on:click="downloadThingFile(file.id)">save</span> 
+                        </div>                        
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
               </div>
 
             </div>
@@ -279,6 +315,9 @@ import axios from "axios";
 import * as SockJS from 'sockjs-client';
 var StompJs = require('@stomp/stompjs');
 import jQuery from 'jquery';
+import setimmediate from 'setimmediate';
+
+
 
 export default {
   name: 'mainPage',
@@ -345,10 +384,13 @@ export default {
       file_origin: "local",
       files: [],
       folders: [],
-      job: {"printfile": "", "estimatedPrintTime": "", "currentZ": "", "progress":{"completion": "", "filepos": "", "printTime": "", "printTimeLeft": "", "printTimeLeft": "", "filament": {"tool0": {"length": "", "volume": ""}}}}
+      job: {"printfile": "", "estimatedPrintTime": "", "currentZ": "", "progress":{"completion": "", "filepos": "", "printTime": "", "printTimeLeft": "", "printTimeLeft": "", "filament": {"tool0": {"length": "", "volume": ""}}}},
+      thingiverse_results: [],
+      q: ""
     }
   },
   methods: {
+    //thingiverse_results: [{"creator": "", "id": "", "is_private": "", "is_published": "", "is_purchased": "", "name": "", "public_url": "", "thumbnail": "", "url": ""}],
     formatTime(value) {
         value=value/60/60
         let val = (value/1).toFixed(2).replace(',', ':').replace('.', ':')+" h"
@@ -829,13 +871,22 @@ export default {
           console.error(error);
       });
     },
-    thingiverse_search: function(q) {
-      var url = "https://api.thingiverse.com/search/"+q;
-      axios({ method: "GET", url: url, headers: {'Access-Control-Allow-Origin': '*'}}).then(result => {
-        console.log(result);
+    windowOpen: function(url) {
+      window.open(url, "_blank"); 
+    },
+    thingiverse_search: function() {
+      var q = this.q.replace(" ", "%2B");
+      var url = "http://cststudios.de/thingiverse/?token=1&q="+q;
+      axios({ method: "GET", url: url}).then(result => {
+        this.thingiverse_results = result.data;
+        console.log(result.data);
       }, error => {
           console.error(error);
       });
+    },
+    downloadThingFile: function(id) {
+      var url = "https://www.thingiverse.com/thing:"+id+"/zip";
+      alert(url);
     }
   },
   computed: {

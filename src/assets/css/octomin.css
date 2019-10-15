@@ -48,6 +48,9 @@ tr.is-selected {
   display: none;
   margin: 5px 5px 0px 5px;
 }
+.file_buttons_thingiverse span {
+  margin: 5px 5px 0px 5px;
+}
 .temp_ist {
   position: relative;
   width: 20px;
