@@ -206,10 +206,7 @@
                   <tbody id="filesbody">
                     <tr v-if="thingiverse_results.length" v-for="file in thingiverse_results">
                       <td>
-                        <figure class="image is-128x128"><img :src="file.thumbnail" :id="file.id" class="thumb" @error="imgFallback" v-on:mousemove="zoomIn($event, file.id)" v-on:mouseleave="zoomOut(''+file.id)"></figure>
-                        <div class="overlay_wrapper">
-                          <div :id="'overlay_'+file.id" class="zoomoverlay" v-bind:style="{'background-image': 'url(' + file.thumbnail + ')' }"></div>
-                        </div>
+                        <figure class="image is-128x128"><img :src="file.thumbnail" :id="'thumb_'+file.id" class="thumb" @error="imgFallback"></figure>
                       </td>
                       <td>
                         {{ file.name }}<br />
@@ -886,7 +883,7 @@ export default {
     },
     downloadThingFile: function(id) {
       var url = "https://www.thingiverse.com/thing:"+id+"/zip";
-      alert(url);
+      window.open(url, "_blank"); 
     }
   },
   computed: {
