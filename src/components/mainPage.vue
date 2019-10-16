@@ -188,7 +188,7 @@
               </div>
 
               <div v-if="file_origin == 'thingiverse'">
-                <div class="columns is-vcentered">
+                <div class="columns is-vcentered" style="margin-bottom: 50px;">
                   <div class="field has-addons" style="margin: 0 auto;">
                     <div class="control">
                       <input class="input" type="text" placeholder="search thingiverse" v-model="q">
@@ -871,14 +871,26 @@ export default {
       window.open(url, "_blank"); 
     },
     thingiverse_search: function() {
-      var q = this.q.replace(" ", "%2B");
-      var url = "http://cststudios.de/thingiverse/?token=1&q="+q;
-      axios({ method: "GET", url: url}).then(result => {
-        this.thingiverse_results = result.data;
-        console.log(result.data);
-      }, error => {
-          console.error(error);
-      });
+      if(this.q == "") {
+        var q = this.q.replace(" ", "%2B");
+        var url = "http://cststudios.de/thingiverse/?action=init";
+        axios({ method: "GET", url: url}).then(result => {
+          this.thingiverse_results = result.data;
+          console.log(result.data);
+        }, error => {
+            console.error(error);
+        });
+      } else {
+        var q = this.q.replace(" ", "%2B");
+        var url = "http://cststudios.de/thingiverse/?action=search&q="+q;
+        axios({ method: "GET", url: url}).then(result => {
+          this.thingiverse_results = result.data;
+          console.log(result.data);
+        }, error => {
+            console.error(error);
+        });
+      }
+      
     },
     downloadThingFile: function(id) {
       var url = "https://www.thingiverse.com/thing:"+id+"/zip";
