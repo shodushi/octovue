@@ -188,7 +188,7 @@
               </div>
 
               <div v-if="file_origin == 'thingiverse'">
-                <div class="columns is-vcentered" style="margin-bottom: 50px;">
+                <div class="columns is-vcentered" style="margin-bottom: 30px;">
                   <div class="field has-addons" style="margin: 0 auto;">
                     <div class="control">
                       <input class="input" type="text" placeholder="search thingiverse" v-model="q">
@@ -201,6 +201,14 @@
                   </div>
                 </div>
 
+                <table class="table is-fullwidth">
+                  <tr v-if="thingiverse_results.length <= 12">
+                    <td colspan="3" style="text-align: center">
+                      <span v-if="thingpage > 1" id="btn_page" class="button is-small" v-on:click="prevPage();thingiverse_search()">prev page</span>
+                      <span v-if="thingiverse_results.length == 12" id="btn_page" class="button is-small" style="margin-left: 20px;" v-on:click="nextPage();thingiverse_search()">next page</span>
+                    </td>
+                  </tr>
+                </table>
                 <table class="table is-fullwidth is-striped is-hoverable" id="filestable">
                   <tbody id="filesbody">
                     <tr v-if="thingiverse_results.length" v-for="file in thingiverse_results">
@@ -209,7 +217,7 @@
                       </td>
                       <td>
                         {{ file.name }}<br />
-                        Creator: <a v-bind:href="file.creator.public_url" target="_blank">{{ file.creator.name }} ({{ file.creator.first_name }} {{ file.creator.last_name }})</a>
+                        Creator: <a v-bind:href="file.creator.public_url" target="_blank">{{ file.creator.name }} <span v-if="file.creator.first_name || file.creator.last_name">({{ file.creator.first_name }}<span v-if="file.creator.first_name && file.creator.last_name">&nbsp;</span>{{ file.creator.last_name }})</span></a>
                       </td>
                       <td>
                         <div class="file_buttons_thingiverse" :id="'fb_'+file.id">
@@ -219,6 +227,14 @@
                       </td>
                     </tr>
                   </tbody>
+                </table>
+                <table class="table is-fullwidth">
+                  <tr v-if="thingiverse_results.length <= 12">
+                    <td colspan="3" style="text-align: center">
+                      <span v-if="thingpage > 1" id="btn_page" class="button is-small" v-on:click="prevPage();thingiverse_search()">prev page</span>
+                      <span v-if="thingiverse_results.length == 12" id="btn_page" class="button is-small" style="margin-left: 20px;" v-on:click="nextPage();thingiverse_search()">next page</span>
+                    </td>
+                  </tr>
                 </table>
 
               </div>
@@ -382,7 +398,8 @@ export default {
       folders: [],
       job: {"printfile": "", "estimatedPrintTime": "", "currentZ": "", "progress":{"completion": "", "filepos": "", "printTime": "", "printTimeLeft": "", "printTimeLeft": "", "filament": {"tool0": {"length": "", "volume": ""}}}},
       thingiverse_results: [],
-      q: ""
+      q: "",
+      thingpage: 1
     }
   },
   methods: {
@@ -882,7 +899,7 @@ export default {
         });
       } else {
         var q = this.q.replace(" ", "%2B");
-        var url = "http://cststudios.de/thingiverse/?action=search&q="+q;
+        var url = "http://cststudios.de/thingiverse/?action=search&q="+q+"&page="+this.thingpage;
         axios({ method: "GET", url: url}).then(result => {
           this.thingiverse_results = result.data;
           console.log(result.data);
@@ -895,6 +912,12 @@ export default {
     downloadThingFile: function(id) {
       var url = "https://www.thingiverse.com/thing:"+id+"/zip";
       window.open(url, "_blank"); 
+    },
+    prevPage: function() {
+      this.thingpage = this.thingpage -1;
+    },
+    nextPage: function() {
+      this.thingpage = this.thingpage +1;
     }
   },
   computed: {
