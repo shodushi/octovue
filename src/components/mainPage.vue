@@ -221,8 +221,8 @@
                       </td>
                       <td>
                         <div class="file_buttons_thingiverse" :id="'fb_'+file.id">
-                          <span id="btn_download" class="button is-success is-small" v-on:click="windowOpen(file.public_url)">show</span> 
-                          <span id="btn_download" class="button is-success is-small" v-on:click="downloadThingFile(file.id)">save</span> 
+                          <span id="btn_thing_show" class="button is-success is-small" v-on:click="windowOpen(file.public_url)">show</span> 
+                          <span id="btn:thing_download" class="button is-success is-small" v-on:click="downloadThingFile(file.id, file.name)">save</span> 
                         </div>                        
                       </td>
                     </tr>
@@ -909,9 +909,10 @@ export default {
       }
       
     },
-    downloadThingFile: function(id) {
-      var url = "https://www.thingiverse.com/thing:"+id+"/zip";
-      window.open(url, "_blank"); 
+    downloadThingFile: function(id, name) {
+      name = name.replace(/ /g, "_").replace(/\\/g, "_");
+      var url = "http://cststudios.de/thingiverse/?action=download&thingid="+id+"&thingname="+name;
+      window.open(url, "_blank");
     },
     prevPage: function() {
       this.thingpage = this.thingpage -1;
