@@ -1,5 +1,5 @@
 <template>
-  <div class="hello">
+  <div class="octovue">
     <div id="dropzoneProgress">
       <div class="imgContainer"><img src="img/upload.gif"></div>
       <div class="textContainer"><h3>uploading...</h3></div>
@@ -43,6 +43,7 @@
           <div class="navbar-end">
             <div class="navbar-item">
               <div class="buttons">
+                <a class="button is-info is-small" v-on:click="nav('print')">PRINTPAGE</a>
                 <a class="button is-info is-small" v-on:click="terminalmodal = !terminalmodal">Terminal</a>
                 <a class="button is-info is-small" v-on:click="infomodal = !infomodal">Info</a>
               </div>
@@ -92,7 +93,7 @@
 
 
 
-      <section class="section">
+      <section class="section" id="mainPage" v-if="page == 'main' || !page">
         <div class="">
 
           <div class="columns">
@@ -191,7 +192,7 @@
                 <div class="columns is-vcentered" style="margin-bottom: 30px;">
                   <div class="field has-addons" style="margin: 0 auto;">
                     <div class="control">
-                      <input class="input" type="text" placeholder="search thingiverse" v-model="q">
+                      <input class="input" type="text" placeholder="search thingiverse" v-model="q" v-on:keyup.enter="thingiverse_search()">
                     </div>
                     <div class="control" v-on:click="thingiverse_search()">
                       <a class="button is-info">
@@ -310,6 +311,95 @@
         </div>
       </section>
 
+      <section class="section" id="mainPage" v-if="page == 'print'">
+        <section class="hero is-small is-light is-bold" style="max-height: 80px; margin-bottom: 20px;" v-if="page == 'print'">
+          <div class="hero-body" style="padding: none !important; text-align: left !important;">
+            <div class="container">
+                <div style="float: left; margin-right: 40%;" v-on:click="nav('')">
+                  <i class="fas fa-chevron-left fa-3x"></i>
+                </div>
+                <div class="title">
+                  {{ connectionSettings.options.printerProfiles[0].name }}
+                </div>
+              </div>
+          </div>
+        </section>
+        <div class="columns" id="printPage">
+          <div class="column is-one-third">
+            <figure class="image is-5by4">
+                  <img :src="cam"  @error="imgFallback" alt="Printer image">
+                </figure>
+          </div>
+          <div class="column is-two-third">
+            
+          <h2>{{job.printfile}}</h2>
+          <progress class="progress is-link" v-bind:value="job.progress.completion" max="100"></progress>
+
+          <table class="table is-fullwidth">
+            <tbody>
+              <tr>
+                <td>Progress:</td>
+                <td>{{ formatDecimal(job.progress.completion) }}%</td>
+              </tr>
+              <tr>
+                <td>Printtime:</td>
+                <td>{{ formatTime(job.estimatedPrintTime) }}</td>
+              </tr>
+              <tr>
+                <td>Time elapsed:</td>
+                <td>{{ formatTime(job.progress.printTime) }}</td>
+              </tr>
+              <tr>
+                <td>Time left:</td>
+                <td>{{ formatTime(job.progress.printTimeLeft) }}</td>
+              </tr>
+              <!--<tr>
+                <td>Filament</td>
+                <td>{{ formatLenght(job.filament.tool0.length ) }}</td>
+              </tr>!-->
+              <tr>
+                <td>Height</td>
+                <td>{{ job.currentZ }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="buttons" id="fileoperations">
+            <div style="width: 50%; padding: 10px;">
+              <span id="btn_pause" class="button is-fullwidth"  v-if="printerState.payload.state_string != 'Paused'" v-on:click="pauseJob()">pause</span>
+              <span id="btn_resume" class="button is-fullwidth" v-if="printerState.payload.state_string == 'Paused'" v-on:click="resumeJob()">resume</span>
+            </div>
+            <div style="width: 50%;">
+              <span id="btn_cancel" class="button is-fullwidth is-danger"  v-on:click="cancelJob()">cancel</span>
+            </div>
+          </div>
+
+          </div>
+              
+        </div>
+
+        <div class="columns" id="printPage_temp">
+          <div class="column is-half">
+            <chart :type="'line'" :data="line_temps" :options="line_temps_options"></chart>
+          </div>
+          
+          <div class="column is-half">
+            <div class="columns">
+              <div class="column  is-half">
+                <chart ref="tool0chart" :type="'pie'" v-bind:data="pie_tool0" :options="pie_tool0_options"></chart>
+                <div style="font-size: 2em; font-weight: bold; position: relative; top: -130px;"> {{ temps.tool0.actual }}&deg;C</div>
+              </div>
+              <div class="column  is-half">
+                <chart ref="bedchart" :type="'pie'" v-bind:data="pie_bed" :options="pie_bed_options"></chart>
+                <div style="font-size: 2em; font-weight: bold; position: relative; top: -130px;"> {{ temps.bed.actual }}&deg;C</div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+
+      </section>
+
+
       <footer class="footer">
       <div class="content has-text-centered">
         <p>
@@ -323,13 +413,11 @@
 
 <script>
 import axios from "axios";
-
 import * as SockJS from 'sockjs-client';
 var StompJs = require('@stomp/stompjs');
 import jQuery from 'jquery';
 import setimmediate from 'setimmediate';
-
-
+import Chart from 'vue-bulma-chartjs'
 
 export default {
   name: 'mainPage',
@@ -337,8 +425,11 @@ export default {
     msg: String,
     txt: String
   },
+  components: {
+    Chart
+  },
   created:function(){
-    
+
   },
   mounted:function() {
     setTimeout(this.loadCam, 500)
@@ -371,6 +462,8 @@ export default {
   },
   data() {
     return {
+      temp: [20, 80],
+      page: '',
       infomodal: false,
       terminalmodal: false,
       printerState: {"type": "PrinterStateChanged", "payload":{"state_string":"Offline","state_id":"OFFLINE"}},
@@ -399,7 +492,80 @@ export default {
       job: {"printfile": "", "estimatedPrintTime": "", "currentZ": "", "progress":{"completion": "", "filepos": "", "printTime": "", "printTimeLeft": "", "printTimeLeft": "", "filament": {"tool0": {"length": "", "volume": ""}}}},
       thingiverse_results: [],
       q: "",
-      thingpage: 1
+      thingpage: 1,
+      pie_tool0: {
+        datasets: [{
+          data: [0, 250],
+          backgroundColor: [
+            'red',
+            '#C0C0C0'
+          ]
+        }]
+      },
+      pie_tool0_options: {
+        segmentShowStroke: false,
+        circumference: 1 * Math.PI,
+        rotation: 1 * Math.PI,
+        cutoutPercentage: 80
+      },
+      pie_bed: {
+        datasets: [{
+          data: [0, 90],
+          backgroundColor: [
+            'blue',
+            '#C0C0C0'
+          ]
+        }]
+      },
+      pie_bed_options: {
+        segmentShowStroke: false,
+        circumference: 1 * Math.PI,
+        rotation: 1 * Math.PI,
+        cutoutPercentage: 80
+      },
+      line_temps: {
+        datasets: [{
+          label: 'Extruder',
+          fill: false,
+          backgroundColor: 'red',
+          borderColor: 'red',
+          data: [0, 205, 208, 212, 207, 200, 210],
+        },
+        {
+          label: 'Bed',
+          fill: false,
+          backgroundColor: 'blue',
+          borderColor: 'blue',
+          data: [0, 60, 80, 76, 70, 75, 80],
+        }]
+      },
+      line_temps_options: {
+        responsive: true,
+        tooltips: {
+					mode: 'index',
+					intersect: false,
+				},
+				hover: {
+					mode: 'nearest',
+					intersect: true
+				},
+				scales: {
+					xAxes: [{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'Month'
+            },
+					}],
+					yAxes: [{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'Value'
+            },
+					}]
+				}
+      },
     }
   },
   methods: {
@@ -486,6 +652,7 @@ export default {
               $("#temp_tool0_actual").css("height", temptool0_ist+"%");
               var tempbed_ist = (100/this.temps.bed.target)*this.temps.bed.actual;
               $("#temp_bed_actual").css("height", tempbed_ist+"%");
+              this.updateGauge(this.temps.tool0.actual, this.temps.bed.actual);
             }
           }
         }
@@ -787,6 +954,7 @@ export default {
       axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$apikey, 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
         if(print) {
           $('#btn_cancel').attr("disabled", false);
+          this.nav('print');
         }
       }, error => {
           console.error(error);
@@ -919,6 +1087,19 @@ export default {
     },
     nextPage: function() {
       this.thingpage = this.thingpage +1;
+    },
+    nav: function(page) {
+      this.page = page;
+    },
+    updateGauge: function(tool0temp, bedtemp) {
+      var tool0temp_percent = (100/250)*parseInt(tool0temp);
+      var bedtemp_percent = (100/90)*parseInt(bedtemp);
+      var val1 = 100-tool0temp_percent;
+      var val2 = 100-bedtemp_percent;
+      this.pie_tool0.datasets[0].data = [tool0temp_percent, val1];
+      this.pie_bed.datasets[0].data = [bedtemp_percent, val2];
+      this.$refs.tool0chart.chart.update();
+      this.$refs.bedchart.chart.update();
     }
   },
   computed: {
