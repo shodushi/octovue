@@ -43,7 +43,7 @@
           <div class="navbar-end">
             <div class="navbar-item">
               <div class="buttons">
-                <a class="button is-info is-small" v-on:click="nav('print')">PRINTPAGE</a>
+                <a class="button is-info is-small" v-on:click="nav('print')" v-if="page == 'main' || !page">Print page</a>
                 <a class="button is-info is-small" v-on:click="terminalmodal = !terminalmodal">Terminal</a>
                 <a class="button is-info is-small" v-on:click="infomodal = !infomodal">Info</a>
               </div>
@@ -316,7 +316,7 @@
           <div class="hero-body" style="padding: none !important; text-align: left !important;">
             <div class="container">
                 <div style="float: left; margin-right: 40%;" v-on:click="nav('')">
-                  <i class="fas fa-chevron-left fa-3x"></i>
+                  <i class="fas fa-chevron-left fa-3x" style="cursor: pointer;"></i>
                 </div>
                 <div class="title">
                   {{ connectionSettings.options.printerProfiles[0].name }}
@@ -926,6 +926,15 @@ export default {
                 this.fileList[i].imgid = imgid;
                 this.fileList[i].thumbid = "thumb_"+imgid;
                 this.fileList[i].hr_date = date;
+                if(this.fileList[i].gcodeAnalysis == null) {
+                  this.fileList[i].gcodeAnalysis = {};
+                  this.fileList[i].gcodeAnalysis.estimatedPrintTime = null;
+                  this.fileList[i].gcodeAnalysis.filament = {"tool0": {"length": null, "volume": null}};
+                  this.fileList[i].gcodeAnalysis.printingArea = {"maxX": null, "maxY": null, "maxZ": null, "minX": null, "minY": null, "minZ": null};
+                }
+                if(this.fileList[i].gcodeAnalysis.dimensions == null) {
+                  this.fileList[i].gcodeAnalysis.dimensions = {"width": null, "depth": null, "height": null};
+                }
               }
               this.files.push(this.fileList[i]);
             }
