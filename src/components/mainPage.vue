@@ -418,8 +418,6 @@ var StompJs = require('@stomp/stompjs');
 import jQuery from 'jquery';
 import setimmediate from 'setimmediate';
 import Chart from 'vue-bulma-chartjs'
-import vue2Dropzone from 'vue2-dropzone'
-import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 
 export default {
   name: 'mainPage',
@@ -428,8 +426,7 @@ export default {
     txt: String
   },
   components: {
-    Chart,
-    vueDropzone: vue2Dropzone
+    Chart
   },
   created:function(){
 
@@ -470,7 +467,6 @@ export default {
               $("#messagebox").hide( "slow" );
             }, 5000);
 	    		} else {
-	    			alert(self.selectedfolder);
 	    			formData.append("path", self.selectedfolder);
 					  $("#dropzoneProgress").css("display", "block");
 	    		}
