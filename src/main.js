@@ -1,11 +1,6 @@
 import Vue from 'vue'
 import App from './App.vue'
 
-//import LoadScript from 'vue-plugin-load-script';
-//Vue.use(LoadScript);
-//Vue.loadScript('./assets/js/sockjs.min.js')
-//Vue.loadScript('./assets/js/packed_client.js')
-
 Vue.config.productionTip = false
 
 new Vue({

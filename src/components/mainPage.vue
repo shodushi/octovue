@@ -334,37 +334,22 @@
           <div class="column is-two-third">
             
           <h2>{{job.printfile}}</h2>
-          <progress class="progress is-link" v-bind:value="job.progress.completion" max="100"></progress>
 
-          <table class="table is-fullwidth">
-            <tbody>
-              <tr>
-                <td>Progress:</td>
-                <td>{{ formatDecimal(job.progress.completion) }}%</td>
-              </tr>
-              <tr>
-                <td>Printtime:</td>
-                <td>{{ formatTime(job.estimatedPrintTime) }}</td>
-              </tr>
-              <tr>
-                <td>Time elapsed:</td>
-                <td>{{ formatTime(job.progress.printTime) }}</td>
-              </tr>
-              <tr>
-                <td>Time left:</td>
-                <td>{{ formatTime(job.progress.printTimeLeft) }}</td>
-              </tr>
-              <!--<tr>
-                <td>Filament</td>
-                <td>{{ formatLenght(job.filament.tool0.length ) }}</td>
-              </tr>!-->
-              <tr>
-                <td>Height</td>
-                <td>{{ job.currentZ }}</td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="buttons" id="fileoperations">
+          <div class="columns" style="padding-top: 70px;">
+            <div class="column is-half timeremaining">
+              <i class="fas fa-clock" style="color: #525151;"></i><br />
+              {{ formatTimeRemaining(job.progress.printTimeLeft) }}
+            </div>
+            <div class="column is-half timeremaining">
+              <i class="fas fa-layer-group" style="color: #525151;"></i><br />
+              12 / 243
+            </div>
+          </div>
+
+          <div style="text-align: right; margin-top: 50px;" class="timeremaining">{{formatDecimal(job.progress.completion)}}%</div>
+          <progress class="progress is-primary" v-bind:value="job.progress.completion" max="100"></progress>
+
+          <div class="buttons" id="fileoperations" style="margin-top: 30px;">
             <div style="width: 50%; padding: 10px;">
               <span id="btn_pause" class="button is-fullwidth"  v-bind:disabled="this.printerState.payload.state_string != 'Printing'" v-if="printerState.payload.state_string != 'Paused'" v-on:click="pauseJob()">pause</span>
               <span id="btn_resume" class="button is-fullwidth" v-bind:disabled="this.printerState.payload.state_string != 'Printing'" v-if="printerState.payload.state_string == 'Paused'" v-on:click="resumeJob()">resume</span>
@@ -415,9 +400,9 @@
 import axios from "axios";
 import * as SockJS from 'sockjs-client';
 var StompJs = require('@stomp/stompjs');
-import jQuery from 'jquery';
+//import jQuery from 'jquery';
 import setimmediate from 'setimmediate';
-import Chart from 'vue-bulma-chartjs'
+import Chart from 'vue-bulma-chartjs';
 
 export default {
   name: 'mainPage',
@@ -429,7 +414,7 @@ export default {
     Chart
   },
   created:function(){
-
+    
   },
   mounted:function() {
     setTimeout(this.loadCam, 500)
@@ -631,6 +616,20 @@ export default {
         value=value/60/60
         let val = (value/1).toFixed(2).replace(',', ':').replace('.', ':')+" h"
         return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+    },
+    formatTimeRemaining(value) {
+      if(value == null || value == "") {
+        return '00:00:00';
+      } else {
+        var sec_num = parseInt(value, 10); // don't forget the second param
+        var hours   = Math.floor(sec_num / 3600);
+        var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+        var seconds = sec_num - (hours * 3600) - (minutes * 60);
+        if (hours   < 10) {hours   = "0"+hours;}
+        if (minutes < 10) {minutes = "0"+minutes;}
+        if (seconds < 10) {seconds = "0"+seconds;}
+        return hours+':'+minutes+':'+seconds;
+      }
     },
     formatDecimal(value) {
         let val = (value/1).toFixed(2).replace(',', ':')
