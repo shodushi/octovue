@@ -499,7 +499,7 @@ export default {
         datasets: [{
           data: [0, 250],
           backgroundColor: [
-            'red',
+            '#fc3c63',
             '#C0C0C0'
           ]
         }]
@@ -514,7 +514,7 @@ export default {
         datasets: [{
           data: [0, 90],
           backgroundColor: [
-            'blue',
+            '#2b9eeb',
             '#C0C0C0'
           ]
         }]
@@ -530,31 +530,33 @@ export default {
         datasets: [{
           label: 'Extruder',
           fill: false,
-          backgroundColor: 'red',
-          borderColor: 'red',
+          backgroundColor: '#fc3c63',
+          borderColor: '#fc3c63',
+          borderWidth: 2,
           data: [0],
         },
         {
           label: '',
           fill: false,
-          borderDash: [5, 5],
-          backgroundColor: 'red',
-          borderColor: 'red',
+          backgroundColor: '#fab3c2',
+          borderColor: '#fab3c2',
+          borderWidth: 6,
           data: [0],
         },
         {
           label: 'Bed',
           fill: false,
-          backgroundColor: 'blue',
-          borderColor: 'blue',
+          backgroundColor: '#2b9eeb',
+          borderColor: '#2b9eeb',
+          borderWidth: 2,
           data: [0],
         },
         {
           label: '',
           fill: false,
-          borderDash: [5, 5],
-          backgroundColor: 'blue',
-          borderColor: 'blue',
+          backgroundColor: '#99d3fa',
+          borderColor: '#99d3fa',
+          borderWidth: 6,
           data: [0],
         }]
       },
