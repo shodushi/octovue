@@ -1,13 +1,12 @@
 <template>
   <div class="octovue">
+    <article id="messagebox" class="message is-danger">
+      <div id="messagebox_body" class="message-body"></div>
+    </article>
     <div id="dropzoneProgress">
       <div class="imgContainer"><img src="img/upload.gif"></div>
       <div class="textContainer"><h3>uploading...</h3></div>
     </div>
-    <article id="messagebox" class="message is-danger">
-      <div id="messagebox_body" class="message-body"></div>
-    </article>
-
     <nav class="navbar" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
           <a class="navbar-item" href="/">
@@ -367,14 +366,13 @@
           </table>
           <div class="buttons" id="fileoperations">
             <div style="width: 50%; padding: 10px;">
-              <span id="btn_pause" class="button is-fullwidth"  v-if="printerState.payload.state_string != 'Paused'" v-on:click="pauseJob()">pause</span>
-              <span id="btn_resume" class="button is-fullwidth" v-if="printerState.payload.state_string == 'Paused'" v-on:click="resumeJob()">resume</span>
+              <span id="btn_pause" class="button is-fullwidth"  v-bind:disabled="this.printerState.payload.state_string != 'Printing'" v-if="printerState.payload.state_string != 'Paused'" v-on:click="pauseJob()">pause</span>
+              <span id="btn_resume" class="button is-fullwidth" v-bind:disabled="this.printerState.payload.state_string != 'Printing'" v-if="printerState.payload.state_string == 'Paused'" v-on:click="resumeJob()">resume</span>
             </div>
             <div style="width: 50%;">
-              <span id="btn_cancel" class="button is-fullwidth is-danger"  v-on:click="cancelJob()">cancel</span>
+              <span id="btn_cancel" class="button is-fullwidth is-danger" v-bind:disabled="this.printerState.payload.state_string != 'Printing'" v-on:click="cancelJob()">cancel</span>
             </div>
           </div>
-
           </div>
               
         </div>
@@ -420,6 +418,8 @@ var StompJs = require('@stomp/stompjs');
 import jQuery from 'jquery';
 import setimmediate from 'setimmediate';
 import Chart from 'vue-bulma-chartjs'
+import vue2Dropzone from 'vue2-dropzone'
+import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 
 export default {
   name: 'mainPage',
@@ -428,7 +428,8 @@ export default {
     txt: String
   },
   components: {
-    Chart
+    Chart,
+    vueDropzone: vue2Dropzone
   },
   created:function(){
 
@@ -456,6 +457,31 @@ export default {
       this.isConnecting = false;
       this.connectionState = "on";
     }
+
+    var self = this;
+    var octoDropzone = new Dropzone(document.body, {
+	    init: function() {
+	    	this.on("sending", function(file, xhr, formData) {
+	    		$(".dz-preview").css("display", "none");
+	    		if(file.name.split('.').pop() != "gcode" && file.name.split('.').pop() != "stl") {
+	    			$("#messagebox_body").html("only gcode or stl files possible to upload");
+	    			$("#messagebox").show( "slow" );
+	    			setTimeout(function(){
+              $("#messagebox").hide( "slow" );
+            }, 5000);
+	    		} else {
+	    			alert(self.selectedfolder);
+	    			formData.append("path", self.selectedfolder);
+					  $("#dropzoneProgress").css("display", "block");
+	    		}
+			});
+			this.on("success", function() {
+				$("#dropzoneProgress").css("display", "none");
+				self.loadFiles();
+			});
+		},
+	    url: "http://192.168.120.244:5000/api/files/local"
+    });
     
 
 //-----------------------------------------------------------------------------------------
@@ -593,7 +619,13 @@ export default {
 							labelString: 'Temperature'
 						}
 					}]
-				}
+        },
+      },
+      dropzoneOptions: {
+        url: 'http://192.168.120.244:5000/api/files/local',
+        thumbnailWidth: 150,
+        maxFilesize: 100,
+        headers: { "My-Awesome-Header": "header value" }
       },
     }
   },
@@ -1029,6 +1061,7 @@ export default {
       var obj = {};
       obj.command = "cancel";
       axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$apikey, 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
+        $('#btn_cancel').attr("disabled", true);
       }, error => {
           console.error(error);
       });
