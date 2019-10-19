@@ -10,7 +10,7 @@
 
     <nav class="navbar" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
-          <a class="navbar-item" href="https://bulma.io">
+          <a class="navbar-item" href="/">
             <!-- <img src="https://bulma.io/images/bulma-logo.png" alt="Bulma: Free, open source, & modern CSS framework based on Flexbox" width="112" height="28"> !-->
             OctoVue
           </a>
@@ -120,10 +120,12 @@
                     <td>Time left:</td>
                     <td>{{ formatTime(job.progress.printTimeLeft) }}</td>
                   </tr>
-                  <tr>
+                  <!--
+                  <tr v-if="job.filament.tool0.length != null">
                     <td>Filament</td>
                     <td>{{ formatLenght(job.filament.tool0.length ) }}</td>
                   </tr>
+                  !-->
                   <tr>
                     <td>Height</td>
                     <td>{{ job.currentZ }}</td>
@@ -173,7 +175,7 @@
                         {{ file.display }}<br />
                         <div style="width: 130px; float:left; margin-left: 20px;" v-if="file.gcodeAnalysis.dimensions.width != null">Dimensions:</div><div v-if="file.gcodeAnalysis.dimensions.width != null">x: {{ formatLenght(file.gcodeAnalysis.dimensions.width) }} y: {{ formatLenght(file.gcodeAnalysis.dimensions.depth) }} z: {{ formatLenght(file.gcodeAnalysis.dimensions.height) }}</div>
                         <div style="width: 130px; float:left; margin-left: 20px;" v-if="file.gcodeAnalysis.estimatedPrintTime != null">PrintTime:</div><div v-if="file.gcodeAnalysis.estimatedPrintTime != null">{{ formatTime(file.gcodeAnalysis.estimatedPrintTime) }}</div>
-                        <div style="width: 130px; float:left; margin-left: 20px;" v-if="file.gcodeAnalysis.filament.tool0.length != null">Filament:</div><div v-if="file.gcodeAnalysis.filament.tool0.length != null">{{ formatLenght(file.gcodeAnalysis.filament.tool0.length) }}</div>
+                        <div style="width: 130px; float:left; margin-left: 20px;" v-if="file.gcodeAnalysis.filament.tool0 != null && file.gcodeAnalysis.filament.tool0.length != null">Filament:</div><div v-if="file.gcodeAnalysis.filament.tool0 != null && file.gcodeAnalysis.filament.tool0.length != null">{{ formatLenght(file.gcodeAnalysis.filament.tool0.length) }}</div>
                         <div style="width: 130px; float:left; margin-left: 20px;" v-if="file.prints != null">Prints ok/nok:</div><div v-if="file.prints != null">{{ file.prints.success }} / {{ file.prints.failure }}</div>
                       </td>
                       <td>{{file.hr_date}} 
@@ -379,7 +381,7 @@
 
         <div class="columns" id="printPage_temp">
           <div class="column is-half">
-            <chart :type="'line'" :data="line_temps" :options="line_temps_options"></chart>
+            <chart ref="tempchart" :type="'line'" v-bind:data="line_temps" :options="line_temps_options"></chart>
           </div>
           
           <div class="column is-half">
@@ -438,7 +440,7 @@ export default {
     setTimeout(this.loadFiles, 1)
     setTimeout(this.getOctoprintConnection, 1)
     setTimeout(this.sockConnection, 2);
-    if(this.printerState.payload.state_string != "Operational") {
+    if(this.printerState.payload.state_string != "Operational" && this.printerState.payload.state_string != "Connecting" && this.printerState.payload.state_string != "Paused") {
       this.isNotConnection = true;
       this.isConnection = false;
       this.isConnecting = false;
@@ -524,24 +526,49 @@ export default {
         cutoutPercentage: 80
       },
       line_temps: {
+        labels: [''],
         datasets: [{
           label: 'Extruder',
           fill: false,
           backgroundColor: 'red',
           borderColor: 'red',
-          data: [0, 205, 208, 212, 207, 200, 210],
+          data: [0],
+        },
+        {
+          label: '',
+          fill: false,
+          borderDash: [5, 5],
+          backgroundColor: 'red',
+          borderColor: 'red',
+          data: [0],
         },
         {
           label: 'Bed',
           fill: false,
           backgroundColor: 'blue',
           borderColor: 'blue',
-          data: [0, 60, 80, 76, 70, 75, 80],
+          data: [0],
+        },
+        {
+          label: '',
+          fill: false,
+          borderDash: [5, 5],
+          backgroundColor: 'blue',
+          borderColor: 'blue',
+          data: [0],
         }]
       },
       line_temps_options: {
+        elements: {
+          point:{
+            radius: 0
+          }
+        },
         responsive: true,
-        tooltips: {
+				title: {
+					display: false
+				},
+				tooltips: {
 					mode: 'index',
 					intersect: false,
 				},
@@ -553,16 +580,16 @@ export default {
 					xAxes: [{
 						display: true,
 						scaleLabel: {
-							display: true,
-							labelString: 'Month'
-            },
+							display: false,
+							labelString: ''
+						}
 					}],
 					yAxes: [{
 						display: true,
 						scaleLabel: {
 							display: true,
-							labelString: 'Value'
-            },
+							labelString: 'Temperature'
+						}
 					}]
 				}
       },
@@ -616,12 +643,12 @@ export default {
       client.activate();
     },
     messageParser: function(msg) {
-      //console.log(msg);
+      console.log(msg);
       if(msg.event != null) {
           if(msg.event.type != null) {
               if(msg.event.type == "PrinterStateChanged") {
                   this.printerState = msg.event;
-                  if(this.printerState.payload.state_string != "Operational" && this.printerState.payload.state_string != "Connecting") {
+                  if(this.printerState.payload.state_string != "Operational" && this.printerState.payload.state_string != "Connecting" && this.printerState.payload.state_string != "Paused") {
                     this.isNotConnection = true;
                     this.isConnection = false;
                     this.isConnecting = false;
@@ -653,6 +680,7 @@ export default {
               var tempbed_ist = (100/this.temps.bed.target)*this.temps.bed.actual;
               $("#temp_bed_actual").css("height", tempbed_ist+"%");
               this.updateGauge(this.temps.tool0.actual, this.temps.bed.actual);
+              this.updateTempChart(this.temps.tool0.actual, this.temps.tool0.target, this.temps.bed.actual,  this.temps.bed.target);
             }
           }
         }
@@ -663,7 +691,7 @@ export default {
         }
         if(msg.current.state != null) {
           this.printerState.payload.state_string = msg.current.state.text;
-          if(this.printerState.payload.state_string != "Operational" && this.printerState.payload.state_string != "Connecting" && this.printerState.payload.state_string != "Cancelling") {
+          if(this.printerState.payload.state_string != "Operational" && this.printerState.payload.state_string != "Connecting" && this.printerState.payload.state_string != "Cancelling" && this.printerState.payload.state_string != "Paused") {
             this.isNotConnection = true;
             this.isConnection = false;
             this.isConnecting = false;
@@ -1103,12 +1131,22 @@ export default {
     updateGauge: function(tool0temp, bedtemp) {
       var tool0temp_percent = (100/250)*parseInt(tool0temp);
       var bedtemp_percent = (100/90)*parseInt(bedtemp);
-      var val1 = 100-tool0temp_percent;
-      var val2 = 100-bedtemp_percent;
-      this.pie_tool0.datasets[0].data = [tool0temp_percent, val1];
-      this.pie_bed.datasets[0].data = [bedtemp_percent, val2];
-      this.$refs.tool0chart.chart.update();
-      this.$refs.bedchart.chart.update();
+      this.pie_tool0.datasets[0].data = [tool0temp_percent, 100-tool0temp_percent];
+      this.pie_bed.datasets[0].data = [bedtemp_percent, 100-bedtemp_percent];
+      if(this.$refs.tool0chart) {
+        this.$refs.tool0chart.chart.update();
+        this.$refs.bedchart.chart.update();
+      }
+    },
+    updateTempChart: function(tool0_ist, tool0_soll, bed_ist, bed_soll) {
+      this.line_temps.datasets[0].data.push({x:this.line_temps.datasets[0].data.length+1, y:parseInt(tool0_ist)});
+      this.line_temps.datasets[1].data.push({x:this.line_temps.datasets[1].data.length+1, y:parseInt(tool0_soll)});
+      this.line_temps.datasets[2].data.push({x:this.line_temps.datasets[2].data.length+1, y:parseInt(bed_ist)});
+      this.line_temps.datasets[3].data.push({x:this.line_temps.datasets[3].data.length+1, y:parseInt(bed_soll)});
+      this.line_temps.labels.push('');
+      if(this.$refs.tempchart) {
+        this.$refs.tempchart.chart.update();
+      }
     }
   },
   computed: {
