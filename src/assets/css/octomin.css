@@ -39,6 +39,7 @@ tr.is-selected {
   top: -128px;
   left: 242px;
   background-color: white;
+  background-size: 800px 600px;
 }
 .file_buttons {
   z-index: 800;
@@ -145,4 +146,10 @@ tr.is-selected {
   font-size: 2.3em;
   color: #22d0b2;
   font-weight: bold;
+}
+#printPage_temp {
+  margin-top: 50px;
+}
+#piecharts .columns .column {
+  padding: 20px 20px 20px 20px;
 }

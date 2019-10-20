@@ -165,7 +165,7 @@
                     <tr v-on:click="selectFolder(folder.path)" v-for="folder in folders"><td><span class="icon">&#128193;</span></td><td>{{ folder.display }}</td><td></td></tr>
                     <tr v-on:click="selectFile($event, file)" v-for="file in files">
                       <td>
-                        <figure class="image is-128x128"><img :src="file.img" :id="file.thumbid" class="thumb" @error="imgFallback" v-on:mousemove="zoomIn($event, file.imgid)" v-on:mouseleave="zoomOut(''+file.imgid)"></figure>
+                        <figure class="image is-128x128"><img :src="file.img" :id="file.thumbid" class="thumb" @error="imgFallback" v-on:mousemove="zoomIn($event, file.thumbid, 'overlay_'+file.imgid)" v-on:mouseleave="zoomOut(''+file.imgid)"></figure>
                         <div class="overlay_wrapper">
                           <div :id="'overlay_'+file.imgid" class="zoomoverlay" v-bind:style="{'background-image': 'url(' + file.img + ')' }"></div>
                         </div>
@@ -363,19 +363,19 @@
         </div>
 
         <div class="columns" id="printPage_temp">
-          <div class="column is-half">
+          <div class="column is-half" style="padding: 0 50px 0 0">
             <chart ref="tempchart" :type="'line'" v-bind:data="line_temps" :options="line_temps_options"></chart>
           </div>
           
-          <div class="column is-half">
+          <div class="column is-half" id="piecharts">
             <div class="columns">
-              <div class="column  is-half">
+              <div class="column is-half">
                 <chart ref="tool0chart" :type="'pie'" v-bind:data="pie_tool0" :options="pie_tool0_options"></chart>
-                <div style="font-size: 2em; font-weight: bold; position: relative; top: -130px;"> {{ temps.tool0.actual }}&deg;C</div>
+                <div style="font-size: 2em; font-weight: bold; position: relative; top: -165px;"> {{ temps.tool0.actual }}&deg;C<br /><span style="font-size: 0.7em;">Extruder</span></div>
               </div>
-              <div class="column  is-half">
+              <div class="column is-half">
                 <chart ref="bedchart" :type="'pie'" v-bind:data="pie_bed" :options="pie_bed_options"></chart>
-                <div style="font-size: 2em; font-weight: bold; position: relative; top: -130px;"> {{ temps.bed.actual }}&deg;C</div>
+                <div style="font-size: 2em; font-weight: bold; position: relative; top: -165px;"> {{ temps.bed.actual }}&deg;C<br /><span style="font-size: 0.7em;">Bed</span></div>
               </div>
             </div>
           </div>
@@ -999,17 +999,17 @@ export default {
         }
       }
     },
-    zoomIn: function(event, id) {
-      var element = document.getElementById("overlay_"+id);
-      element.style.display = "inline-block";
-      var img = document.getElementById("imgZoom");
+    zoomIn: function(event, imgId, zoomId) {
+      var zoomElement = document.getElementById(zoomId);
+      zoomElement.style.display = "inline-block";
+      var img = document.getElementById(imgId);
       var posX = event.offsetX ? (event.offsetX) : event.pageX - img.offsetLeft;
       var posY = event.offsetY ? (event.offsetY) : event.pageY - img.offsetTop;
-      element.style.backgroundPosition=(-posX*3.5)+"px "+(-posY*4)+"px";
+      zoomElement.style.backgroundPosition=(-posX*3.5)+"px "+(-posY*4)+"px";
     },
     zoomOut: function(id) {
-      var element = document.getElementById("overlay_"+id);
-      element.style.display = "none";
+      var zoomElement = document.getElementById("overlay_"+id);
+      zoomElement.style.display = "none";
     },
     loadprintFile: function(print) {
       var url = this.$octo_ip+"/api/files/"+this.selectedfile.origin+"/"+this.selectedfile.display;
