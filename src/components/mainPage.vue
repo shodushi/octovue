@@ -677,7 +677,7 @@ export default {
       client.activate();
     },
     messageParser: function(msg) {
-      console.log(msg);
+      //console.log(msg);
       /*
       DisplayLayerProgress_heightChanged
       DisplayLayerProgress_layerChanged
@@ -718,7 +718,6 @@ export default {
           }
       }
       if(msg.plugin != null) {
-        console.log(msg.plugin);
         if(msg.plugin.plugin == "DisplayLayerProgress") {
           if(msg.plugin.data.stateMessage != null) {
             this.currentLayer = msg.plugin.data.stateMessage.split(" / ")[0];
