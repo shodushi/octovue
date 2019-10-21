@@ -710,11 +710,25 @@ export default {
                 this.currentLayer = msg.payload.currentLayer;
                 this.totalHeight = msg.payload.totalHeightWithExtrusion;
                 this.currentHeight = msg.payload.currentHeight;
+                //this.currentHeight = msg.currentZ;
               }
               if(msg.event.type == "UpdatedFiles") {
                   this.loadFiles();
               }
           }
+      }
+      if(msg.plugin != null) {
+        console.log(msg.plugin);
+        if(msg.plugin.plugin == "DisplayLayerProgress") {
+          if(msg.plugin.data.stateMessage != null) {
+            this.currentLayer = msg.plugin.data.stateMessage.split(" / ")[0];
+            this.totalLayer = msg.plugin.data.stateMessage.split(" / ")[1];
+          }
+          if(msg.plugin.data.heightMessage != null) {
+            this.currentHeight = msg.plugin.data.heightMessage.split("/")[0];
+            this.totalHeight = msg.plugin.data.heightMessage.split("/")[1].replace(/mm/i, '');
+          }
+        }
       }
       if(msg.current != null) {
         if(msg.current.temps != null) {
@@ -732,9 +746,26 @@ export default {
         }
         if(msg.current.logs != null) {
           for(var i=0;i<msg.current.logs.length;i++) {
-            if(msg.current.logs[i].startswidth("M117 INDICATOR-Layer")) {
-              this.currentLayer = msg.current.logs[i].replace("M117 INDICATOR-Layer", "");
+            if(msg.current.logs[i].includes("M117")) {
+              const regex = /[0-9]*\/[0-9]*/g;
+              var layers = msg.current.logs[i].match(regex);
+              if(layers != null && layers.length > 0) {
+                this.currentLayer = layers[0].split("/")[0];
+                this.totalLayer = layers[0].split("/")[1];
+              }
             }
+            if(msg.current.logs[i].includes("G1")) {
+              if(msg.current.logs[i].includes("Z")) {
+                const regex = /Z[0-9]*\.[0-9]*/g;
+                var height = msg.current.logs[i].match(regex);
+                if(height != null && height.length > 0) {
+                  this.currentHeight = height[0].split("Z")[1];
+                  //this.totalH = height[0].split("/")[1];
+                }
+              }
+            }
+
+            //N692 G1 Z0.400 F10200*32
             this.logs.push(msg.current.logs[i])
           }
         }
