@@ -84,7 +84,7 @@ tr.is-selected {
 }
 #messagebox {
   position: absolute;
-  top: 10px;
+  top: 20%;
   left: 10px;
   z-index: 999;
   width: 40%;
@@ -92,7 +92,7 @@ tr.is-selected {
   display: none;
 }
 #messagebox div {
-  font-size: 80%;
+  font-size: 100%;
 }
 #terminal {
   position: absolute;

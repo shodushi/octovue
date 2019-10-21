@@ -212,8 +212,8 @@
                   </tr>
                 </table>
                 <table class="table is-fullwidth is-striped is-hoverable" id="filestable">
-                  <tbody id="filesbody">
-                    <tr v-if="thingiverse_results.length" v-for="file in thingiverse_results">
+                  <tbody id="filesbody" v-if="thingiverse_results.length">
+                    <tr v-for="file in thingiverse_results">
                       <td>
                         <figure class="image is-128x128"><img :src="file.thumbnail" :id="'thumb_'+file.id" class="thumb" @error="imgFallback"></figure>
                       </td>
@@ -336,13 +336,17 @@
           <h2>{{job.printfile}}</h2>
 
           <div class="columns" style="padding-top: 70px;">
-            <div class="column is-half timeremaining">
+            <div class="column is-one-third timeremaining">
               <i class="fas fa-clock" style="color: #525151;"></i><br />
               {{ formatTimeRemaining(job.progress.printTimeLeft) }}
             </div>
-            <div class="column is-half timeremaining">
+            <div class="column is-one-third timeremaining">
               <i class="fas fa-layer-group" style="color: #525151;"></i><br />
-              12 / 243
+              {{currentLayer}} / {{totalLayer}}
+            </div>
+            <div class="column is-one-third timeremaining">
+              <img src="img/layer_height.png" style="height: 46px"><br />
+              {{currentHeight}} / {{totalHeight}} mm
             </div>
           </div>
 
@@ -371,11 +375,11 @@
             <div class="columns">
               <div class="column is-half">
                 <chart ref="tool0chart" :type="'pie'" v-bind:data="pie_tool0" :options="pie_tool0_options"></chart>
-                <div style="font-size: 2em; font-weight: bold; position: relative; top: -165px;"> {{ temps.tool0.actual }}&deg;C<br /><span style="font-size: 0.7em;">Extruder</span></div>
+                <div style="font-size: 1.8em; font-weight: bold; position: relative; top: -145px;"><img src="img/hotend-icon.png" style="width: 40px;"><br />{{ temps.tool0.actual }}&deg;C</div>
               </div>
               <div class="column is-half">
                 <chart ref="bedchart" :type="'pie'" v-bind:data="pie_bed" :options="pie_bed_options"></chart>
-                <div style="font-size: 2em; font-weight: bold; position: relative; top: -165px;"> {{ temps.bed.actual }}&deg;C<br /><span style="font-size: 0.7em;">Bed</span></div>
+                <div style="font-size: 1.8em; font-weight: bold; position: relative; top: -145px;"><img src="img/bed-icon.png" style="width: 40px;"><br />{{ temps.bed.actual }}&deg;C</div>
               </div>
             </div>
           </div>
@@ -401,7 +405,7 @@ import axios from "axios";
 import * as SockJS from 'sockjs-client';
 var StompJs = require('@stomp/stompjs');
 //import jQuery from 'jquery';
-import setimmediate from 'setimmediate';
+//import setimmediate from 'setimmediate';
 import Chart from 'vue-bulma-chartjs';
 
 export default {
@@ -414,7 +418,28 @@ export default {
     Chart
   },
   created:function(){
-    
+    var self = this;
+    var octoDropzone = new Dropzone(document.body, {
+      init: function() {
+        this.on("sending", function(file, xhr, formData) {
+          $(".dz-preview").css("display", "none");
+          if(file.name.split('.').pop() != "gcode" && file.name.split('.').pop() != "gco") {
+            self.displayMsg('upload_invalid_file');
+	    		} else {
+            formData.append("path", self.selectedfolder);
+            $("#dropzoneProgress").css("display", "block");
+          }
+			});
+			this.on("success", function() {
+				$("#dropzoneProgress").css("display", "none");
+				self.loadFiles();
+      });
+      this.on('error', function(file, response) {
+        $("#dropzoneProgress").css("display", "none");
+      });
+		},
+      url: "http://192.168.120.244:5000/api/files/local"
+    });
   },
   mounted:function() {
     setTimeout(this.loadCam, 500)
@@ -440,29 +465,7 @@ export default {
       this.connectionState = "on";
     }
 
-    var self = this;
-    var octoDropzone = new Dropzone(document.body, {
-	    init: function() {
-	    	this.on("sending", function(file, xhr, formData) {
-	    		$(".dz-preview").css("display", "none");
-	    		if(file.name.split('.').pop() != "gcode" && file.name.split('.').pop() != "stl") {
-	    			$("#messagebox_body").html("only gcode or stl files possible to upload");
-	    			$("#messagebox").show( "slow" );
-	    			setTimeout(function(){
-              $("#messagebox").hide( "slow" );
-            }, 5000);
-	    		} else {
-	    			formData.append("path", self.selectedfolder);
-					  $("#dropzoneProgress").css("display", "block");
-	    		}
-			});
-			this.on("success", function() {
-				$("#dropzoneProgress").css("display", "none");
-				self.loadFiles();
-			});
-		},
-	    url: "http://192.168.120.244:5000/api/files/local"
-    });
+    
     
 
 //-----------------------------------------------------------------------------------------
@@ -495,10 +498,12 @@ export default {
       selectedfile: "",
       files: [],
       folders: [],
+      currentLayer: 0,
+      totalLayer: 0,
+      currentHeight: 0,
+      totalHeight: 0,
       file_origin: "local",
-      files: [],
-      folders: [],
-      job: {"printfile": "", "estimatedPrintTime": "", "currentZ": "", "progress":{"completion": "", "filepos": "", "printTime": "", "printTimeLeft": "", "printTimeLeft": "", "filament": {"tool0": {"length": "", "volume": ""}}}},
+      job: {"printfile": "", "estimatedPrintTime": "", "currentZ": "", "progress":{"completion": "", "filepos": "", "printTime": "", "printTimeLeft": "", "filament": {"tool0": {"length": "", "volume": ""}}}},
       thingiverse_results: [],
       q: "",
       thingpage: 1,
@@ -653,9 +658,9 @@ export default {
       var sock = new SockJS(this.$octo_ip+'/sockjs');
       const client = new StompJs.Client({
         brokerURL: "ws://127.0.0.1/sockjs", //dummy
-        debug: function (data) {
+        //debug: function (data) {
             //console.log(data);
-        },
+        //},
         reconnectDelay: 2000,
         heartbeatIncoming: 4000,
         heartbeatOutgoing: 4000
@@ -663,8 +668,8 @@ export default {
       client.webSocketFactory = function () {
         sock = new SockJS(self.$octo_ip+'/sockjs');
       };
-      client.onConnect = function(frame) {};
-      client.onStompError = function (frame) {};
+      //client.onConnect = function(frame) {};
+      //client.onStompError = function (frame) {};
       sock.onmessage = function(e) {
         self.messageParser(e.data);
         sock.close();
@@ -673,6 +678,12 @@ export default {
     },
     messageParser: function(msg) {
       console.log(msg);
+      /*
+      DisplayLayerProgress_heightChanged
+      DisplayLayerProgress_layerChanged
+      get totalLayer
+      get currentLayer
+      */
       if(msg.event != null) {
           if(msg.event.type != null) {
               if(msg.event.type == "PrinterStateChanged") {
@@ -693,6 +704,12 @@ export default {
                     this.isConnecting = false;
                     this.connectionState = "on";
                   }
+              }
+              if(msg.event.type == "DisplayLayerProgress_layerChanged" || msg.event.type == "DisplayLayerProgress_heightChanged") {
+                this.totalLayer = msg.payload.totalLayer;
+                this.currentLayer = msg.payload.currentLayer;
+                this.totalHeight = msg.payload.totalHeightWithExtrusion;
+                this.currentHeight = msg.payload.currentHeight;
               }
               if(msg.event.type == "UpdatedFiles") {
                   this.loadFiles();
@@ -715,6 +732,9 @@ export default {
         }
         if(msg.current.logs != null) {
           for(var i=0;i<msg.current.logs.length;i++) {
+            if(msg.current.logs[i].startswidth("M117 INDICATOR-Layer")) {
+              this.currentLayer = msg.current.logs[i].replace("M117 INDICATOR-Layer", "");
+            }
             this.logs.push(msg.current.logs[i])
           }
         }
@@ -792,11 +812,10 @@ export default {
     },
     lightswitch: function() {
       axios({ method: "POST", "url": this.$cors_proxy+"/"+this.$led_ip+"/light/3d_drucker_led/toggle" }).then(result => {
-	      this.getLightState();
+        this.getLightState();
       }, error => {
-          console.error(error);
+        console.error(error);
       });
-      
     },
     getLightState: function() {
       axios({ method: "GET", "url": this.$cors_proxy+"/"+this.$led_ip+"/light/3d_drucker_led/state" }).then(result => {
@@ -842,6 +861,7 @@ export default {
       axios({ method: "GET", "url": this.$octo_ip+"/api/connection", headers: {'X-Api-Key': this.$apikey} }).then(result => {
         self.connectionSettings = result.data;
       }, error => {
+          self.displayMsg('octoprint_conn_error');
           console.error(error);
       });
     },
@@ -854,8 +874,8 @@ export default {
       this.listFiles();
     },
     folderup: function() {
-      this.selectedfolder = this.selectedfolder.substring(0, this.selectedfolder.lastIndexOf('/'))
-	    this.listFiles();
+      this.selectedfolder = this.selectedfolder.substring(0, this.selectedfolder.lastIndexOf('/'));
+      this.listFiles();
     },
     selectFile: function(event, file) {
       this.selectedfile = file;
@@ -869,7 +889,6 @@ export default {
       $('#btn_cancel').attr("disabled", true);
     },
     loadFiles: function() {
-      var self = this;
       axios({ method: "GET", "url": this.$octo_ip+"/api/files?recursive=true", headers: {'X-Api-Key': this.$apikey} }).then(result => {
         this.fileList = [];
         this.fileList = result.data.files;
@@ -904,13 +923,19 @@ export default {
             }
           }
         }
+        var date;
+        var tstamp;
+        var day;
+        var month;
+        var imgid;
+        var img;
+        var download;
+        var i;
         if(pathobj.children.length > 0) {
-          for(var i = 0; i<pathobj.children.length;i++) {
+          for(i = 0; i<pathobj.children.length;i++) {
             if(pathobj.children[i].type == "folder") {
               this.folders.push(pathobj.children[i]);
             } else if(pathobj.children[i].type == "machinecode") {
-              var img;
-              var download;
               if(pathobj.children[i].refs.resource != null) {
                 if(self.file_origin == "local" && pathobj.children[i].refs.resource.includes(".gcode")) {
                   img = pathobj.children[i].refs.download.replace(".gcode", ".png");
@@ -921,15 +946,15 @@ export default {
                   img = pathobj.children[i].refs.resource.replace(".gco", ".png");
                   download = pathobj.children[i].refs.resource;
                 }
-                var imgid = pathobj.children[i].display.replace(".", "");
+                imgid = pathobj.children[i].display.replace(".", "");
 
                 if(pathobj.children[i].date != null) {
-                  var tstamp = new Date(pathobj.children[i].date*1000);
-                  var day = "0"+tstamp.getDate();
-                  var month = "0"+tstamp.getMonth();
-                  var date = day.slice(-2)+"."+month.slice(-2)+"."+tstamp.getFullYear();
+                  tstamp = new Date(pathobj.children[i].date*1000);
+                  day = "0"+tstamp.getDate();
+                  month = "0"+tstamp.getMonth();
+                  date = day.slice(-2)+"."+month.slice(-2)+"."+tstamp.getFullYear();
                 } else {
-                  var date = "";
+                  date = "";
                 }
                 pathobj.children[i].download = download;
                 pathobj.children[i].img = img;
@@ -956,8 +981,6 @@ export default {
             if(this.fileList[i].type == "folder") {
               self.folders.push(this.fileList[i]);
             } else if(this.fileList[i].type == "machinecode") {
-              var img;
-              var download;
               if(this.fileList[i].refs.resource != null) {
                 if(self.file_origin == "local" && this.fileList[i].refs.resource.includes(".gcode")) {
                   img = this.fileList[i].refs.download.replace(".gcode", ".png");
@@ -968,15 +991,14 @@ export default {
                   img = this.fileList[i].refs.resource.replace(".gco", ".png");
                   download = this.fileList[i].refs.resource;
                 }
-                var imgid = this.fileList[i].display.replace(".", "");
-
+                imgid = this.fileList[i].display.replace(".", "");
                 if(this.fileList[i].date != null) {
-                  var tstamp = new Date(this.fileList[i].date*1000);
-                  var day = "0"+tstamp.getDate();
-                  var month = "0"+tstamp.getMonth();
-                  var date = day.slice(-2)+"."+month.slice(-2)+"."+tstamp.getFullYear();
+                  tstamp = new Date(this.fileList[i].date*1000);
+                  day = "0"+tstamp.getDate();
+                  month = "0"+tstamp.getMonth();
+                  date = day.slice(-2)+"."+month.slice(-2)+"."+tstamp.getFullYear();
                 } else {
-                  var date = "";
+                  date = "";
                 }
                 this.fileList[i].download = download;
                 this.fileList[i].img = img;
@@ -1081,7 +1103,7 @@ export default {
           console.error(error);
       });
     },
-    setExtruderTemp: function(temp) {
+    setExtruderTemp: function() {
       var temp = $("#sliderExtruder").val();
       var url = this.$octo_ip+"/api/printer/tool";
       var obj = {};
@@ -1114,7 +1136,7 @@ export default {
       var url = this.$octo_ip+"/api/printer/command";
       var obj = {};
       obj.command = gcmd;
-      axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$apikey, 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
+      axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$apikey, 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then({
       }, error => {
           console.error(error);
       });
@@ -1123,9 +1145,11 @@ export default {
       window.open(url, "_blank"); 
     },
     thingiverse_search: function() {
+      var url;
+      var q;
       if(this.q == "") {
-        var q = this.q.replace(" ", "%2B");
-        var url = "http://cststudios.de/thingiverse/?action=init";
+        q = this.q.replace(" ", "%2B");
+        url = "http://cststudios.de/thingiverse/?action=init";
         axios({ method: "GET", url: url}).then(result => {
           this.thingiverse_results = result.data;
           console.log(result.data);
@@ -1133,8 +1157,8 @@ export default {
             console.error(error);
         });
       } else {
-        var q = this.q.replace(" ", "%2B");
-        var url = "http://cststudios.de/thingiverse/?action=search&q="+q+"&page="+this.thingpage;
+        q = this.q.replace(" ", "%2B");
+        url = "http://cststudios.de/thingiverse/?action=search&q="+q+"&page="+this.thingpage;
         axios({ method: "GET", url: url}).then(result => {
           this.thingiverse_results = result.data;
           console.log(result.data);
@@ -1176,6 +1200,26 @@ export default {
       this.line_temps.labels.push('');
       if(this.$refs.tempchart) {
         this.$refs.tempchart.chart.update();
+      }
+    },
+    displayMsg: function(error) {
+      switch(error) {
+        case "octoprint_conn_error":
+          $("#messagebox_body").html("Connection to OctoPrint server failed. Is it offline?");
+          $("#messagebox").show( "slow" );
+          setTimeout(function(){
+            $("#messagebox").hide( "slow" );
+          }, 8000);
+          break;
+        case "upload_invalid_file":
+          $("#messagebox_body").html("Only gcode files possible to upload");
+          $("#messagebox").show( "slow" );
+          setTimeout(function(){
+            $("#messagebox").hide( "slow" );
+          }, 8000);
+          
+        default:
+          console.log("unhandled msg error");
       }
     }
   },
