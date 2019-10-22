@@ -142,8 +142,8 @@ tr.is-selected {
   width: 20px;
   height: 20px;
 }
-.timeremaining {
-  font-size: 2.3em;
+.pp_boxes {
+  font-size: 1.8em;
   color: #22d0b2;
   font-weight: bold;
 }

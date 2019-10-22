@@ -20,7 +20,9 @@ Vue.prototype.$selectedfolder = "";
 Vue.prototype.$cam = "";
 Vue.prototype.$file_origin = "local";
 
-
+Vue.prototype.$port = "/dev/ttyACM0";
+Vue.prototype.$baudrate = 115200;
+Vue.prototype.$printerProfile = "_default";
 
 Vue.prototype.$tasmota_ip="192.168.120.81"
 Vue.prototype.$powerhandling = "yes";

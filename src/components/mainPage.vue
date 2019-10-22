@@ -313,13 +313,13 @@
       </section>
 
       <section class="section" id="mainPage" v-if="page == 'print'">
-        <section class="hero is-small is-light is-bold" style="max-height: 80px; margin-bottom: 20px;" v-if="page == 'print'">
+        <section class="hero is-small is-primary is-bold" style="max-height: 80px; margin-bottom: 20px;" v-if="page == 'print'">
           <div class="hero-body" style="padding: none !important; text-align: left !important;">
             <div class="container">
                 <div style="float: left; margin-right: 40%;" v-on:click="nav('')">
-                  <i class="fas fa-chevron-left fa-3x" style="cursor: pointer;"></i>
+                  <i class="fas fa-chevron-left fa-3x" style="cursor: pointer; position: relative; top: -8px;"></i>
                 </div>
-                <div class="title">
+                <div class="title" v-if="connectionSettings.options.printerProfiles[0].name">
                   {{ connectionSettings.options.printerProfiles[0].name }}
                 </div>
               </div>
@@ -333,24 +333,24 @@
           </div>
           <div class="column is-two-third">
             
-          <h2>{{job.printfile}}</h2>
+          <h3>{{job.printfile}}</h3>
 
           <div class="columns" style="padding-top: 70px;">
-            <div class="column is-one-third timeremaining">
-              <i class="fas fa-clock" style="color: #525151;"></i><br />
+            <div class="column is-one-third pp_boxes">
+              <img src="img/layer-time-average-icon2.png" style="height: 46px"><br />
               {{ formatTimeRemaining(job.progress.printTimeLeft) }}
             </div>
-            <div class="column is-one-third timeremaining">
-              <i class="fas fa-layer-group" style="color: #525151;"></i><br />
+            <div class="column is-one-third pp_boxes">
+              <img src="img/layers-icon2.png" style="height: 46px"><br />
               {{currentLayer}} / {{totalLayer}}
             </div>
-            <div class="column is-one-third timeremaining">
+            <div class="column is-one-third pp_boxes">
               <img src="img/layer_height.png" style="height: 46px"><br />
-              {{currentHeight}} / {{totalHeight}} mm
+              {{formatDecimal(currentHeight)}} / {{formatDecimal(totalHeight)}} mm
             </div>
           </div>
 
-          <div style="text-align: right; margin-top: 50px;" class="timeremaining">{{formatDecimal(job.progress.completion)}}%</div>
+          <div style="text-align: right; margin-top: 50px;" class="pp_boxes">{{formatDecimal(job.progress.completion)}}%</div>
           <progress class="progress is-primary" v-bind:value="job.progress.completion" max="100"></progress>
 
           <div class="buttons" id="fileoperations" style="margin-top: 30px;">
@@ -375,11 +375,11 @@
             <div class="columns">
               <div class="column is-half">
                 <chart ref="tool0chart" :type="'pie'" v-bind:data="pie_tool0" :options="pie_tool0_options"></chart>
-                <div style="font-size: 1.8em; font-weight: bold; position: relative; top: -145px;"><img src="img/hotend-icon.png" style="width: 40px;"><br />{{ temps.tool0.actual }}&deg;C</div>
+                <div style="font-size: 1.8em; font-weight: bold; position: relative; top: -145px;"><img src="img/hotend-icon2.png" style="width: 40px;"><br />{{ temps.tool0.actual }}&deg;C</div>
               </div>
               <div class="column is-half">
                 <chart ref="bedchart" :type="'pie'" v-bind:data="pie_bed" :options="pie_bed_options"></chart>
-                <div style="font-size: 1.8em; font-weight: bold; position: relative; top: -145px;"><img src="img/bed-icon.png" style="width: 40px;"><br />{{ temps.bed.actual }}&deg;C</div>
+                <div style="font-size: 1.8em; font-weight: bold; position: relative; top: -145px;"><img src="img/bed-icon2.png" style="width: 40px;"><br />{{ temps.bed.actual }}&deg;C</div>
               </div>
             </div>
           </div>
@@ -540,7 +540,7 @@ export default {
       line_temps: {
         labels: [''],
         datasets: [{
-          label: 'Extruder',
+          label: 'Extruder I',
           fill: false,
           backgroundColor: '#fc3c63',
           borderColor: '#fc3c63',
@@ -548,7 +548,7 @@ export default {
           data: [0],
         },
         {
-          label: '',
+          label: 'Extruder S',
           fill: false,
           backgroundColor: '#fab3c2',
           borderColor: '#fab3c2',
@@ -556,7 +556,7 @@ export default {
           data: [0],
         },
         {
-          label: 'Bed',
+          label: 'Bed I',
           fill: false,
           backgroundColor: '#2b9eeb',
           borderColor: '#2b9eeb',
@@ -564,7 +564,7 @@ export default {
           data: [0],
         },
         {
-          label: '',
+          label: 'Bed S',
           fill: false,
           backgroundColor: '#99d3fa',
           borderColor: '#99d3fa',
@@ -719,6 +719,7 @@ export default {
       }
       if(msg.plugin != null) {
         if(msg.plugin.plugin == "DisplayLayerProgress") {
+          console.log(msg);
           if(msg.plugin.data.stateMessage != null) {
             this.currentLayer = msg.plugin.data.stateMessage.split(" / ")[0];
             this.totalLayer = msg.plugin.data.stateMessage.split(" / ")[1];
@@ -764,7 +765,9 @@ export default {
               }
             }
 
-            //N692 G1 Z0.400 F10200*32
+            if(this.logs.length > 500) {
+              this.logs = this.logs.splice(-500, 500)
+            }
             this.logs.push(msg.current.logs[i])
           }
         }
@@ -865,9 +868,9 @@ export default {
       var obj = {};
       if(this.isNotConnection) {
         obj.command = "connect";
-        obj.port = "/dev/ttyACM0";
-        obj.baudrate = 115200;
-        obj.printerProfile = "_default";
+        obj.port = this.$port;
+        obj.baudrate = this.$baudrate;
+        obj.printerProfile = this.$printerProfile;
         obj.save = true;
         obj.autoconnect = false;
       } else {
@@ -1247,7 +1250,7 @@ export default {
           setTimeout(function(){
             $("#messagebox").hide( "slow" );
           }, 8000);
-          
+          break;
         default:
           console.log("unhandled msg error");
       }
