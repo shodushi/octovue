@@ -1,5 +1,6 @@
 <template>
   <div class="octovue">
+    <div :class="{'is-active': pageLoader}" class="pageloader"><span class="title">connecting to OctoPrint instance<br /><span class="title" v-if="octoprintConnectionTries >= octoprintConnectionMaxTries">{{pageLoaderAddText}}</span></span></div>
     <article id="messagebox" class="message is-danger">
       <div id="messagebox_body" class="message-body"></div>
     </article>
@@ -512,6 +513,10 @@ export default {
       totalHeight: 0,
       file_origin: "local",
       searchLoader: false,
+      pageLoader: true,
+      pageLoaderAddText: "",
+      octoprintConnectionTries: 0,
+      octoprintConnectionMaxTries: 4,
       job: {"printfile": "", "estimatedPrintTime": "", "currentZ": "", "progress":{"completion": "", "filepos": "", "printTime": "", "printTimeLeft": "", "filament": {"tool0": {"length": "", "volume": ""}}}},
       thingiverse_results: [],
       q: "",
@@ -902,9 +907,18 @@ export default {
       var self = this;
       axios({ method: "GET", "url": this.$octo_ip+"/api/connection", headers: {'X-Api-Key': this.$apikey} }).then(result => {
         self.connectionSettings = result.data;
+        self.pageLoader = false;
       }, error => {
           self.displayMsg('octoprint_conn_error');
           console.error(error);
+          if(self.octoprintConnectionTries < self.octoprintConnectionMaxTries) {
+            setTimeout(function(){
+              self.octoprintConnectionTries = self.octoprintConnectionTries + 1;
+              self.getOctoprintConnection();
+            }, 1000);
+          } else {
+            self.pageLoaderAddText = "Connection failed, seems like OctoPrint server is not available!?";
+          }
       });
     },
     changeFileSource: function(src) {
