@@ -1,6 +1,10 @@
 import Vue from 'vue'
 import App from './App.vue'
+Vue.config.productionTip = false
 
+new Vue({
+  render: h => h(App)
+}).$mount('#app')
 
 /*
 
@@ -47,17 +51,6 @@ Vue.prototype.$cors_proxy = "http://192.168.120.244:8090"
 // -----        EDIT YOUR SEETINGS TO HERE      -----
 
 
-
-
-
-
-
-
-Vue.config.productionTip = false
-
-new Vue({
-  render: h => h(App)
-}).$mount('#app')
 
 Vue.prototype.$gcodes = [];
 Vue.prototype.$gcodes['marlin'] = [];

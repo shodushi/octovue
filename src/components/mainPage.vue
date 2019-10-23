@@ -43,7 +43,8 @@
           <div class="navbar-end">
             <div class="navbar-item">
               <div class="buttons">
-                <a class="button is-info is-small" v-on:click="nav('print')" v-if="page == 'main' || !page">Print page</a>
+                <a class="button is-info is-small" v-on:click="nav('stats');"  v-if="page != 'stats' || !page">Statistics</a>
+                <a class="button is-info is-small" v-on:click="nav('print')" v-if="page != 'print' || !page">Print page</a>
                 <a class="button is-info is-small" v-on:click="terminalmodal = !terminalmodal">Terminal</a>
                 <a class="button is-info is-small" v-on:click="infomodal = !infomodal">Info</a>
               </div>
@@ -321,7 +322,7 @@
         </div>
       </section>
 
-      <section class="section" id="mainPage" v-if="page == 'print'">
+      <section class="section" id="printPage" v-if="page == 'print'">
         <section class="hero is-small is-primary is-bold" style="max-height: 80px; margin-bottom: 20px;" v-if="page == 'print'">
           <div class="hero-body" style="padding: none !important; text-align: left !important;">
             <div class="container">
@@ -394,6 +395,54 @@
           </div>
           
         </div>
+
+      </section>
+
+      <section class="section" id="statPage" v-if="page == 'stats'">
+
+        <div class="columns" style="padding-top: 70px;">
+            <div class="column is-one-fiths">
+              <chart ref="pie_stats_printing" :type="'pie'" v-bind:data="pie_stats_printing" :options="pie_stats_printing_options"></chart>
+            </div>
+            <div class="column is-four-fifths">
+
+
+              <table class="table is-fullwidth is-striped is-hoverable" id="filestable">
+                <thead>
+                  <tr>
+                    <th>&nbsp;</th>
+                    <th>Filename</th>
+                    <th><i class="fas fa-thumbs-up" style="color: #31cf65;"></i></th>
+                    <th><i class="fas fa-thumbs-down" style="color: #fc3c63;"></i></th>
+                    <th>last printdate</th>
+                    <th>last print</th>
+                  </tr>
+                </thead>
+                <tbody id="filesbody">
+                  <tr v-for="entry in printhistory">
+                    <td>
+                      <figure v-if="$previewimages == 'yes'" class="image is-64x64"><img :src="entry.file.img" :id="entry.file.thumbid" class="thumb" @error="imgFallback" v-on:mousemove="zoomIn($event, entry.file.thumbid, 'overlay_'+entry.file.imgid)" v-on:mouseleave="zoomOut(''+entry.file.imgid)"></figure>
+                      <div class="overlay_wrapper">
+                        <div :id="'overlay_'+entry.file.imgid" class="zoomoverlay" v-bind:style="{'background-image': 'url(' + entry.file.img + ')' }"></div>
+                      </div>
+                    </td>
+                    <td>{{formatShorten(entry.file.name, 30)}}</td>
+                    <td>{{entry.file.prints.success}}</td>
+                    <td>{{entry.file.prints.failure}}</td>
+                    <td>{{formatDate(entry.date)}}</td>
+                    <td>
+                      <i class="fas" :class="{'fa-thumbs-up': entry.file.prints.last.success}" v-if="entry.file.prints.last.success" style="color: #31cf65;"></i>
+                      <i class="fas" :class="{'fa-thumbs-down': !entry.file.prints.last.success}" v-if="!entry.file.prints.last.success" style="color: #fc3c63;"></i>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+
+
+            </div>
+          
+          </div>
 
       </section>
 
@@ -517,10 +566,12 @@ export default {
       pageLoaderAddText: "",
       octoprintConnectionTries: 0,
       octoprintConnectionMaxTries: 4,
+      printhistory: [],
       job: {"printfile": "", "estimatedPrintTime": "", "currentZ": "", "progress":{"completion": "", "filepos": "", "printTime": "", "printTimeLeft": "", "filament": {"tool0": {"length": "", "volume": ""}}}},
       thingiverse_results: [],
       q: "",
       thingpage: 1,
+      stats: {"success": 0, "failed": 0},
       pie_tool0: {
         datasets: [{
           data: [0, 250],
@@ -621,6 +672,20 @@ export default {
 					}]
         },
       },
+      pie_stats_printing: {
+        datasets: [{
+          data: [0, 0],
+          backgroundColor: [
+            '#31cf65',
+            '#fc3c63'
+          ]
+        }],
+        labels: ['successful', 'failed']
+      },
+      pie_stats_printing_options: {
+        segmentShowStroke: false,
+        responsive: true
+      },
       dropzoneOptions: {
         url: 'http://192.168.120.244:5000/api/files/local',
         thumbnailWidth: 150,
@@ -666,6 +731,22 @@ export default {
         }
         
         return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+    },
+    formatDate: function(value) {
+      if (value) {
+        //return new Date(value * 1000).format('MM-DD-YYYY')
+        return new Date(value*1000).toLocaleDateString("de-DE", {day: '2-digit', month: '2-digit', year: 'numeric'});
+        //const date = new Date(value)
+        //moment.unix(value).format('MM-DD-YYYY')
+        //return moment(String(date)).format('MM/DD/YYYY hh:mm')
+      }
+    },
+    formatShorten: function(string, count) {
+      var newstring = string;
+      if(string.length > count) {
+        newstring = newstring.substring(0,count)+"...";
+      }
+      return newstring;
     },
     sockConnection: function() {
       var self = this;
@@ -952,8 +1033,10 @@ export default {
       axios({ method: "GET", "url": this.$octo_ip+"/api/files?recursive=true", headers: {'X-Api-Key': this.$apikey} }).then(result => {
         this.fileList = [];
         this.fileList = result.data.files;
+        console.log("loadFiles");
         console.log(result.data.files);
         this.listFiles();
+        this.getStats();
       }, error => {
           console.error(error);
       });
@@ -1286,6 +1369,81 @@ export default {
         default:
           console.log("unhandled msg error");
       }
+    },
+    getStats: function() {
+      var s = 0;
+      var f = 0;
+      var img;
+      var imgid;
+      for(var i = 0; i<this.fileList.length;i++) {
+        var obj = this.fileList[i];
+        if(obj.type == "machinecode") {
+          if(obj.prints != null) {
+            if(obj.prints.success != null) {
+              if(obj.prints.success > 0 || obj.prints.failure > 0) {
+                f = f + obj.prints.success;
+                s = s + obj.prints.failure;
+              }
+            }
+
+            if(obj.origin == "local") {
+              img = obj.refs.download.replace(".gcode", ".png");
+            }
+            imgid = obj.display.replace(".", "");
+            obj.img = img;
+            obj.imgid = imgid;
+            obj.thumbid = "thumb_"+imgid;
+            if(obj.prints.last != null) {
+              if(obj.prints.last.date != null) {
+                this.printhistory.push({"date": obj.prints.last.date.toString().split(".")[0], "file": obj});
+              }
+            }
+          }
+        }
+        if(obj.type == "folder") {
+          for(var n = 0; n<obj.children.length;n++) {
+            if(obj.children[n].type == "machinecode") {
+              if(obj.children[n].prints != null) {
+                if(obj.children[n].prints.success != null) {
+                  if(obj.children[n].prints.success > 0 || obj.children[n].prints.failure > 0) {
+                    f = f + obj.children[n].prints.success;
+                    s = s + obj.children[n].prints.failure;
+                  }
+                }
+
+                if(obj.children[n].origin == "local") {
+                  img = obj.children[n].refs.download.replace(".gcode", ".png");
+                }
+                imgid = obj.children[n].display.replace(".", "");
+                obj.children[n].img = img;
+                obj.children[n].imgid = imgid;
+                obj.children[n].thumbid = "thumb_"+imgid;
+                if(obj.children[n].prints.last != null) {
+                  if(obj.children[n].prints.last.date != null) {
+                    this.printhistory.push({"date": obj.children[n].prints.last.date.toString().split(".")[0], "file": obj.children[n]});
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      this.printhistory.sort(this.compare);
+      this.stats.success = s;
+      this.stats.failure = f;
+      this.pie_stats_printing.datasets[0].data = [s, f];
+      if(this.$refs.pie_stats_printing) {
+        this.$refs.pie_stats_printing.chart.update();
+      }
+    },
+    compare: function( a, b ) {
+      if ( a.date < b.date ){
+        return 1;
+      }
+      if ( a.date > b.date ){
+        return -1;
+      }
+      return 0;
     }
   },
   computed: {
