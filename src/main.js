@@ -1,23 +1,6 @@
 import Vue from 'vue'
 import App from './App.vue'
 
-Vue.config.productionTip = false
-
-new Vue({
-  render: h => h(App)
-}).$mount('#app')
-
-Vue.prototype.$gcodes = [];
-Vue.prototype.$gcodes['marlin'] = [];
-Vue.prototype.$gcodes['reprap'] = [];
-
-Vue.prototype.$fileList = [];
-Vue.prototype.$selectedfile = {};
-Vue.prototype.$selectedfolder = "";
-Vue.prototype.$cam = "";
-Vue.prototype.$file_origin = "local";
-
-
 
 // -----        EDIT YOUR SEETINGS FROM HERE      -----
 //-----------------------------------------------------
@@ -55,7 +38,25 @@ Vue.prototype.$previewimages = "yes";
 
 
 
-Vue.prototype.$printerState = {"type": "PrinterStateChanged", "payload":{"state_string":"Offline","state_id":"OFFLINE"}};
+
+
+
+
+Vue.config.productionTip = false
+
+new Vue({
+  render: h => h(App)
+}).$mount('#app')
+
+Vue.prototype.$gcodes = [];
+Vue.prototype.$gcodes['marlin'] = [];
+Vue.prototype.$gcodes['reprap'] = [];
+
+Vue.prototype.$fileList = [];
+Vue.prototype.$selectedfile = {};
+Vue.prototype.$selectedfolder = "";
+Vue.prototype.$cam = "";
+Vue.prototype.$file_origin = "local";
 
 Vue.prototype.$gcodes['marlin'][0] = {"cmd": "emergencystop", "label": "Emergency stop", "icon": "fa-radiation", "gcmd": "M112"}
 Vue.prototype.$gcodes['marlin'][1] = {"cmd": "stop", "label": "Stop print", "icon": "fa-stop-circle", "gcmd": "M2"};
