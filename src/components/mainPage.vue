@@ -1291,7 +1291,9 @@ export default {
   computed: {
     terminalLogs: {
       get() {
-        return this.logs.join('\n')
+        if(this.logs.length > 0) {
+          return this.logs.join('\n')
+        }
       }
     }
   }
