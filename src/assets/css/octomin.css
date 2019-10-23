@@ -100,15 +100,17 @@ tr.is-selected {
   left: 20%;
   width: 50%;
   max-width: 600px;
-  height: 200px;
+  height: 400px;
   z-index: 999;
-
 }
 #terminal_header {
   background-color: #ffdd57;
   color: black;
   cursor: grab;
   padding: 4px;
+}
+#terminal_console {
+  height: 300px;
 }
 #filebrowser_head td {
   border: none;
