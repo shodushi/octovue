@@ -22,26 +22,29 @@ Vue.prototype.$file_origin = "local";
 // -----        EDIT YOUR SEETINGS FROM HERE      -----
 //-----------------------------------------------------
 
+// octoprint api
+Vue.prototype.$octo_ip = "http://192.168.120.244:5000";
+Vue.prototype.$apikey = "86DA1D669334418CB773A50A142A4E72";
+
+// octoprint printer settings
 Vue.prototype.$port = "/dev/ttyACM0";
 Vue.prototype.$baudrate = 115200;
 Vue.prototype.$printerProfile = "_default";
 
+// led controlling via external device like any esp device via http call
 Vue.prototype.$powerhandling = "yes";
 Vue.prototype.$tasmota_ip="192.168.120.81"
 
+// printer power switch via sonoff tasmota
 Vue.prototype.$lighthandling = "yes";
 Vue.prototype.$led_ip = "http://192.168.120.45";
-
-// octoprint api
-Vue.prototype.$octo_ip = "http://192.168.120.244:5000";
-Vue.prototype.$apikey = "86DA1D669334418CB773A50A142A4E72";
 
 // only used if using external devices like tasmota or esphome devices
 // see https://www.npmjs.com/package/cors-anywhere for more info
 Vue.prototype.$cors_proxy = "http://192.168.120.244:8090"
 
 // enable/disable preview image of gcode files
-//var previewimages = "no";
+Vue.prototype.$previewimages = "yes";
 
 //---------------------------------------------------
 // -----        EDIT YOUR SEETINGS TO HERE      -----
