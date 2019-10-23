@@ -18,7 +18,7 @@
         <div id="navbarBasicExample" class="navbar-menu">
           <div class="navbar-start" style="width: 50%;">
             <div id="meta" class="field is-grouped is-grouped-multiline" style="margin: 14px 0px 0px 20%;">
-              <div class="control" id="control_power">
+              <div class="control" id="control_power" v-if="$powerhandling == 'yes'">
                 <div class="tags has-addons">
                   <span class="tag">Power</span>
                   <a class="tag" :class="{'is-success': isPower, 'is-danger': isNotPower}" id="tag_printer_power" v-on:click="powerswitch">{{ powerState }}</a>
@@ -32,7 +32,7 @@
                 </div>
               </div>
 
-              <div class="control" id="control_light">
+              <div class="control" id="control_light" v-if="$lighthandling == 'yes'">
                 <div class="tags has-addons">
                   <span class="tag">Light</span>
                   <a class="tag" :class="{'is-success': isLight, 'is-danger': isNotLight}" id="tag_lightswitch" v-on:click="lightswitch">{{ lightState }}</a>
@@ -843,19 +843,21 @@ export default {
       });
     },
     getPowerState: function() {
-      axios({ method: "GET", "url": this.$cors_proxy+"/"+this.$tasmota_ip+"/cm?cmnd=Status" }).then(result => {
-        if(result.data.Status.Power == 0) {
-          this.powerState = "off";
-          this.isNotPower = true;
-          this.isPower = false;
-        } else {
-          this.powerState = "on";
-          this.isNotPower = false;
-          this.isPower = true;
-        }
-      }, error => {
-          console.error(error);
-      });
+      if(this.$powerhandling == "yes") {
+        axios({ method: "GET", "url": this.$cors_proxy+"/"+this.$tasmota_ip+"/cm?cmnd=Status" }).then(result => {
+          if(result.data.Status.Power == 0) {
+            this.powerState = "off";
+            this.isNotPower = true;
+            this.isPower = false;
+          } else {
+            this.powerState = "on";
+            this.isNotPower = false;
+            this.isPower = true;
+          }
+        }, error => {
+            console.error(error);
+        });
+      }
     },
     lightswitch: function() {
       axios({ method: "POST", "url": this.$cors_proxy+"/"+this.$led_ip+"/light/3d_drucker_led/toggle" }).then(result => {
@@ -865,18 +867,20 @@ export default {
       });
     },
     getLightState: function() {
-      axios({ method: "GET", "url": this.$cors_proxy+"/"+this.$led_ip+"/light/3d_drucker_led/state" }).then(result => {
-        this.lightState = result.data.state.toLowerCase();
-        if(this.lightState == "off") {
-          this.isNotLight = true;
-          this.isLight = false;
-        } else {
-          this.isNotLight = false;
-          this.isLight = true;
-        }
-      }, error => {
-          console.error(error);
-      });
+      if(this.$lighthandling == "yes") {
+        axios({ method: "GET", "url": this.$cors_proxy+"/"+this.$led_ip+"/light/3d_drucker_led/state" }).then(result => {
+          this.lightState = result.data.state.toLowerCase();
+          if(this.lightState == "off") {
+            this.isNotLight = true;
+            this.isLight = false;
+          } else {
+            this.isNotLight = false;
+            this.isLight = true;
+          }
+        }, error => {
+            console.error(error);
+        });
+      }
     },
     printerConnection: function() {
       var obj = {};

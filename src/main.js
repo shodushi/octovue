@@ -4,10 +4,7 @@ import App from './App.vue'
 Vue.config.productionTip = false
 
 new Vue({
-  render: h => h(App),
-  renderError (h, err) {
-    return h('pre', { style: { color: 'red' }}, err.stack)
-  }
+  render: h => h(App)
 }).$mount('#app')
 
 Vue.prototype.$gcodes = [];
@@ -20,12 +17,17 @@ Vue.prototype.$selectedfolder = "";
 Vue.prototype.$cam = "";
 Vue.prototype.$file_origin = "local";
 
+
+
+// -----        EDIT YOUR SEETINGS FROM HERE      -----
+//-----------------------------------------------------
+
 Vue.prototype.$port = "/dev/ttyACM0";
 Vue.prototype.$baudrate = 115200;
 Vue.prototype.$printerProfile = "_default";
 
-Vue.prototype.$tasmota_ip="192.168.120.81"
 Vue.prototype.$powerhandling = "yes";
+Vue.prototype.$tasmota_ip="192.168.120.81"
 
 Vue.prototype.$lighthandling = "yes";
 Vue.prototype.$led_ip = "http://192.168.120.45";
@@ -40,6 +42,11 @@ Vue.prototype.$cors_proxy = "http://192.168.120.244:8090"
 
 // enable/disable preview image of gcode files
 //var previewimages = "no";
+
+//---------------------------------------------------
+// -----        EDIT YOUR SEETINGS TO HERE      -----
+
+
 
 Vue.prototype.$printer_firmware = "marlin";
 Vue.prototype.$printerState = {"type": "PrinterStateChanged", "payload":{"state_string":"Offline","state_id":"OFFLINE"}};
