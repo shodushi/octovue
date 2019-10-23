@@ -43,7 +43,7 @@
           <div class="navbar-end">
             <div class="navbar-item">
               <div class="buttons">
-                <a class="button is-info is-small" v-on:click="nav('stats');"  v-if="page != 'stats' || !page">Statistics</a>
+                <a class="button is-info is-small" v-on:click="nav('stats');"  v-if="page != 'stats' || !page">Stats</a>
                 <a class="button is-info is-small" v-on:click="nav('print')" v-if="page != 'print' || !page">Print page</a>
                 <a class="button is-info is-small" v-on:click="terminalmodal = !terminalmodal">Terminal</a>
                 <a class="button is-info is-small" v-on:click="infomodal = !infomodal">Info</a>
@@ -323,7 +323,8 @@
       </section>
 
       <section class="section" id="printPage" v-if="page == 'print'">
-        <section class="hero is-small is-primary is-bold" style="max-height: 80px; margin-bottom: 20px;" v-if="page == 'print'">
+        
+        <section class="hero is-small is-bold" style="max-height: 80px; margin-bottom: 20px;" v-if="page == 'print'">
           <div class="hero-body" style="padding: none !important; text-align: left !important;">
             <div class="container">
                 <div style="float: left; margin-right: 40%;" v-on:click="nav('')">
@@ -335,6 +336,7 @@
               </div>
           </div>
         </section>
+
         <div class="columns" id="printPage">
           <div class="column is-one-third">
             <figure class="image is-5by4">
@@ -400,7 +402,20 @@
 
       <section class="section" id="statPage" v-if="page == 'stats'">
 
-        <div class="columns" style="padding-top: 70px;">
+        <section class="hero is-small is-bold" style="max-height: 80px; margin-bottom: 20px;">
+          <div class="hero-body" style="padding: none !important; text-align: left !important;">
+            <div class="container">
+                <div style="float: left; margin-right: 40%;" v-on:click="nav('')">
+                  <i class="fas fa-chevron-left fa-3x" style="cursor: pointer; position: relative; top: -8px;"></i>
+                </div>
+                <div class="title">
+                  Stats
+                </div>
+              </div>
+          </div>
+        </section>
+
+        <div class="columns" style="padding-top: 10px;">
             <div class="column is-one-fiths">
               <chart ref="pie_stats_printing" :type="'pie'" v-bind:data="pie_stats_printing" :options="pie_stats_printing_options"></chart>
             </div>
