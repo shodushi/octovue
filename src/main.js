@@ -31,6 +31,9 @@ Vue.prototype.$port = "/dev/ttyACM0";
 Vue.prototype.$baudrate = 115200;
 Vue.prototype.$printerProfile = "_default";
 
+// set your type of printer firmware (marlin or reprap)
+Vue.prototype.$printer_firmware = "marlin";
+
 // led controlling via external device like any esp device via http call
 Vue.prototype.$powerhandling = "yes";
 Vue.prototype.$tasmota_ip="192.168.120.81"
@@ -51,7 +54,7 @@ Vue.prototype.$previewimages = "yes";
 
 
 
-Vue.prototype.$printer_firmware = "marlin";
+
 Vue.prototype.$printerState = {"type": "PrinterStateChanged", "payload":{"state_string":"Offline","state_id":"OFFLINE"}};
 
 Vue.prototype.$gcodes['marlin'][0] = {"cmd": "emergencystop", "label": "Emergency stop", "icon": "fa-radiation", "gcmd": "M112"}
