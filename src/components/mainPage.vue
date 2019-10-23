@@ -11,7 +11,6 @@
     <nav class="navbar" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
           <a class="navbar-item" href="/">
-            <!-- <img src="https://bulma.io/images/bulma-logo.png" alt="Bulma: Free, open source, & modern CSS framework based on Flexbox" width="112" height="28"> !-->
             OctoVue
           </a>
         </div>
@@ -537,16 +536,11 @@ export default {
       this.isConnecting = false;
       this.connectionState = "on";
     }
-
-    
-    
-
-//-----------------------------------------------------------------------------------------
-    
-//-----------------------------------------------------------------------------------------
   },
   data() {
     return {
+      powerhandling: "",
+      lighthandling: "",
       temp: [20, 80],
       page: '',
       infomodal: false,
@@ -749,11 +743,7 @@ export default {
     },
     formatDate: function(value) {
       if (value) {
-        //return new Date(value * 1000).format('MM-DD-YYYY')
         return new Date(value*1000).toLocaleDateString("de-DE", {day: '2-digit', month: '2-digit', year: 'numeric'});
-        //const date = new Date(value)
-        //moment.unix(value).format('MM-DD-YYYY')
-        //return moment(String(date)).format('MM/DD/YYYY hh:mm')
       }
     },
     formatShorten: function(string, count) {
@@ -768,9 +758,6 @@ export default {
       var sock = new SockJS(this.$octo_ip+'/sockjs');
       const client = new StompJs.Client({
         brokerURL: "ws://127.0.0.1/sockjs", //dummy
-        //debug: function (data) {
-            //console.log(data);
-        //},
         reconnectDelay: 2000,
         heartbeatIncoming: 4000,
         heartbeatOutgoing: 4000
@@ -778,8 +765,6 @@ export default {
       client.webSocketFactory = function () {
         sock = new SockJS(self.$octo_ip+'/sockjs');
       };
-      //client.onConnect = function(frame) {};
-      //client.onStompError = function (frame) {};
       sock.onmessage = function(e) {
         self.messageParser(e.data);
         sock.close();
@@ -787,13 +772,6 @@ export default {
       client.activate();
     },
     messageParser: function(msg) {
-      //console.log(msg);
-      /*
-      DisplayLayerProgress_heightChanged
-      DisplayLayerProgress_layerChanged
-      get totalLayer
-      get currentLayer
-      */
       if(msg.event != null) {
           if(msg.event.type != null) {
               if(msg.event.type == "PrinterStateChanged") {
@@ -829,7 +807,6 @@ export default {
       }
       if(msg.plugin != null) {
         if(msg.plugin.plugin == "DisplayLayerProgress") {
-          console.log(msg);
           if(msg.plugin.data.stateMessage != null) {
             this.currentLayer = msg.plugin.data.stateMessage.split(" / ")[0];
             this.totalLayer = msg.plugin.data.stateMessage.split(" / ")[1];
@@ -1048,8 +1025,6 @@ export default {
       axios({ method: "GET", "url": this.$octo_ip+"/api/files?recursive=true", headers: {'X-Api-Key': this.$apikey} }).then(result => {
         this.fileList = [];
         this.fileList = result.data.files;
-        console.log("loadFiles");
-        console.log(result.data.files);
         this.listFiles();
         this.getStats();
       }, error => {
@@ -1226,7 +1201,6 @@ export default {
         this.selectedfile = null;
         $("#fileoperations span").attr("disabled", true);
         this.loadFiles();
-        console.log(result);
       }, error => {
           console.error(error);
       });
@@ -1311,7 +1285,6 @@ export default {
         url = "http://cststudios.de/thingiverse/?action=init";
         axios({ method: "GET", url: url}).then(result => {
           this.thingiverse_results = result.data;
-          console.log(result.data);
           this.searchLoader = false;
         }, error => {
             console.error(error);
@@ -1322,7 +1295,6 @@ export default {
         url = "http://cststudios.de/thingiverse/?action=search&q="+q+"&page="+this.thingpage;
         axios({ method: "GET", url: url}).then(result => {
           this.thingiverse_results = result.data;
-          console.log(result.data);
           this.searchLoader = false;
         }, error => {
             console.error(error);
