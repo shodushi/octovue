@@ -2,6 +2,17 @@ import Vue from 'vue'
 import App from './App.vue'
 
 
+/*
+
+in OctopPrint settings please activate:
+
+1. api usage
+2. allow CORS
+
+*/
+
+
+
 // -----        EDIT YOUR SEETINGS FROM HERE      -----
 //-----------------------------------------------------
 
@@ -17,6 +28,9 @@ Vue.prototype.$printerProfile = "_default";
 // set your type of printer firmware (marlin or reprap)
 Vue.prototype.$printer_firmware = "marlin";
 
+// enable/disable preview image of gcode files in file browser
+Vue.prototype.$previewimages = "yes";
+
 // led controlling via external device like any esp device via http call
 Vue.prototype.$powerhandling = "yes";
 Vue.prototype.$tasmota_ip="192.168.120.81"
@@ -28,9 +42,6 @@ Vue.prototype.$led_ip = "http://192.168.120.45";
 // only used if using external devices like tasmota or esphome devices
 // see https://www.npmjs.com/package/cors-anywhere for more info
 Vue.prototype.$cors_proxy = "http://192.168.120.244:8090"
-
-// enable/disable preview image of gcode files
-Vue.prototype.$previewimages = "yes";
 
 //---------------------------------------------------
 // -----        EDIT YOUR SEETINGS TO HERE      -----
