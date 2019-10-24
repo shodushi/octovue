@@ -155,3 +155,6 @@ tr.is-selected {
 #piecharts .columns .column {
   padding: 20px 20px 20px 20px;
 }
+.nav-divider {
+  width: 11px; height: 80%; margin: 5px 10px 0px 20px; background-color: #C0C0C0; border: 5px solid white;
+}

@@ -8,6 +8,82 @@
       <div class="imgContainer"><img src="img/upload.gif"></div>
       <div class="textContainer"><h3>uploading...</h3></div>
     </div>
+
+
+    <nav class="navbar is-transparent">
+      <div class="navbar-brand" style="width: 20px;">
+        <a class="navbar-item" href="/">
+          OctoVue
+        </a>
+      </div>
+
+      <div id="navbarExampleTransparentExample" class="navbar-menu">
+        <div class="navbar-start" style="width: 60%;">
+          <div id="meta" class="field is-grouped is-grouped-multiline" style="margin: 14px 0px 0px 20%;">
+            <div class="control" id="control_power" v-if="$powerhandling == 'yes'">
+              <div class="tags has-addons">
+                <span class="tag">Power</span>
+                <a class="tag" :class="{'is-success': isPower, 'is-danger': isNotPower}" id="tag_printer_power" v-on:click="powerswitch">{{ powerState }}</a>
+              </div>
+            </div>
+
+            <div class="control">
+              <div class="tags has-addons">
+                <span class="tag">Connection</span>
+                <a class="tag" :class="{'is-success': isConnection, 'is-danger': isNotConnection, 'is-warning': isConnecting}" id="tag_btn_connect" v-on:click="printerConnection()">{{ connectionState }}</a>
+              </div>
+            </div>
+
+            <div class="control" id="control_light" v-if="$lighthandling == 'yes'">
+              <div class="tags has-addons">
+                <span class="tag">Light</span>
+                <a class="tag" :class="{'is-success': isLight, 'is-danger': isNotLight}" id="tag_lightswitch" v-on:click="lightswitch">{{ lightState }}</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="nav-divider"></div>
+
+          <a class="navbar-item" href="https://versions.bulma.io/0.7.0/">
+            Home
+          </a>
+          <a class="navbar-item" href="https://versions.bulma.io/0.7.0/">
+            Printpage
+          </a>
+          <a class="navbar-item" href="https://versions.bulma.io/0.7.0/">
+            Stats
+          </a>
+          
+        </div>
+
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <div class="field is-grouped">
+              <p class="control">
+                <a class="bd-tw-button button is-small" v-on:click="terminalmodal = !terminalmodal">
+                  <span class="icon">
+                    <i class="fas fa-terminal"></i>
+                  </span>
+                  <span>
+                    Terminal
+                  </span>
+                </a>
+              </p>
+              <p class="control">
+                <a class="button is-primary is-small" v-on:click="infomodal = !infomodal">
+                  <span class="icon">
+                    <i class="fas fa-info-circle"></i>
+                  </span>
+                  <span>Info</span>
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+<!--
     <nav class="navbar" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
           <a class="navbar-item" href="/">
@@ -51,6 +127,7 @@
           </div>
         </div>
       </nav>
+!-->
 
       <div class="modal" v-bind:class="{ 'is-active' : infomodal }">
         <div class="modal-background"></div>
