@@ -20,7 +20,5 @@ edit src/main.js
 
 ## Preview
 
-<img src="https://github.com/shodushi/octovue/blob/master/screenshots/screen1.png?raw=true" alt="screenshot" width="250" target="_blank" style="float: left;"/>
-<img src="https://github.com/shodushi/octovue/blob/master/screenshots/screen2.png?raw=true" alt="screenshot" width="250" target="_blank" style="float: left;"/><br />
-<img src="https://github.com/shodushi/octovue/blob/master/screenshots/screen3.png?raw=true" alt="screenshot" width="250" target="_blank" style="float: left;"/>
-<img src="https://github.com/shodushi/octovue/blob/master/screenshots/screen4.png?raw=true" alt="screenshot" width="250" target="_blank" style="float: left;"/>
+<img src="https://github.com/shodushi/octovue/blob/master/screenshots/screen1.png?raw=true" alt="screenshot" width="250" target="_blank"/><img src="https://github.com/shodushi/octovue/blob/master/screenshots/screen2.png?raw=true" alt="screenshot" width="250" target="_blank"/>
+<img src="https://github.com/shodushi/octovue/blob/master/screenshots/screen3.png?raw=true" alt="screenshot" width="250" target="_blank"/><img src="https://github.com/shodushi/octovue/blob/master/screenshots/screen4.png?raw=true" alt="screenshot" width="250" target="_blank"/>
