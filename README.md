@@ -21,11 +21,14 @@ edit src/main.js
 ## Preview
 ![screenshot](screenshots/screen1.png)
 
+<hr />
 
 ![screenshot](screenshots/screen2.png)
 
+<hr />
 
 ![screenshot](screenshots/screen3.png)
 
+<hr />
 
 ![screenshot](screenshots/screen4.png)
