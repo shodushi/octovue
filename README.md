@@ -19,13 +19,8 @@ edit src/main.js
 ```
 
 ## Preview
-![screenshot](screenshots/screen1.png | width=100)
 
-
-![screenshot](screenshots/screen2.png | width=100)
-
-
-![screenshot](screenshots/screen3.png | width=100)
-
-
-![screenshot](screenshots/screen4.png | width=100)
+<img src="https://github.com/shodushi/octovue/blob/master/screenshots/screen1.png?raw=true" alt="screenshot" width="250"/>
+<img src="https://github.com/shodushi/octovue/blob/master/screenshots/screen2.png?raw=true" alt="screenshot" width="250"/>
+<img src="https://github.com/shodushi/octovue/blob/master/screenshots/screen3.png?raw=true" alt="screenshot" width="250"/>
+<img src="https://github.com/shodushi/octovue/blob/master/screenshots/screen4.png?raw=true" alt="screenshot" width="250"/>
