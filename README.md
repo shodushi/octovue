@@ -2,9 +2,23 @@
 
 An alternative UI for octoprint based on vue.js and bulma css framework
 
+## prerequisites
+```
+install & configure octoprint
+  octoprint settings:
+  	-> enable cors
+  	-> enable api
+
+  octoprint plugins needed:
+    -> OctoPrint-DisplayLayerProgress (https://github.com/OllisGit/OctoPrint-DisplayLayerProgress)
+
+```
+
 ## Installation
 ```
-clone repository & npm install
+git clone https://github.com/shodushi/octovue.git
+
+npm install
 ```
 
 ## Run
