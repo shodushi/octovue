@@ -601,7 +601,6 @@ export const globalSettings = {
       window.open(url, "_blank"); 
     },
     thingiverse_search: function() {
-      alert("jo");
       this.$store.state.searchLoader = true;
       var url;
       var q;
