@@ -1,10 +1,21 @@
 import Vue from 'vue'
 import App from './App.vue'
+import VueRouter from 'vue-router'
+import routes from './routes';
+import { mapState } from 'vuex'
+
 Vue.config.productionTip = false
 
-new Vue({
-  render: h => h(App)
-}).$mount('#app')
+Vue.use(VueRouter)
+
+const router = new VueRouter({mode: 'history', routes});
+
+import { globalSettings } from './globalSettings.js';
+import { store } from './store/store.js'
+
+Vue.mixin(globalSettings); 
+//Vue.mixin(store); 
+
 
 /*
 
@@ -83,3 +94,14 @@ Vue.prototype.$gcodes['reprap'][6] = {"cmd": "motorsoff", "label": "Motors off",
 Vue.prototype.$gcodes['reprap'][7] = {"cmd": "unloadfilament", "label": "Unload filament", "icon": "fa-long-arrow-alt-up", "gcmd": "M702"};
 Vue.prototype.$gcodes['reprap'][8] = {"cmd": "loadfilament", "label": "Load filament", "icon": "fa-long-arrow-alt-down", "gcmd": "M701"};
 Vue.prototype.$gcodes['reprap'][9] = {"cmd": "changefilament", "label": "Change filament", "icon": "fa-arrows-alt-v", "gcmd": "M600"};
+
+
+
+
+
+new Vue({
+  store,
+  router,
+  render: h => h(App),
+  routes
+}).$mount('#app')
