@@ -19,13 +19,13 @@ edit src/main.js
 ```
 
 ## Preview
-![screenshot](screenshots/screen1.png){ width=50% }
+![screenshot](screenshots/screen1.png =250x250)
 
 
-![screenshot](screenshots/screen2.png){ width=50% }
+![screenshot](screenshots/screen2.png =250x250)
 
 
-![screenshot](screenshots/screen3.png){ width=50% }
+![screenshot](screenshots/screen3.png =250x250)
 
 
-![screenshot](screenshots/screen4.png){ width=50% }
+![screenshot](screenshots/screen4.png =250x250)
