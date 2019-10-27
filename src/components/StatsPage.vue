@@ -21,7 +21,7 @@
                 <tbody id="filesbody">
                   <tr v-for="entry in printhistory">
                     <td>
-                      <figure v-if="$previewimages == 'yes'" class="image is-64x64"><img :src="entry.file.img" :id="entry.file.thumbid" class="thumb" @error="imgFallback" v-on:mousemove="zoomIn($event, entry.file.thumbid, 'overlay_'+entry.file.imgid)" v-on:mouseleave="zoomOut(''+entry.file.imgid)"></figure>
+                      <figure v-if="$localStorage.get('previewimages') == 'yes'" class="image is-64x64"><img :src="entry.file.img" :id="entry.file.thumbid" class="thumb" @error="imgFallback" v-on:mousemove="zoomIn($event, entry.file.thumbid, 'overlay_'+entry.file.imgid)" v-on:mouseleave="zoomOut(''+entry.file.imgid)"></figure>
                       <div class="overlay_wrapper">
                         <div :id="'overlay_'+entry.file.imgid" class="zoomoverlay" v-bind:style="{'background-image': 'url(' + entry.file.img + ')' }"></div>
                       </div>

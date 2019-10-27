@@ -2,66 +2,18 @@ import Vue from 'vue'
 import App from './App.vue'
 import VueRouter from 'vue-router'
 import routes from './routes';
-import { mapState } from 'vuex'
-
-Vue.config.productionTip = false
-
-Vue.use(VueRouter)
-
-const router = new VueRouter({mode: 'history', routes});
-
+import VueLocalStorage from 'vue-localstorage'
 import { globalSettings } from './globalSettings.js';
 import { store } from './store/store.js'
 
-Vue.mixin(globalSettings); 
-//Vue.mixin(store); 
+Vue.config.productionTip = false
 
+Vue.use(VueRouter);
+const router = new VueRouter({mode: 'history', routes});
 
-/*
+Vue.use(VueLocalStorage);
 
-in OctopPrint settings please activate:
-
-1. api usage
-2. allow CORS
-
-*/
-
-
-
-// -----        EDIT YOUR SEETINGS FROM HERE      -----
-//-----------------------------------------------------
-
-// octoprint api
-Vue.prototype.$octo_ip = "http://192.168.120.244:5000";
-Vue.prototype.$apikey = "86DA1D669334418CB773A50A142A4E72";
-
-// octoprint printer settings
-Vue.prototype.$port = "/dev/ttyACM0";
-Vue.prototype.$baudrate = 115200;
-Vue.prototype.$printerProfile = "_default";
-
-// set your type of printer firmware (marlin or reprap)
-Vue.prototype.$printer_firmware = "marlin";
-
-// enable/disable preview image of gcode files in file browser
-Vue.prototype.$previewimages = "yes";
-
-// led controlling via external device like any esp device via http call
-Vue.prototype.$powerhandling = "yes";
-Vue.prototype.$tasmota_ip="192.168.120.81"
-
-// printer power switch via sonoff tasmota
-Vue.prototype.$lighthandling = "yes";
-Vue.prototype.$led_ip = "http://192.168.120.45";
-
-// only used if using external devices like tasmota or esphome devices
-// see https://www.npmjs.com/package/cors-anywhere for more info
-Vue.prototype.$cors_proxy = "http://192.168.120.244:8090"
-
-//---------------------------------------------------
-// -----        EDIT YOUR SEETINGS TO HERE      -----
-
-
+Vue.mixin(globalSettings);
 
 Vue.prototype.$gcodes = [];
 Vue.prototype.$gcodes['marlin'] = [];
@@ -94,9 +46,6 @@ Vue.prototype.$gcodes['reprap'][6] = {"cmd": "motorsoff", "label": "Motors off",
 Vue.prototype.$gcodes['reprap'][7] = {"cmd": "unloadfilament", "label": "Unload filament", "icon": "fa-long-arrow-alt-up", "gcmd": "M702"};
 Vue.prototype.$gcodes['reprap'][8] = {"cmd": "loadfilament", "label": "Load filament", "icon": "fa-long-arrow-alt-down", "gcmd": "M701"};
 Vue.prototype.$gcodes['reprap'][9] = {"cmd": "changefilament", "label": "Change filament", "icon": "fa-arrows-alt-v", "gcmd": "M600"};
-
-
-
 
 
 new Vue({

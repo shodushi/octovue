@@ -4,13 +4,13 @@ import { mapState } from 'vuex'
 
 Vue.use(Vuex)
 Vue.use(mapState)
+
 export const store = new Vuex.Store({
     state: {
-        powerhandling: "",
-        lighthandling: "",
         temp: [20, 80],
         page: '',
         infomodal: false,
+        settingsmodal: false,
         terminalmodal: false,
         printerState: {"type": "PrinterStateChanged", "payload":{"state_string":"Offline","state_id":"OFFLINE"}},
         temps: {"bed":{"actual":"0","target":"0"}, "chamber":{"actual":"0","target":"0"}, "tool0":{"actual":"0","target":"0"}, "time": "0"},
@@ -169,33 +169,5 @@ export const store = new Vuex.Store({
             headers: { "My-Awesome-Header": "header value" }
         }
     },
-    mutations: {
-        update(state, obj, val) {
-            state[obj] = val;
-            console.log("setting "+obj+" = "+state[obj]);
-        }
-        /*,
-        isNotConnection(state, value) {
-            state.isNotConnection = value;
-        },
-        isConnection(state, value) {
-            state.isConnection = value;
-        },
-        isConnecting(state, value) {
-            state.isConnecting = value;
-        },
-        connectionState(state, value) {
-            state.connectionState = value;
-        },
-        connectionSettings(state, value) {
-            state.connectionSettings = value;
-        },
-        pageLoader(state, value) {
-            state.pageLoader = value;
-        },
-        pageLoaderAddText(state, value) {
-            state.pageLoaderAddText = value;
-        }
-        */
-    }
+    mutations: {}
 })

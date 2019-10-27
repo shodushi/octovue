@@ -4,7 +4,7 @@
 
             <div class="columns">
 
-            <div class="column is-one-fifth" v-if="printerState.payload.state_string == 'Printing' || printerState.payload.state_string == 'Paused' || printerState.payload.state_string == 'Pausing' || printerState.payload.state_string == 'Resuming'">
+            <div class="column is-one-fifths" v-if="printerState.payload.state_string == 'Printing' || printerState.payload.state_string == 'Paused' || printerState.payload.state_string == 'Pausing' || printerState.payload.state_string == 'Resuming'">
                 <h2>{{job.printfile}}</h2>
                 <progress class="progress is-link" v-bind:value="job.progress.completion" max="100"></progress>
 
@@ -46,7 +46,7 @@
 
             </div>
             
-            <div class="column is-three-fifth" v-if="file_origin == 'local' || file_origin == 'sdcard' || file_origin == 'thingiverse'">
+            <div class="column is-three-fifths" v-if="file_origin == 'local' || file_origin == 'sdcard' || file_origin == 'thingiverse'">
                 <h2>Files & Folders</h2>
                 <table id="filebrowser_head" class="table is-fullwidth">
                 <thead>
@@ -72,7 +72,7 @@
                     <tr v-on:click="selectFolder(folder.path)" v-for="folder in folders"><td><span class="icon">&#128193;</span></td><td>{{ folder.display }}</td><td></td></tr>
                     <tr v-on:click="selectFile($event, file)" v-for="file in files">
                         <td>
-                        <figure v-if="$previewimages == 'yes'" class="image is-128x128"><img :src="file.img" :id="file.thumbid" class="thumb" @error="imgFallback" v-on:mousemove="zoomIn($event, file.thumbid, 'overlay_'+file.imgid)" v-on:mouseleave="zoomOut(''+file.imgid)"></figure>
+                        <figure v-if="$localStorage.get('previewimages') == 'yes'" class="image is-128x128"><img :src="file.img" :id="file.thumbid" class="thumb" @error="imgFallback" v-on:mousemove="zoomIn($event, file.thumbid, 'overlay_'+file.imgid)" v-on:mouseleave="zoomOut(''+file.imgid)"></figure>
                         <div class="overlay_wrapper">
                             <div :id="'overlay_'+file.imgid" class="zoomoverlay" v-bind:style="{'background-image': 'url(' + file.img + ')' }"></div>
                         </div>
@@ -158,7 +158,7 @@
 
             </div>
 
-            <div class="column is-one-fifth">
+            <div class="column is-one-fifths">
                 <div class="card">
                 <div class="card-image">
                     <figure class="image is-4by3">
@@ -212,7 +212,7 @@
                             <div class="dropdown-menu" role="menu">
                             <div class="dropdown-content">
                                 <div class="dropdown-item" id="dropdown-item_printer_commands">
-                                <a v-for="value in $gcodes[$printer_firmware]" class="dropdown-item" v-bind:data-id="value.cmd" v-on:click="pcmds(value.gcmd)"><i class="fas" v-bind:class="value.icon"></i> {{ value.label }}</a>
+                                <a v-for="value in $gcodes[$localStorage.get('printer_firmware')]" class="dropdown-item" v-bind:data-id="value.cmd" v-on:click="pcmds(value.gcmd)"><i class="fas" v-bind:class="value.icon"></i> {{ value.label }}</a>
                                 </div>
                             </div>
                             </div>
