@@ -12,6 +12,7 @@ install & configure octoprint
   octoprint plugins needed:
     -> OctoPrint-DisplayLayerProgress (https://github.com/OllisGit/OctoPrint-DisplayLayerProgress)
 
+npm install -g serve
 ```
 
 ## Installation
@@ -21,18 +22,19 @@ git clone https://github.com/shodushi/octovue.git
 npm install
 ```
 
-### Customize configuration
-```
-edit src/main.js
-
-and set ip adress of your octoprint installation and other things like octoprint api key
-
-
-```
-
 ## Run
 ```
+
+run the non-optimized version:
+
 npm run serve
+
+
+run the optimized version:
+
+npm run build
+serve -s dist
+
 ```
 
 

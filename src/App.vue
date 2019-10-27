@@ -205,13 +205,13 @@
           <section class="modal-card-body">
             <div class="content">
               <h3>General</h3>
-              <p>Octoprint installation is required for OctoVue to work and control your printer. Just edit &quot;main.js&quot;, set &quot;Vue.prototype.$octo_ip&quot; to your octoprint ipaddress:port and set &quot;Vue.prototype.$apikey&quot; to your octoprint's api key.</p>
+              <p>Octoprint installation is required for OctoVue to work and control your printer. Just add your octoprint ipaddress:port and set your octoprint's api key and enable CORS in octoprint settings.</p>
               <h3>Uploading files</h3>
               <p>Navigate to the destination folder and just drag and drop the gcode file into this browser window.<br />For now, only uploading to octoprint's local storage is used.</p>
               <h3>Printer power</h3>
-              <p>For switching the printer on/off I use a &quot;Sonoff POW with tasmota firmware&quot;. If you plan the same/similar setup, edit &quot;main.js&quot;, set your sonoff's ip-address and set &quot;Vue.prototype.$powerhandling = yes&quot;.</p>
+              <p>For switching the printer on/off I use a &quot;Sonoff POW with tasmota firmware&quot;. If you plan the same/similar setup, add your sonoff's ip-address to config and switch powerhandling on.</p>
               <h3>Light control</h3>
-              <p>For switching the enclosure lights on/off I use a &quot;nodemcu flashed with esphome&quot;, integrated into homeassistant. If you plan the same/similar setup, edit &quot;main.js&quot;, set your led-controlling-device's ip-address and set &quot;Vue.prototype.$lighthandling = yes&quot;.</p>
+              <p>For switching the enclosure lights on/off I use a &quot;nodemcu flashed with esphome&quot;, integrated into homeassistant. If you plan the same/similar setup, add your led-controlling-device's ip-address and switch lighthandling on.</p>
             </div>
           </section>
           <footer class="modal-card-foot">

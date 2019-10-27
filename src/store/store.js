@@ -161,13 +161,17 @@ export const store = new Vuex.Store({
         pie_stats_printing_options: {
             segmentShowStroke: false,
             responsive: true
-        },
-        dropzoneOptions: {
+        }
+    },
+    mutations: {}
+})
+
+
+/*
+dropzoneOptions: {
             url: 'http://192.168.120.244:5000/api/files/local',
             thumbnailWidth: 150,
             maxFilesize: 100,
             headers: { "My-Awesome-Header": "header value" }
         }
-    },
-    mutations: {}
-})
+*/

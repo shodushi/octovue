@@ -818,8 +818,7 @@ export const globalSettings = {
       'line_temps',
       'line_temps_options',
       'pie_stats_printing',
-      'pie_stats_printing_options',
-      'dropzoneOptions'
+      'pie_stats_printing_options'
     ]),
     terminalLogs: {
       get() {
