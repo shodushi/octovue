@@ -500,7 +500,7 @@ export const globalSettings = {
       axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$localStorage.get('apikey'), 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
         if(print) {
           $('#btn_cancel').attr("disabled", false);
-          this.nav('print');
+          this.$router.push('printpage')
         }
       }, error => {
           console.error(error);
@@ -647,10 +647,11 @@ export const globalSettings = {
       var bedtemp_percent = (100/90)*parseInt(bedtemp);
       this.$store.state.pie_tool0.datasets[0].data = [tool0temp_percent, 100-tool0temp_percent];
       this.$store.state.pie_bed.datasets[0].data = [bedtemp_percent, 100-bedtemp_percent];
-      if(this.$refs.tool0chart) {
+      /*if(this.$refs.tool0chart) {
         this.$refs.tool0chart.chart.update();
         this.$refs.bedchart.chart.update();
       }
+      */
     },
     updateTempChart: function(tool0_ist, tool0_soll, bed_ist, bed_soll) {
       this.$store.state.line_temps.datasets[0].data.push({x:this.$store.state.line_temps.datasets[0].data.length+1, y:parseInt(tool0_ist)});
@@ -658,9 +659,9 @@ export const globalSettings = {
       this.$store.state.line_temps.datasets[2].data.push({x:this.$store.state.line_temps.datasets[2].data.length+1, y:parseInt(bed_ist)});
       this.$store.state.line_temps.datasets[3].data.push({x:this.$store.state.line_temps.datasets[3].data.length+1, y:parseInt(bed_soll)});
       this.$store.state.line_temps.labels.push('');
-      if(this.$refs.tempchart) {
+      /*if(this.$refs.tempchart) {
         this.$refs.tempchart.chart.update();
-      }
+      }*/
     },
     displayMsg: function(error) {
       switch(error) {

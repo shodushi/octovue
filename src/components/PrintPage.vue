@@ -66,6 +66,40 @@
 
 <script>
 export default {
+  
+  watch: {
+    linechart_changed: {
+      handler: function (after, before) {
+        // Return the object that changed
+        this.$refs.tempchart.chart.update();
+      }
+    },
+    pie_tool0_changed: {
+      handler: function (after, before) {
+        // Return the object that changed
+        this.$refs.tool0chart.chart.update();
+        this.$refs.bedchart.chart.update(); 
+      }
+    },
+    pie_bed_changed: {
+      handler: function (after, before) {
+        // Return the object that changed
+        this.$refs.tool0chart.chart.update();
+        this.$refs.bedchart.chart.update();
+      }
+    }
+  },
+  computed: {
+    linechart_changed() {
+      return this.$store.state.line_temps;
+    },
+    pie_tool0_changed() {
+      return this.$store.state.pie_tool0;
+    },
+    pie_bed_changed() {
+      return this.$store.state.pie_bed;
+    }
+  }
 
 }
 </script>
