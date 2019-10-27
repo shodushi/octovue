@@ -275,7 +275,6 @@ export const globalSettings = {
       }
     },
     printerConnection: function() {
-      console.log("here");
       var self = this;
       var obj = {};
       if(this.$store.state.isNotConnection) {
@@ -288,7 +287,6 @@ export const globalSettings = {
       } else {
         obj.command = "disconnect";
       }
-      console.log(obj);
       axios({ method: "POST", url: this.$localStorage.get('octo_ip')+"/api/connection", headers: {'X-Api-Key': this.$localStorage.get('apikey'), 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
         this.$store.state.isNotConnection = false;
         this.$store.state.isConnection = true;
