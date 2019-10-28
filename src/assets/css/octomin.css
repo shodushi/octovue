@@ -98,9 +98,9 @@ tr.is-selected {
   position: absolute;
   top: 100px;
   left: 20%;
-  width: 50%;
-  max-width: 600px;
-  height: 400px;
+  width: 70%;
+  max-width: 800px;
+  height: 600px;
   z-index: 999;
 }
 #terminal_header {
@@ -110,7 +110,9 @@ tr.is-selected {
   padding: 4px;
 }
 #terminal_console {
-  height: 300px;
+  height: 500px;
+  background-color: rgba(0,0,0,0.8);
+  color: #fff;
 }
 #filebrowser_head td {
   border: none;
