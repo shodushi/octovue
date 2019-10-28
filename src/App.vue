@@ -369,6 +369,9 @@
 </template>
 
 <script>
+import axios from "axios";
+
+
 
 export default {
   linkActiveClass: 'is-active',
@@ -440,6 +443,110 @@ export default {
     }
   },
   methods: {
+    powerswitch: function() {
+      axios({ method: "GET", "url": this.$localStorage.get('cors_proxy')+"/"+this.$localStorage.get('tasmota_ip')+"/cm?cmnd=Power%20TOGGLE" }).then(result => {
+        this.$store.state.powerState = result.data.POWER.toLowerCase();
+        //this.powerState = result.data.POWER.toLowerCase();
+        if(this.powerState == "off") {
+          this.$store.state.isNotPower = true;
+          this.$store.state.isPower = false;
+        } else {
+          this.$store.state.isNotPower = false;
+          this.$store.state.isPower = true;
+        }
+      }, error => {
+          console.error(error);
+      });
+    },
+    getPowerState: function() {
+      if(this.$localStorage.get('powerhandling') == "yes") {
+        axios({ method: "GET", "url": this.$localStorage.get('cors_proxy')+"/"+this.$localStorage.get('tasmota_ip')+"/cm?cmnd=Status" }).then(result => {
+          if(result.data.Status.Power == 0) {
+            this.$store.state.powerState = 'off';
+            this.$store.state.isNotPower = true;
+            this.$store.state.isPower = false;
+          } else {
+            this.$store.state.powerState = 'on';
+            this.$store.state.isNotPower = false;
+            this.$store.state.isPower = true;
+          }
+        }, error => {
+            console.error(error);
+        });
+      }
+    },
+    lightswitch: function() {
+      axios({ method: "POST", "url": this.$localStorage.get('cors_proxy')+"/"+this.$localStorage.get('led_ip')+"/light/3d_drucker_led/toggle" }).then(result => {
+        this.getLightState();
+      }, error => {
+        console.error(error);
+      });
+    },
+    getLightState: function() {
+      if(this.$localStorage.get('lighthandling') == "yes") {
+        axios({ method: "GET", "url": this.$localStorage.get('cors_proxy')+"/"+this.$localStorage.get('led_ip')+"/light/3d_drucker_led/state" }).then(result => {
+          this.$store.state.lightState = result.data.state.toLowerCase();
+          if(this.lightState == "off") {
+            this.$store.state.isNotLight = true;
+            this.$store.state.isLight = false;
+          } else {
+            this.$store.state.isNotLight = false;
+            this.$store.state.isLight = true;
+          }
+        }, error => {
+            console.error(error);
+        });
+      }
+    },
+    printerConnection: function() {
+      var self = this;
+      var obj = {};
+      if(this.$store.state.isNotConnection) {
+        obj.command = "connect";
+        obj.port = this.$localStorage.get('printerport');
+        obj.baudrate = parseInt(this.$localStorage.get('baudrate'));
+        obj.printerProfile = this.$localStorage.get('printerProfile');
+        obj.save = true;
+        obj.autoconnect = false;
+      } else {
+        obj.command = "disconnect";
+      }
+      axios({ method: "POST", url: this.$localStorage.get('octo_ip')+"/api/connection", headers: {'X-Api-Key': this.$localStorage.get('apikey'), 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
+        this.$store.state.isNotConnection = false;
+        this.$store.state.isConnection = true;
+        this.$store.state.isConnecting = true;
+        this.$store.state.connectionState = "...";
+      }, error => {
+          console.error(error);
+      });
+    },
+    loadCam: function() {
+      var self = this;
+      axios({ method: "GET", "url": this.$localStorage.get('octo_ip')+"/api/settings", headers: {'X-Api-Key': this.$localStorage.get('apikey')} }).then(result => {
+        this.$store.state.cam = result.data.webcam.streamUrl;
+      }, error => {
+          console.error(error);
+      });
+    },
+    getOctoprintConnection: function() {
+      var self = this;
+      axios({ method: "GET", "url": this.$localStorage.get('octo_ip')+"/api/connection", headers: {'X-Api-Key': this.$localStorage.get('apikey')} }).then(result => {
+        self.$store.state.connectionSettings = result.data;
+        console.log(result.data);
+        self.$store.state.pageLoader = false;
+      }, error => {
+          self.displayMsg('octoprint_conn_error');
+          console.error(error);
+          if(self.$store.state.octoprintConnectionTries < self.$store.state.octoprintConnectionMaxTries) {
+            setTimeout(function(){
+              self.$store.state.octoprintConnectionTries = self.$store.state.octoprintConnectionTries + 1;
+              self.getOctoprintConnection();
+            }, 1000);
+          } else {
+            this.$store.state.pageLoaderAddText = "Connection failed, seems like OctoPrint server is not available!?";
+          }
+      });
+    },
     showSettings: function() {
       this.octo_ip = this.$localStorage.get('octo_ip');
       this.apikey = this.$localStorage.get('apikey');

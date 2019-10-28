@@ -6,6 +6,13 @@ import VueLocalStorage from 'vue-localstorage'
 import { globalSettings } from './globalSettings.js';
 import { store } from './store/store.js'
 
+import 'bulma/css/bulma.css'
+import 'bulma-extensions/bulma-slider/dist/js/bulma-slider.min.js'
+import 'bulma-extensions/bulma-slider/dist/css/bulma-slider.min.css'
+import 'bulma-extensions/bulma-pageloader/dist/css/bulma-pageloader.min.css'
+import 'bulma-switch/dist/css/bulma-switch.min.css'
+require('@/assets/css/octomin.css')
+
 Vue.config.productionTip = false
 
 Vue.use(VueRouter);

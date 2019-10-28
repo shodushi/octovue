@@ -1,15 +1,8 @@
-import axios from "axios";
-import 'bulma/css/bulma.css'
-import 'bulma-extensions/bulma-slider/dist/js/bulma-slider.min.js'
-import 'bulma-extensions/bulma-slider/dist/css/bulma-slider.min.css'
-import 'bulma-extensions/bulma-pageloader/dist/css/bulma-pageloader.min.css'
-import 'bulma-switch/dist/css/bulma-switch.min.css'
-require('@/assets/css/octomin.css')
-
+import { mapState } from 'vuex'
 import * as SockJS from 'sockjs-client';
 var StompJs = require('@stomp/stompjs');
+import axios from "axios";
 import Chart from 'vue-bulma-chartjs';
-import { mapState } from 'vuex'
 
 export const globalSettings = {
   components: {
@@ -158,6 +151,7 @@ export const globalSettings = {
                 this.$store.state.totalLayer = layers[0].split("/")[1];
               }
             }
+
             if(msg.current.logs[i].includes("G1")) {
               if(msg.current.logs[i].includes("Z")) {
                 const regex = /Z[0-9]*\.[0-9]*/g;
