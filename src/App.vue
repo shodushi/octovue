@@ -370,7 +370,7 @@
 
 <script>
 import axios from "axios";
-
+import Chart from 'vue-bulma-chartjs';
 
 
 export default {
