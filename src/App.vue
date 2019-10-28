@@ -372,7 +372,6 @@
 import axios from "axios";
 import Chart from 'vue-bulma-chartjs';
 
-
 export default {
   linkActiveClass: 'is-active',
   props: {
@@ -446,7 +445,6 @@ export default {
     powerswitch: function() {
       axios({ method: "GET", "url": this.$localStorage.get('cors_proxy')+"/"+this.$localStorage.get('tasmota_ip')+"/cm?cmnd=Power%20TOGGLE" }).then(result => {
         this.$store.state.powerState = result.data.POWER.toLowerCase();
-        //this.powerState = result.data.POWER.toLowerCase();
         if(this.powerState == "off") {
           this.$store.state.isNotPower = true;
           this.$store.state.isPower = false;
