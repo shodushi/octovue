@@ -355,6 +355,10 @@ export const globalSettings = {
     },
     listFiles: function() {
       var self = this;
+
+      this.$store.selectedfile = "";
+      $("#filestable tr").removeClass("is-selected");
+      $(".file_buttons span").css("display", "none");
       this.$store.state.files = [];
       this.$store.state.folders = [];
 
