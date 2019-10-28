@@ -47,7 +47,6 @@
             </div>
             
             <div class="column" v-bind:class="{ 'is-four-fifths': printerState.payload.state_string != 'Printing' && printerState.payload.state_string != 'Paused' && printerState.payload.state_string != 'Pausing' && printerState.payload.state_string != 'Resuming', 'is-three-fifths' : printerState.payload.state_string == 'Printing'  || printerState.payload.state_string == 'Paused' || printerState.payload.state_string == 'Pausing' || printerState.payload.state_string == 'Resuming' }" v-if="file_origin == 'local' || file_origin == 'sdcard' || file_origin == 'thingiverse'">
-                <h2>Files & Folders</h2>
                 <table id="filebrowser_head" class="table is-fullwidth">
                 <thead>
                     <tr colspan="3">
