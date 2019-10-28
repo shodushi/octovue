@@ -8,7 +8,6 @@ Vue.use(mapState)
 export const store = new Vuex.Store({
     state: {
         temp: [20, 80],
-        page: '',
         infomodal: false,
         settingsmodal: false,
         terminalmodal: false,

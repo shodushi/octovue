@@ -99,6 +99,13 @@
 
               <div class="field is-grouped" style="margin-top: 7%;">
                 <div class="control">
+                  <label for="importfile" class="button">
+                    <span class="icon is-small">
+                      <i class="fas fa-file-upload"></i>
+                    </span>
+                    &nbsp; import config
+                  </label>
+                  <input id="importfile" style="visibility:hidden;" type="file" @change="importConfig($event)">
                   <button class="button is-link" v-on:click="submitConfig()">Submit</button>
                 </div>
               </div>
@@ -329,15 +336,25 @@
             </div>
           </section>
           <footer class="modal-card-foot">
+            <label for="importfile" class="button">
+              <span class="icon is-small">
+                <i class="fas fa-file-upload"></i>
+              </span>
+              &nbsp; import config
+            </label>
+            <button class="button" v-on:click="exportConfig()">
+              <span class="icon is-small">
+                <i class="fas fa-file-download"></i>
+              </span>
+              &nbsp; export config</label>
+            </button>
+            <input id="importfile" style="visibility:hidden;" type="file" @change="importConfig($event)">
             <button class="button" v-on:click="submitConfig()">save</button>
           </footer>
         </div>
       </div>
 
-
-      
       <router-view />
-
 
       <footer class="footer">
         <div class="content has-text-centered">
@@ -370,7 +387,7 @@ export default {
       tasmota_ip: "",
       lighthandling: "",
       led_ip: "",
-      cors_proxy: "",
+      cors_proxy: ""
     };
   },
   created: function() {
@@ -473,7 +490,60 @@ export default {
       this.$localStorage.set('led_ip', this.led_ip);
       this.$localStorage.set('cors_proxy', this.cors_proxy);
       this.$store.state.settingsmodal = false;
-      this.$forceUpdate();
+      this.$router.go();
+    },
+    exportConfig: function() {
+      var config = {
+        octo_ip: this.$localStorage.get('octo_ip'),
+        apikey: this.$localStorage.get('apikey'),
+        printerport: this.$localStorage.get('printerport'),
+        baudrate: this.$localStorage.get('baudrate'),
+        printerProfile: this.$localStorage.get('printerProfile'),
+        printer_firmware: this.$localStorage.get('printer_firmware'),
+        previewimages: this.$localStorage.get('previewimages'),
+        powerhandling: this.$localStorage.get('powerhandling'),
+        tasmota_ip: this.$localStorage.get('tasmota_ip'),
+        lighthandling: this.$localStorage.get('lighthandling'),
+        led_ip: this.$localStorage.get('led_ip'),
+        cors_proxy: this.$localStorage.get('cors_proxy')
+      };
+      var hiddenElement = document.createElement('a');
+      hiddenElement.href = 'data:attachment/text,' + encodeURI(JSON.stringify(config));
+      hiddenElement.target = '_blank';
+      hiddenElement.download = 'octovue_config.txt';
+      hiddenElement.click();
+    },
+    importConfig: function(event) {
+      var self = this;
+      console.log(event);
+      var uploadedFile = event.target.files[0]; 
+      var readFile = new FileReader();
+      readFile.onload = function(e) { 
+          var contents = e.target.result;
+          var json = JSON.parse(contents);
+          self.octo_ip = json.octo_ip;
+          self.apikey = json.apikey;
+          self.printerport = json.printerport;
+          self.baudrate = json.baudrate;
+          self.printerProfile = json.printerProfile;
+          self.printer_firmware = json.printer_firmware;
+          self.previewimages = false;
+          if(json.previewimages == "yes") {
+            self.previewimages = true;
+          }
+          self.powerhandling = false;
+          if(json.powerhandling == "yes") {
+            self.powerhandling = true;
+          }
+          self.tasmota_ip = json.tasmota_ip;
+          self.lighthandling = false;
+          if(json.lighthandling == "yes") {
+            self.lighthandling = true;
+          }
+          self.led_ip = json.led_ip;
+          self.cors_proxy = json.cors_proxy;
+      };
+      readFile.readAsText(uploadedFile);
     }
   }
 }
