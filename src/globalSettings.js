@@ -768,8 +768,7 @@ export const globalSettings = {
     configFromFile: function() {
       if(this.$localStorage.get('octo_ip') == null || this.$localStorage.get('apikey') == null) {
         axios({ method: "GET", url: window.location.href+"/octovue_config.txt"}).then(result => {
-          if(result.status == 200) {
-            console.log("configfile result: "+result);
+          if(result.status == 200 && typeof(result.data.octo_ip) !== 'undefined' && typeof(result.data.apikey) !== 'undefined') {
             var config = result.data;
             this.$localStorage.set('octo_ip', config.octo_ip);
             this.$localStorage.set('apikey', config.apikey);
@@ -795,7 +794,9 @@ export const globalSettings = {
             }
             this.$localStorage.set('led_ip', config.led_ip);
             this.$localStorage.set('cors_proxy', config.cors_proxy);
-            this.$router.go();
+            if(this.$localStorage.get('octo_ip') != null && this.$localStorage.get('apikey') != null) {
+              this.$router.go();
+            }
           }
         }, error => {
             console.error(error);
