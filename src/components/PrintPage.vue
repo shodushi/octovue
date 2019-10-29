@@ -74,23 +74,10 @@ export default {
       console.log(this.$refs);
       //this.$refs.tool0chart.chart.update();
       //this.$refs.tool0chart.update();
-      if(this.$refs.tool0chart[0].chart != null) {
-        this.$refs.tool0chart[0].chart.update();
-      }
-      if(this.$refs.tool1chart[0].chart != null) {
-      this.$refs.tool1chart[0].chart.update();
-      }
-      if(this.$refs.tool2chart[0].chart != null) {
-        this.$refs.tool2chart[0].chart.update();
-      }
-      if(this.$refs.tool3chart[0].chart != null) {
-        this.$refs.tool3chart[0].chart.update();
-      }
-      if(this.$refs.bedchart[0].chart != null) {
-        this.$refs.bedchart[0].chart.update(); 
-      }
-      if(this.$refs.tempchart[0].chart != null) {
-        this.$refs.tempchart[0].chart.update();
+      for(var i = 0;i< this.$store.state.graphs.length;i++) {
+        if(this.$refs[this.$store.state.graphs[i].name+"chart"][0].chart != null) {
+          this.$refs[this.$store.state.graphs[i].name+"chart"][0].chart.update();
+        }
       }
     }
   },
