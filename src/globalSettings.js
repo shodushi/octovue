@@ -340,6 +340,7 @@ export const globalSettings = {
         console.log("DETECTED "+result.data.profiles[this.$localStorage.get('printerProfile')].extruder.count + " Tools");
         var temp_graphs = [];
         var temp_temps = {};
+        var colors = ['#fc3c63','#20cb55','#ffd84d','#01cba9','#1c92eb','#3e7538','#ff4c06'];
         for(var i = 0; i < parseInt(result.data.profiles[this.$localStorage.get('printerProfile')].extruder.count); i++) {
           var key = "tool"+i;
           temp_temps[key] = {"actual":"0","target":"0"};
@@ -350,7 +351,7 @@ export const globalSettings = {
             datasets: [{
               data: [0, 250],
               backgroundColor: [
-                  '#fc3c63',
+                  colors[i],
                   '#C0C0C0'
               ]
               }],

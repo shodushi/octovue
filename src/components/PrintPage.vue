@@ -71,9 +71,6 @@ import Chart from 'vue-bulma-chartjs';
 export default {
   methods: {
     updateCharts: function() {
-      console.log(this.$refs);
-      //this.$refs.tool0chart.chart.update();
-      //this.$refs.tool0chart.update();
       for(var i = 0;i< this.$store.state.graphs.length;i++) {
         if(this.$refs[this.$store.state.graphs[i].name+"chart"][0].chart != null) {
           this.$refs[this.$store.state.graphs[i].name+"chart"][0].chart.update();
