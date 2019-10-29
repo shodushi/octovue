@@ -424,6 +424,7 @@ export default {
     setTimeout(this.getLightState, 1)
     setTimeout(this.loadFiles, 1)
     setTimeout(this.getOctoprintConnection, 1)
+    setTimeout(this.getOctoPrintProfiles, 1);
     setTimeout(this.sockConnection, 2);
     if(this.printerState.payload.state_string != "Operational" && this.printerState.payload.state_string != "Connecting" && this.printerState.payload.state_string != "Paused") {
       this.$store.state.isNotConnection = true;

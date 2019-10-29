@@ -12,6 +12,7 @@ export const store = new Vuex.Store({
         settingsmodal: false,
         terminalmodal: false,
         printerState: {"type": "PrinterStateChanged", "payload":{"state_string":"Offline","state_id":"OFFLINE"}},
+        printerProfiles: {},
         temps: {"bed":{"actual":"0","target":"0"}, "chamber":{"actual":"0","target":"0"}, "tool0":{"actual":"0","target":"0"}, "time": "0"},
         logs: {},
         cam: "",
@@ -47,70 +48,44 @@ export const store = new Vuex.Store({
         q: "",
         thingpage: 1,
         stats: {"success": 0, "failed": 0},
-        pie_tool0: {
-            datasets: [{
-            data: [0, 250],
-            backgroundColor: [
-                '#fc3c63',
-                '#C0C0C0'
-            ]
-            }]
-        },
-        pie_tool0_options: {
-            segmentShowStroke: false,
-            circumference: 1 * Math.PI,
-            rotation: 1 * Math.PI,
-            cutoutPercentage: 80
-        },
-        pie_bed: {
-            datasets: [{
-            data: [0, 90],
-            backgroundColor: [
-                '#2b9eeb',
-                '#C0C0C0'
-            ]
-            }]
-        },
-        pie_bed_options: {
-            segmentShowStroke: false,
-            circumference: 1 * Math.PI,
-            rotation: 1 * Math.PI,
-            cutoutPercentage: 80
-        },
+        graphs: [],
+        tools: [],
         line_temps: {
             labels: [''],
-            datasets: [{
-            label: 'Extruder I',
-            fill: false,
-            backgroundColor: '#fc3c63',
-            borderColor: '#fc3c63',
-            borderWidth: 2,
-            data: [0],
-            },
-            {
-            label: 'Extruder S',
-            fill: false,
-            backgroundColor: '#fab3c2',
-            borderColor: '#fab3c2',
-            borderWidth: 6,
-            data: [0],
-            },
-            {
-            label: 'Bed I',
-            fill: false,
-            backgroundColor: '#2b9eeb',
-            borderColor: '#2b9eeb',
-            borderWidth: 2,
-            data: [0],
-            },
-            {
-            label: 'Bed S',
-            fill: false,
-            backgroundColor: '#99d3fa',
-            borderColor: '#99d3fa',
-            borderWidth: 6,
-            data: [0],
-            }]
+            datasets: [
+                {
+                    label: 'Tool0 I',
+                    fill: false,
+                    backgroundColor: '#fc3c63',
+                    borderColor: '#fc3c63',
+                    borderWidth: 2,
+                    data: [0],
+                },
+                {
+                    label: 'Tool0 S',
+                    fill: false,
+                    backgroundColor: '#fab3c2',
+                    borderColor: '#fab3c2',
+                    borderWidth: 6,
+                    data: [0],
+                },
+                {
+                    label: 'Bed I',
+                    fill: false,
+                    backgroundColor: '#2b9eeb',
+                    borderColor: '#2b9eeb',
+                    borderWidth: 2,
+                    data: [0],
+                },
+                {
+                    label: 'Bed S',
+                    fill: false,
+                    backgroundColor: '#99d3fa',
+                    borderColor: '#99d3fa',
+                    borderWidth: 6,
+                    data: [0],
+                }
+            ]
         },
         line_temps_options: {
             elements: {

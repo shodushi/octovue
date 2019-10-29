@@ -81,6 +81,7 @@ export const globalSettings = {
       client.activate();
     },
     messageParser: function(msg) {
+      //console.log(msg);
       if(msg.event != null) {
           if(msg.event.type != null) {
               if(msg.event.type == "PrinterStateChanged") {
@@ -129,13 +130,27 @@ export const globalSettings = {
       if(msg.current != null) {
         if(msg.current.temps != null) {
           if(msg.current.temps.length != 0) {
+            for(var obj in msg.current.temps[0]) {
+              if(obj == "tool0") {
+
+            
+                //console.log(msg.current.temps[0][obj]);
+              }
+              
+            }
+
+
+
             if(msg.current.temps[0].tool0 != null) {
               this.$store.state.temps = msg.current.temps[0];
               var temptool0_ist = (100/this.$store.state.temps.tool0.target)*this.$store.state.temps.tool0.actual;
               $("#temp_tool0_actual").css("height", temptool0_ist+"%");
               var tempbed_ist = (100/this.$store.state.temps.bed.target)*this.$store.state.temps.bed.actual;
               $("#temp_bed_actual").css("height", tempbed_ist+"%");
-              this.updateGauge(this.$store.state.temps.tool0.actual, this.$store.state.temps.bed.actual);
+              //this.updateGauge(this.$store.state.temps.tool0.actual, this.$store.state.temps.bed.actual);
+
+              this.updateGauge();
+
               this.updateTempChart(this.$store.state.temps.tool0.actual, this.$store.state.temps.tool0.target, this.$store.state.temps.bed.actual,  this.$store.state.temps.bed.target);
             }
           }
@@ -315,6 +330,107 @@ export const globalSettings = {
           } else {
             this.$store.state.pageLoaderAddText = "Connection failed, seems like OctoPrint server is not available!?";
           }
+      });
+    },
+    getOctoPrintProfiles: function() {
+      axios({ method: "GET", "url": this.$localStorage.get('octo_ip')+"/api/printerprofiles", headers: {'X-Api-Key': this.$localStorage.get('apikey')} }).then(result => {
+        console.log("----------- getOctoPrintProfiles--------------")
+        console.log(result.data);
+        this.$store.printerProfiles = result.data;
+        console.log("DETECTED "+result.data.profiles[this.$localStorage.get('printerProfile')].extruder.count + " Tools");
+        var temp_graphs = [];
+        var temp_temps = {};
+        for(var i = 0; i < parseInt(result.data.profiles[this.$localStorage.get('printerProfile')].extruder.count); i++) {
+          var key = "tool"+i;
+          temp_temps[key] = {"actual":"0","target":"0"};
+
+          var obj = {};
+          obj = {
+            name: key,
+            datasets: [{
+              data: [0, 250],
+              backgroundColor: [
+                  '#fc3c63',
+                  '#C0C0C0'
+              ]
+              }],
+              options: {
+                  segmentShowStroke: false,
+                  circumference: 1 * Math.PI,
+                  rotation: 1 * Math.PI,
+                  cutoutPercentage: 80
+              }
+          };
+          temp_graphs.push(obj);
+        }
+
+        if(result.data.profiles[this.$localStorage.get('printerProfile')].heatedBed) {
+          var key = "bed";
+          temp_temps[key] = {"actual":"0","target":"0"};
+          var obj = {};
+
+          obj = {
+            name: key,
+            datasets: [{
+              data: [0, 250],
+              backgroundColor: [
+                  '#2b9eeb',
+                  '#C0C0C0'
+              ]
+              }],
+              options: {
+                  segmentShowStroke: false,
+                  circumference: 1 * Math.PI,
+                  rotation: 1 * Math.PI,
+                  cutoutPercentage: 80
+              }
+          };
+          temp_graphs.push(obj);
+        }
+        if(result.data.profiles[this.$localStorage.get('printerProfile')].heatedChamber) {
+          var key = "chamber";
+          temp_temps[key] = {"actual":"0","target":"0"};
+          var obj = {};
+
+          obj = {
+            name: key,
+            datasets: [{
+              data: [0, 250],
+              backgroundColor: [
+                  '#2b9eeb',
+                  '#C0C0C0'
+              ]
+              }],
+              options: {
+                  segmentShowStroke: false,
+                  circumference: 1 * Math.PI,
+                  rotation: 1 * Math.PI,
+                  cutoutPercentage: 80
+              }
+          };
+          temp_graphs.push(obj);
+        }
+        this.$store.state.graphs = temp_graphs;
+        this.$store.state.temps = temp_temps;
+        console.log("----------------GRAPHS-------------");
+        console.log(this.$store.graphs);
+        /*for(var obj in msg.current.temps[0]) {
+          if(obj == "tool0") {
+
+        
+            console.log(msg.current.temps[0][obj]);
+          }
+          
+        }
+        this.$store.
+        */
+
+
+
+
+
+       
+      }, error => {
       });
     },
     changeFileSource: function(src) {
@@ -640,16 +756,39 @@ export const globalSettings = {
     nav: function(page) {
       this.$store.state.page = page;
     },
-    updateGauge: function(tool0temp, bedtemp) {
-      var tool0temp_percent = (100/250)*parseInt(tool0temp);
-      var bedtemp_percent = (100/90)*parseInt(bedtemp);
-      this.$store.state.pie_tool0.datasets[0].data = [tool0temp_percent, 100-tool0temp_percent];
-      this.$store.state.pie_bed.datasets[0].data = [bedtemp_percent, 100-bedtemp_percent];
-      /*if(this.$refs.tool0chart) {
-        this.$refs.tool0chart.chart.update();
-        this.$refs.bedchart.chart.update();
+    updateGauge: function() {
+      console.log("updateGauge");
+      console.log(this.$store.state.graphs);
+      var percent;
+      for(var obj in this.$store.state.temps) {
+        
+        if(obj != "bed" && obj != "chamber") {
+          for(var i = 0; i< this.$store.state.graphs.length; i++) {
+            if(this.$store.state.graphs[i].name == obj) {
+              percent = (100/250)*parseInt(this.$store.state.temps[obj].actual)
+              this.$store.state.graphs[i].datasets[0].data = [percent, 100-percent];
+            }
+          }
+        }
+        if(obj == "bed") {
+          for(var i = 0; i< this.$store.state.graphs.length; i++) {
+            if(this.$store.state.graphs[i].name == obj) {
+              percent = (100/90)*parseInt(this.$store.state.temps[obj].actual)
+              this.$store.state.graphs[i].datasets[0].data = [percent, 100-percent];
+            }
+          }
+        }
+        if(obj == "chamber") {
+          for(var i = 0; i< this.$store.state.graphs.length; i++) {
+            if(this.$store.state.graphs[i].name == obj) {
+              percent = (100/60)*parseInt(this.$store.state.temps[obj].actual)
+              this.$store.state.graphs[i].datasets[0].data = [percent, 100-percent];
+            }
+          }
+        }
       }
-      */
+      console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+      console.log(this.$store.state.graphs);
     },
     updateTempChart: function(tool0_ist, tool0_soll, bed_ist, bed_soll) {
       this.$store.state.line_temps.datasets[0].data.push({x:this.$store.state.line_temps.datasets[0].data.length+1, y:parseInt(tool0_ist)});
@@ -812,7 +951,10 @@ export const globalSettings = {
       'terminalmodal',
       'settingsmodal',
       'printerState',
+      'printerProfiles',
       'temps',
+      'graphs',
+      'tools',
       'logs',
       'cam',
       'powerState',

@@ -46,16 +46,18 @@
             <chart ref="tempchart" :type="'line'" v-bind:data="line_temps" :options="line_temps_options"></chart>
           </div>
           
-          <div class="column is-half" id="piecharts">
-            <div class="columns">
-              <div class="column is-half">
-                <chart ref="tool0chart" :type="'pie'" v-bind:data="pie_tool0" :options="pie_tool0_options"></chart>
-                <div style="font-size: 1.8em; font-weight: bold; position: relative; top: -145px;"><img src="img/hotend-icon2.png" style="width: 40px;"><br />{{ temps.tool0.actual }}&deg;C</div>
-              </div>
-              <div class="column is-half">
-                <chart ref="bedchart" :type="'pie'" v-bind:data="pie_bed" :options="pie_bed_options"></chart>
-                <div style="font-size: 1.8em; font-weight: bold; position: relative; top: -145px;"><img src="img/bed-icon2.png" style="width: 40px;"><br />{{ temps.bed.actual }}&deg;C</div>
-              </div>
+          <div class="column is-half">
+            <div class="" style="max-width: 140px; max-height: 150px; margin: 0px 20px 0px 20px; float: left;" v-for="graph in graphs" v-if="graph.name != 'bed' && graph.name != 'chamber'">
+              <chart :ref="graph.name+'chart'" :type="'pie'" v-bind:data="graph" :options="graph.options"></chart>
+              <div style="font-size: 1em; font-weight: bold; position: relative; top: -75px;"><img src="img/hotend-icon2.png" style="width: 30px;">{{graph.name}}<br />{{ temps[graph.name].actual }}&deg;C</div>
+            </div>
+            <div class="" style="max-width: 140px; max-height: 150px; margin: 0px 20px 0px 20px; float: left;" v-for="graph in graphs" v-if="graph.name == 'bed'">
+              <chart :ref="graph.name+'chart'" :type="'pie'" v-bind:data="graph" :options="graph.options"></chart>
+              <div style="font-size: 1em; font-weight: bold; position: relative; top: -75px;"><img src="img/bed-icon2.png" style="width: 30px;">{{graph.name}}<br />{{ temps[graph.name].actual }}&deg;C</div>
+            </div>
+            <div class="" style="max-width: 140px; max-height: 150px; margin: 0px 20px 0px 20px; float: left;" v-for="graph in graphs" v-if="graph.name == 'chamber'">
+              <chart :ref="graph.name+'chart'" :type="'pie'" v-bind:data="graph" :options="graph.options"></chart>
+              <div style="font-size: 1em; font-weight: bold; position: relative; top: -75px;"><img src="img/chamber-icon2.png" style="width: 30px;">{{graph.name}}<br />{{ temps[graph.name].actual }}&deg;C</div>
             </div>
           </div>
           
@@ -69,14 +71,32 @@ import Chart from 'vue-bulma-chartjs';
 export default {
   methods: {
     updateCharts: function() {
-      this.$refs.tool0chart.chart.update();
-      this.$refs.bedchart.chart.update(); 
-      this.$refs.tempchart.chart.update();
+      console.log(this.$refs);
+      //this.$refs.tool0chart.chart.update();
+      //this.$refs.tool0chart.update();
+      if(this.$refs.tool0chart[0].chart != null) {
+        this.$refs.tool0chart[0].chart.update();
+      }
+      if(this.$refs.tool1chart[0].chart != null) {
+      this.$refs.tool1chart[0].chart.update();
+      }
+      if(this.$refs.tool2chart[0].chart != null) {
+        this.$refs.tool2chart[0].chart.update();
+      }
+      if(this.$refs.tool3chart[0].chart != null) {
+        this.$refs.tool3chart[0].chart.update();
+      }
+      if(this.$refs.bedchart[0].chart != null) {
+        this.$refs.bedchart[0].chart.update(); 
+      }
+      if(this.$refs.tempchart[0].chart != null) {
+        this.$refs.tempchart[0].chart.update();
+      }
     }
   },
   watch: {
     temps: function () {
-        this.updateCharts();
+      this.updateCharts();
     }
   }
 }
