@@ -764,6 +764,43 @@ export const globalSettings = {
     },
     toggleInfo: function() {
       this.$store.state.infomodal = !this.$store.state.infomodal;
+    },
+    configFromFile: function() {
+      if(this.$localStorage.get('octo_ip') == null || this.$localStorage.get('apikey') == null) {
+        axios({ method: "GET", url: window.location.href+"/octovue_config.txt"}).then(result => {
+          if(result.status == 200) {
+            console.log("configfile result: "+result);
+            var config = result.data;
+            this.$localStorage.set('octo_ip', config.octo_ip);
+            this.$localStorage.set('apikey', config.apikey);
+            this.$localStorage.set('printerport', config.printerport);
+            this.$localStorage.set('baudrate', config.baudrate);
+            this.$localStorage.set('printerProfile', config.printerProfile);
+            this.$localStorage.set('printer_firmware', config.printer_firmware);
+            if(config.previewimages) {
+              this.$localStorage.set('previewimages', 'yes');
+            } else {
+              this.$localStorage.set('previewimages', 'no');
+            }
+            if(config.powerhandling) {
+              this.$localStorage.set('powerhandling', 'yes');
+            } else {
+              this.$localStorage.set('powerhandling', 'no');
+            }
+            this.$localStorage.set('tasmota_ip', config.tasmota_ip);
+            if(config.lighthandling) {
+              this.$localStorage.set('lighthandling', 'yes');
+            } else {
+              this.$localStorage.set('lighthandling', 'no');
+            }
+            this.$localStorage.set('led_ip', config.led_ip);
+            this.$localStorage.set('cors_proxy', config.cors_proxy);
+            this.$router.go();
+          }
+        }, error => {
+            console.error(error);
+        });
+      }
     }
   },
   computed: {

@@ -415,6 +415,7 @@ export default {
 		},
       url: this.$localStorage.get('octo_ip')+"/api/files/local"
     });
+    this.configFromFile();
   },
   mounted: function() {
     if(this.$localStorage.get('octo_ip') == null || this.$localStorage.get('apikey') == null) { return false;}
@@ -620,7 +621,6 @@ export default {
     },
     importConfig: function(event) {
       var self = this;
-      console.log(event);
       var uploadedFile = event.target.files[0]; 
       var readFile = new FileReader();
       readFile.onload = function(e) { 
