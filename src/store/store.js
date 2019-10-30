@@ -51,7 +51,7 @@ export const store = new Vuex.Store({
         graphs: [],
         line_temps: {
             labels: [''],
-            datasets: []
+            datasets: [],
         },
         line_temps_options: {
             elements: {
@@ -59,7 +59,6 @@ export const store = new Vuex.Store({
                     radius: 0
                 }
             },
-            responsive: true,
             title: {
                 display: false
             },

@@ -322,7 +322,8 @@ export const globalSettings = {
         var graphs = [];
         var temps = {};
         var linegraphs = [];
-        var colors = ['#fc3c63','#20cb55','#ffd84d','#01cba9','#1c92eb','#3e7538','#ff4c06'];
+        var colors = ['rgba(252, 60, 99, 1)','rgba(32, 203, 85, 1)','rgba(255, 216, 77, 1)','rgba(1, 203, 169, 1)','rgba(28, 146, 235, 1)','rgba(62, 117, 56, 1)','rgba(255, 76, 6, 1)'];
+        var colors_alpha = ['rgba(252, 60, 99, 0.2)','rgba(32, 203, 85, 0.2)','rgba(255, 216, 77, 0.2)','rgba(1, 203, 169, 0.2)','rgba(28, 146, 235, 0.2)','rgba(62, 117, 56, 0.2)','rgba(255, 76, 6, 0.2)'];
         for(var i = 0; i < parseInt(result.data.profiles[this.$localStorage.get('printerProfile')].extruder.count); i++) {
           var key = "tool"+i;
           temps[key] = {"actual":"0","target":"0"};
@@ -331,9 +332,10 @@ export const globalSettings = {
           obj = {
             name: key,
             datasets: [{
-              data: [0, 250],
+              data: [0, 0, 250],
               backgroundColor: [
                   colors[i],
+                  colors_alpha[i],
                   '#C0C0C0'
               ]
               }],
@@ -356,8 +358,8 @@ export const globalSettings = {
           var linegraph_target = {
             label: key+'_target',
             fill: false,
-            backgroundColor: colors[i],
-            borderColor: colors[i],
+            backgroundColor: colors_alpha[i],
+            borderColor: colors_alpha[i],
             borderWidth: 6,
             data: [0],
           }
@@ -375,8 +377,9 @@ export const globalSettings = {
           obj = {
             name: key,
             datasets: [{
-              data: [0, 250],
+              data: [0, 0, 100],
               backgroundColor: [
+                  '#2b9eeb',
                   '#2b9eeb',
                   '#C0C0C0'
               ]
@@ -417,8 +420,9 @@ export const globalSettings = {
           obj = {
             name: key,
             datasets: [{
-              data: [0, 250],
+              data: [0, 0, 60],
               backgroundColor: [
+                  '#ff06fc',
                   '#ff06fc',
                   '#C0C0C0'
               ]
@@ -796,7 +800,8 @@ export const globalSettings = {
       this.$store.state.page = page;
     },
     updateGraphs: function() {
-      var percent;
+      var percent_actual;
+      var percent_target;
       console.log("temps: ", this.$store.state.temps);
       console.log("graphs: ", this.$store.state.graphs);
       console.log("line_temps: ", this.$store.state.line_temps);
@@ -805,10 +810,18 @@ export const globalSettings = {
         if(obj != "bed" && obj != "chamber") {
           for(var i = 0; i< this.$store.state.graphs.length; i++) {
             if(this.$store.state.graphs[i].name == obj) {
-              percent = (100/250)*parseInt(this.$store.state.temps[obj].actual)
-              this.$store.state.graphs[i].datasets[0].data = [percent, 100-percent];
+              percent_actual = (100/250)*parseInt(this.$store.state.temps[obj].actual)
+              percent_target = (100/250)*parseInt(this.$store.state.temps[obj].target)
+              var target = percent_target-percent_actual;
+              if(target < 0) {
+                target = 0;
+              }
+              this.$store.state.graphs[i].datasets[0].data = [percent_actual, target, 100-percent_target];
             }
             for(var n=0;n<this.$store.state.line_temps.datasets.length;n++) {
+              if(this.$store.state.line_temps.datasets[n].data.length > 10) {
+                this.$store.state.line_temps.datasets[n].data = this.$store.state.line_temps.datasets[n].data.splice(-200, 200)
+              }
               if(this.$store.state.line_temps.datasets[n].label == obj+"_actual") {
                 this.$store.state.line_temps.datasets[n].data.push({x:this.$store.state.line_temps.datasets[n].data.length+1, y:parseInt(this.$store.state.temps[obj].actual)});
               }
@@ -821,10 +834,20 @@ export const globalSettings = {
         if(obj == "bed") {
           for(var i = 0; i< this.$store.state.graphs.length; i++) {
             if(this.$store.state.graphs[i].name == obj) {
-              percent = (100/90)*parseInt(this.$store.state.temps[obj].actual)
-              this.$store.state.graphs[i].datasets[0].data = [percent, 100-percent];
+              //percent = (100/90)*parseInt(this.$store.state.temps[obj].actual)
+              percent_actual = (100/90)*parseInt(this.$store.state.temps[obj].actual)
+              percent_target = (100/90)*parseInt(this.$store.state.temps[obj].target)
+              var target = percent_target-percent_actual;
+              if(target < 0) {
+                target = 0;
+              }
+              this.$store.state.graphs[i].datasets[0].data = [percent_actual, target, 100-percent_target];
+              //alert(percent_target-percent_actual);
             }
             for(var n=0;n<this.$store.state.line_temps.datasets.length;n++) {
+              if(this.$store.state.line_temps.datasets[n].data.length > 200) {
+                this.$store.state.line_temps.datasets[n].data = this.$store.state.line_temps.datasets[n].data.splice(-200, 200)
+              }
               if(this.$store.state.line_temps.datasets[n].label == obj+"_actual") {
                 this.$store.state.line_temps.datasets[n].data.push({x:this.$store.state.line_temps.datasets[n].data.length+1, y:parseInt(this.$store.state.temps[obj].actual)});
               }
@@ -837,10 +860,19 @@ export const globalSettings = {
         if(obj == "chamber") {
           for(var i = 0; i< this.$store.state.graphs.length; i++) {
             if(this.$store.state.graphs[i].name == obj) {
-              percent = (100/60)*parseInt(this.$store.state.temps[obj].actual)
-              this.$store.state.graphs[i].datasets[0].data = [percent, 100-percent];
+              //percent = (100/60)*parseInt(this.$store.state.temps[obj].actual)
+              percent_actual = (100/60)*parseInt(this.$store.state.temps[obj].actual)
+              percent_target = (100/60)*parseInt(this.$store.state.temps[obj].target)
+              var target = percent_target-percent_actual;
+              if(target < 0) {
+                target = 0;
+              }
+              this.$store.state.graphs[i].datasets[0].data = [percent_actual, target, 100-percent_target];
             }
             for(var n=0;n<this.$store.state.line_temps.datasets.length;n++) {
+              if(this.$store.state.line_temps.datasets[n].data.length > 200) {
+                this.$store.state.line_temps.datasets[n].data = this.$store.state.line_temps.datasets[n].data.splice(-200, 200)
+              }
               if(this.$store.state.line_temps.datasets[n].label == obj+"_actual") {
                 this.$store.state.line_temps.datasets[n].data.push({x:this.$store.state.line_temps.datasets[n].data.length+1, y:parseInt(this.$store.state.temps[obj].actual)});
               }
@@ -849,6 +881,9 @@ export const globalSettings = {
               }
             }
           }
+        }
+        if(this.$store.state.line_temps.labels.length > 200) {
+          this.$store.state.line_temps.labels = this.$store.state.line_temps.labels.splice(-200, 200)
         }
         this.$store.state.line_temps.labels.push('');
       }
