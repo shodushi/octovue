@@ -34,6 +34,9 @@ export const globalSettings = {
       }
     },
     formatDecimal(value) {
+        if(value == null) {
+          value=0;
+        }
         let val = (value/1).toFixed(2).replace(',', ':')
         return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
     },
@@ -802,9 +805,7 @@ export const globalSettings = {
     updateGraphs: function() {
       var percent_actual;
       var percent_target;
-      console.log("temps: ", this.$store.state.temps);
-      console.log("graphs: ", this.$store.state.graphs);
-      console.log("line_temps: ", this.$store.state.line_temps);
+      var target;
       for(var obj in this.$store.state.temps) {
         
         if(obj != "bed" && obj != "chamber") {
@@ -812,7 +813,7 @@ export const globalSettings = {
             if(this.$store.state.graphs[i].name == obj) {
               percent_actual = (100/250)*parseInt(this.$store.state.temps[obj].actual)
               percent_target = (100/250)*parseInt(this.$store.state.temps[obj].target)
-              var target = percent_target-percent_actual;
+              target = percent_target-percent_actual;
               if(target < 0) {
                 target = 0;
               }
@@ -834,15 +835,13 @@ export const globalSettings = {
         if(obj == "bed") {
           for(var i = 0; i< this.$store.state.graphs.length; i++) {
             if(this.$store.state.graphs[i].name == obj) {
-              //percent = (100/90)*parseInt(this.$store.state.temps[obj].actual)
               percent_actual = (100/90)*parseInt(this.$store.state.temps[obj].actual)
               percent_target = (100/90)*parseInt(this.$store.state.temps[obj].target)
-              var target = percent_target-percent_actual;
+              target = percent_target-percent_actual;
               if(target < 0) {
                 target = 0;
               }
               this.$store.state.graphs[i].datasets[0].data = [percent_actual, target, 100-percent_target];
-              //alert(percent_target-percent_actual);
             }
             for(var n=0;n<this.$store.state.line_temps.datasets.length;n++) {
               if(this.$store.state.line_temps.datasets[n].data.length > 200) {
@@ -860,10 +859,9 @@ export const globalSettings = {
         if(obj == "chamber") {
           for(var i = 0; i< this.$store.state.graphs.length; i++) {
             if(this.$store.state.graphs[i].name == obj) {
-              //percent = (100/60)*parseInt(this.$store.state.temps[obj].actual)
               percent_actual = (100/60)*parseInt(this.$store.state.temps[obj].actual)
               percent_target = (100/60)*parseInt(this.$store.state.temps[obj].target)
-              var target = percent_target-percent_actual;
+              target = percent_target-percent_actual;
               if(target < 0) {
                 target = 0;
               }
