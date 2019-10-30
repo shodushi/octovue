@@ -130,29 +130,13 @@ export const globalSettings = {
       if(msg.current != null) {
         if(msg.current.temps != null) {
           if(msg.current.temps.length != 0) {
-            for(var obj in msg.current.temps[0]) {
-              if(obj == "tool0") {
-
-            
-                //console.log(msg.current.temps[0][obj]);
-              }
-              
-            }
-
-
-
-            if(msg.current.temps[0].tool0 != null) {
-              this.$store.state.temps = msg.current.temps[0];
-              var temptool0_ist = (100/this.$store.state.temps.tool0.target)*this.$store.state.temps.tool0.actual;
-              $("#temp_tool0_actual").css("height", temptool0_ist+"%");
-              var tempbed_ist = (100/this.$store.state.temps.bed.target)*this.$store.state.temps.bed.actual;
-              $("#temp_bed_actual").css("height", tempbed_ist+"%");
-              //this.updateGauge(this.$store.state.temps.tool0.actual, this.$store.state.temps.bed.actual);
-
-              this.updateGauge();
-
-              this.updateTempChart(this.$store.state.temps.tool0.actual, this.$store.state.temps.tool0.target, this.$store.state.temps.bed.actual,  this.$store.state.temps.bed.target);
-            }
+            this.$store.state.temps = msg.current.temps[0];
+            this.updateGraphs();
+            /*var temptool0_ist = (100/this.$store.state.temps.tool0.target)*this.$store.state.temps.tool0.actual;
+            $("#temp_tool0_actual").css("height", temptool0_ist+"%");
+            var tempbed_ist = (100/this.$store.state.temps.bed.target)*this.$store.state.temps.bed.actual;
+            $("#temp_bed_actual").css("height", tempbed_ist+"%");
+            //this.updateGauge(this.$store.state.temps.tool0.actual, this.$store.state.temps.bed.actual);*/
           }
         }
         if(msg.current.logs != null) {
@@ -334,16 +318,14 @@ export const globalSettings = {
     },
     getOctoPrintProfiles: function() {
       axios({ method: "GET", "url": this.$localStorage.get('octo_ip')+"/api/printerprofiles", headers: {'X-Api-Key': this.$localStorage.get('apikey')} }).then(result => {
-        console.log("----------- getOctoPrintProfiles--------------")
-        console.log(result.data);
         this.$store.printerProfiles = result.data;
-        console.log("DETECTED "+result.data.profiles[this.$localStorage.get('printerProfile')].extruder.count + " Tools");
-        var temp_graphs = [];
-        var temp_temps = {};
+        var graphs = [];
+        var temps = {};
+        var linegraphs = [];
         var colors = ['#fc3c63','#20cb55','#ffd84d','#01cba9','#1c92eb','#3e7538','#ff4c06'];
         for(var i = 0; i < parseInt(result.data.profiles[this.$localStorage.get('printerProfile')].extruder.count); i++) {
           var key = "tool"+i;
-          temp_temps[key] = {"actual":"0","target":"0"};
+          temps[key] = {"actual":"0","target":"0"};
 
           var obj = {};
           obj = {
@@ -362,12 +344,32 @@ export const globalSettings = {
                   cutoutPercentage: 80
               }
           };
-          temp_graphs.push(obj);
+
+          var linegraph_actual = {
+            label: key+'_actual',
+            fill: false,
+            backgroundColor: colors[i],
+            borderColor: colors[i],
+            borderWidth: 2,
+            data: [0],
+          };
+          var linegraph_target = {
+            label: key+'_target',
+            fill: false,
+            backgroundColor: colors[i],
+            borderColor: colors[i],
+            borderWidth: 6,
+            data: [0],
+          }
+
+          graphs.push(obj);
+          linegraphs.push(linegraph_actual);
+          linegraphs.push(linegraph_target);
         }
 
         if(result.data.profiles[this.$localStorage.get('printerProfile')].heatedBed) {
           var key = "bed";
-          temp_temps[key] = {"actual":"0","target":"0"};
+          temps[key] = {"actual":"0","target":"0"};
           var obj = {};
 
           obj = {
@@ -386,11 +388,30 @@ export const globalSettings = {
                   cutoutPercentage: 80
               }
           };
-          temp_graphs.push(obj);
+          var linegraph_actual = {
+            label: key+'_actual',
+            fill: false,
+            backgroundColor: '#2b9eeb',
+            borderColor: '#2b9eeb',
+            borderWidth: 2,
+            data: [0],
+          };
+          var linegraph_target = {
+            label: key+'_target',
+            fill: false,
+            backgroundColor: '#2b9eeb',
+            borderColor: '#2b9eeb',
+            borderWidth: 6,
+            data: [0],
+          }
+
+          graphs.push(obj);
+          linegraphs.push(linegraph_actual);
+          linegraphs.push(linegraph_target);
         }
         if(result.data.profiles[this.$localStorage.get('printerProfile')].heatedChamber) {
           var key = "chamber";
-          temp_temps[key] = {"actual":"0","target":"0"};
+          temps[key] = {"actual":"0","target":"0"};
           var obj = {};
 
           obj = {
@@ -398,7 +419,7 @@ export const globalSettings = {
             datasets: [{
               data: [0, 250],
               backgroundColor: [
-                  '#2b9eeb',
+                  '#ff06fc',
                   '#C0C0C0'
               ]
               }],
@@ -409,28 +430,31 @@ export const globalSettings = {
                   cutoutPercentage: 80
               }
           };
-          temp_graphs.push(obj);
-        }
-        this.$store.state.graphs = temp_graphs;
-        this.$store.state.temps = temp_temps;
-        console.log("----------------GRAPHS-------------");
-        console.log(this.$store.graphs);
-        /*for(var obj in msg.current.temps[0]) {
-          if(obj == "tool0") {
-
-        
-            console.log(msg.current.temps[0][obj]);
+          var linegraph_actual = {
+            label: key+'_actual',
+            fill: false,
+            backgroundColor: '#ff06fc',
+            borderColor: '#ff06fc',
+            borderWidth: 2,
+            data: [0],
+          };
+          var linegraph_target = {
+            label: key+'_target',
+            fill: false,
+            backgroundColor: '#ff06fc',
+            borderColor: '#ff06fc',
+            borderWidth: 6,
+            data: [0],
           }
-          
+
+          graphs.push(obj);
+          linegraphs.push(linegraph_actual);
+          linegraphs.push(linegraph_target);
         }
-        this.$store.
-        */
+        this.$store.state.graphs = graphs;
+        this.$store.state.temps = temps;
+        this.$store.state.line_temps.datasets = linegraphs;
 
-
-
-
-
-       
       }, error => {
       });
     },
@@ -675,14 +699,14 @@ export const globalSettings = {
           console.error(error);
       });
     },
-    setExtruderTemp: function() {
-      var temp = $("#sliderExtruder").val();
+    setExtruderTemp: function(tool) {
+      var temp = $("#slider"+tool).val();
       var url = this.$localStorage.get('octo_ip')+"/api/printer/tool";
       var obj = {};
       obj.command = "target";
       obj.targets = {};
-      obj.targets.tool0 = parseInt(temp);
-      this.temps.tool0.target = temp;
+      obj.targets[tool] = parseInt(temp);
+      this.temps[tool].target = temp;
       axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$localStorage.get('apikey'), 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
         var temptool0_ist = (100/temp)*this.$store.state.temps.tool0.actual;
         $("#temp_tool0_actual").css("height", temptool0_ist+"%");
@@ -691,12 +715,26 @@ export const globalSettings = {
       });
     },
     setBedTemp: function() {
-      var temp = $("#sliderBed").val();
+      var temp = $("#sliderbed").val();
       var url = this.$localStorage.get('octo_ip')+"/api/printer/bed";
       var obj = {};
       obj.command = "target";
       obj.target = parseInt(temp);
       this.$store.state.temps.bed.target = temp;
+      axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$localStorage.get('apikey'), 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
+        var tempbed_ist = (100/temp)*this.$store.state.temps.bed.actual;
+        $("#temp_bed_actual").css("height", tempbed_ist+"%");
+      }, error => {
+          console.error(error);
+      });
+    },
+    setChamberTemp: function() {
+      var temp = $("#sliderchamber").val();
+      var url = this.$localStorage.get('octo_ip')+"/api/printer/chamber";
+      var obj = {};
+      obj.command = "target";
+      obj.target = parseInt(temp);
+      this.$store.state.temps.chamber.target = temp;
       axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$localStorage.get('apikey'), 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
         var tempbed_ist = (100/temp)*this.$store.state.temps.bed.actual;
         $("#temp_bed_actual").css("height", tempbed_ist+"%");
@@ -757,10 +795,11 @@ export const globalSettings = {
     nav: function(page) {
       this.$store.state.page = page;
     },
-    updateGauge: function() {
-      console.log("updateGauge");
-      console.log(this.$store.state.graphs);
+    updateGraphs: function() {
       var percent;
+      console.log("temps: ", this.$store.state.temps);
+      console.log("graphs: ", this.$store.state.graphs);
+      console.log("line_temps: ", this.$store.state.line_temps);
       for(var obj in this.$store.state.temps) {
         
         if(obj != "bed" && obj != "chamber") {
@@ -768,6 +807,14 @@ export const globalSettings = {
             if(this.$store.state.graphs[i].name == obj) {
               percent = (100/250)*parseInt(this.$store.state.temps[obj].actual)
               this.$store.state.graphs[i].datasets[0].data = [percent, 100-percent];
+            }
+            for(var n=0;n<this.$store.state.line_temps.datasets.length;n++) {
+              if(this.$store.state.line_temps.datasets[n].label == obj+"_actual") {
+                this.$store.state.line_temps.datasets[n].data.push({x:this.$store.state.line_temps.datasets[n].data.length+1, y:parseInt(this.$store.state.temps[obj].actual)});
+              }
+              if(this.$store.state.line_temps.datasets[n].label == obj+"_target") {
+                this.$store.state.line_temps.datasets[n].data.push({x:this.$store.state.line_temps.datasets[n].data.length+1, y:parseInt(this.$store.state.temps[obj].target)});
+              }
             }
           }
         }
@@ -777,6 +824,14 @@ export const globalSettings = {
               percent = (100/90)*parseInt(this.$store.state.temps[obj].actual)
               this.$store.state.graphs[i].datasets[0].data = [percent, 100-percent];
             }
+            for(var n=0;n<this.$store.state.line_temps.datasets.length;n++) {
+              if(this.$store.state.line_temps.datasets[n].label == obj+"_actual") {
+                this.$store.state.line_temps.datasets[n].data.push({x:this.$store.state.line_temps.datasets[n].data.length+1, y:parseInt(this.$store.state.temps[obj].actual)});
+              }
+              if(this.$store.state.line_temps.datasets[n].label == obj+"_target") {
+                this.$store.state.line_temps.datasets[n].data.push({x:this.$store.state.line_temps.datasets[n].data.length+1, y:parseInt(this.$store.state.temps[obj].target)});
+              }
+            }
           }
         }
         if(obj == "chamber") {
@@ -785,21 +840,18 @@ export const globalSettings = {
               percent = (100/60)*parseInt(this.$store.state.temps[obj].actual)
               this.$store.state.graphs[i].datasets[0].data = [percent, 100-percent];
             }
+            for(var n=0;n<this.$store.state.line_temps.datasets.length;n++) {
+              if(this.$store.state.line_temps.datasets[n].label == obj+"_actual") {
+                this.$store.state.line_temps.datasets[n].data.push({x:this.$store.state.line_temps.datasets[n].data.length+1, y:parseInt(this.$store.state.temps[obj].actual)});
+              }
+              if(this.$store.state.line_temps.datasets[n].label == obj+"_target") {
+                this.$store.state.line_temps.datasets[n].data.push({x:this.$store.state.line_temps.datasets[n].data.length+1, y:parseInt(this.$store.state.temps[obj].target)});
+              }
+            }
           }
         }
+        this.$store.state.line_temps.labels.push('');
       }
-      console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-      console.log(this.$store.state.graphs);
-    },
-    updateTempChart: function(tool0_ist, tool0_soll, bed_ist, bed_soll) {
-      this.$store.state.line_temps.datasets[0].data.push({x:this.$store.state.line_temps.datasets[0].data.length+1, y:parseInt(tool0_ist)});
-      this.$store.state.line_temps.datasets[1].data.push({x:this.$store.state.line_temps.datasets[1].data.length+1, y:parseInt(tool0_soll)});
-      this.$store.state.line_temps.datasets[2].data.push({x:this.$store.state.line_temps.datasets[2].data.length+1, y:parseInt(bed_ist)});
-      this.$store.state.line_temps.datasets[3].data.push({x:this.$store.state.line_temps.datasets[3].data.length+1, y:parseInt(bed_soll)});
-      this.$store.state.line_temps.labels.push('');
-      /*if(this.$refs.tempchart) {
-        this.$refs.tempchart.chart.update();
-      }*/
     },
     displayMsg: function(error) {
       switch(error) {
@@ -955,7 +1007,6 @@ export const globalSettings = {
       'printerProfiles',
       'temps',
       'graphs',
-      'tools',
       'logs',
       'cam',
       'powerState',

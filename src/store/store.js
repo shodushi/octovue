@@ -49,77 +49,43 @@ export const store = new Vuex.Store({
         thingpage: 1,
         stats: {"success": 0, "failed": 0},
         graphs: [],
-        tools: [],
         line_temps: {
             labels: [''],
-            datasets: [
-                {
-                    label: 'Tool0 I',
-                    fill: false,
-                    backgroundColor: '#fc3c63',
-                    borderColor: '#fc3c63',
-                    borderWidth: 2,
-                    data: [0],
-                },
-                {
-                    label: 'Tool0 S',
-                    fill: false,
-                    backgroundColor: '#fab3c2',
-                    borderColor: '#fab3c2',
-                    borderWidth: 6,
-                    data: [0],
-                },
-                {
-                    label: 'Bed I',
-                    fill: false,
-                    backgroundColor: '#2b9eeb',
-                    borderColor: '#2b9eeb',
-                    borderWidth: 2,
-                    data: [0],
-                },
-                {
-                    label: 'Bed S',
-                    fill: false,
-                    backgroundColor: '#99d3fa',
-                    borderColor: '#99d3fa',
-                    borderWidth: 6,
-                    data: [0],
-                }
-            ]
+            datasets: []
         },
         line_temps_options: {
             elements: {
-            point:{
-                radius: 0
-            }
+                point:{
+                    radius: 0
+                }
             },
             responsive: true,
-                    title: {
-                        display: false
-                    },
-                    tooltips: {
-                        mode: 'index',
-                        intersect: false,
-                    },
-                    hover: {
-                        mode: 'nearest',
-                        intersect: true
-                    },
-                    scales: {
-                        xAxes: [{
-                            display: true,
-                            scaleLabel: {
-                                display: false,
-                                labelString: ''
-                            }
-                        }],
-                        yAxes: [{
-                            display: true,
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'Temperature'
-                            }
-                        }]
+            title: {
+                display: false
+            },
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: true
+            },
+            scales: {
+                xAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: false,
+                        labelString: ''
+                    }
+                }],
+                yAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Temperature'
+                    }
+                }]
             },
         },
         pie_stats_printing: {

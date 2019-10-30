@@ -72,10 +72,15 @@ export default {
   methods: {
     updateCharts: function() {
       for(var i = 0;i< this.$store.state.graphs.length;i++) {
-        if(this.$refs[this.$store.state.graphs[i].name+"chart"][0].chart != null) {
-          this.$refs[this.$store.state.graphs[i].name+"chart"][0].chart.update();
+        if(this.$refs[this.$store.state.graphs[i].name+"chart"] != null) {
+          if(this.$refs[this.$store.state.graphs[i].name+"chart"][0] != null) {
+            if(this.$refs[this.$store.state.graphs[i].name+"chart"][0].chart != null) {
+              this.$refs[this.$store.state.graphs[i].name+"chart"][0].chart.update();
+            }
+          }
         }
       }
+      this.$refs.tempchart.chart.update();
     }
   },
   watch: {

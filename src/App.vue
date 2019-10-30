@@ -393,6 +393,8 @@ export default {
     };
   },
   created: function() {
+
+    console.log(this.temps);
     var self = this;
     var octoDropzone = new Dropzone(document.body, {
       init: function() {

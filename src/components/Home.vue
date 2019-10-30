@@ -1,5 +1,6 @@
 <template>
     <section class="section" id="mainPage" v-if="page == 'main' || !page">
+
         <div class="">
 
             <div class="columns">
@@ -181,41 +182,91 @@
                         </div>
                     
                         <div class="content" id="cardtools" style="border-top: 1px solid #C0C0C0; height: 270px;" v-if="printerState.payload.state_string != 'Offline'">
-                        <div style="width: 25%; float: left; text-align: center;">
-                            <p>Extruder:</p>
-                            <input id="sliderExtruder" class="slider is-fullwidth is-danger is-small is-circle has-output" step="1" min="0" max="250" v-bind:value="temps.tool0.target" type="range" orient="vertical" v-on:mouseup="setExtruderTemp()"><output id="sliderextruderoutput" for="sliderExtruder">{{ temps.tool0.target }}</output> &deg;C
-                        </div>
-                        <div style="width: 25%; float: left; text-align: center;">
-                            <p>&nbsp;</p>
-                            <div class="temp_ist"><div id="temp_tool0_actual"></div></div>
-                        </div>
-                        <div style="width: 25%; float: left; text-align: center;">
-                            <p>Bed:</p>
-                            <input id="sliderBed" class="slider is-fullwidth is-info is-small is-circle has-output" step="1" min="0" max="90" v-bind:value="temps.bed.target" type="range" orient="vertical" v-on:mouseup="setBedTemp()"><output id="sliderbedoutput" for="sliderBed">{{temps.bed.target}}</output> &deg;C
-                        </div>
-                        <div style="width: 25%; float: left; text-align: center;">
-                            <p>&nbsp;</p>
-                            <div class="temp_ist"><div id="temp_bed_actual"></div></div>
-                        </div>
 
-                        <div class="dropdown is-hoverable is-up" style="margin: 20px 0px 0px 0px;">
-                            <div class="dropdown-trigger">
-                            <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
-                                <span>Printer commands</span>
-
-                                <span class="icon is-small">
-                                <i class="fas fa-angle-up" aria-hidden="true"></i>
-                                </span>
-                            </button>
+                            <div v-if="graphs.length <= 2">
+                                <div v-for="graph in graphs" v-if="graph.name != 'bed' && graph.name != 'chamber'" style="text-align: left;">
+                                    <div style="width: 25%; float: left; text-align: center;">
+                                        {{graph.name}}<br />
+                                        <input :id="'slider'+graph.name" class="slider is-fullwidth is-danger is-small is-circle has-output" step="1" min="0" max="250" v-on:mouseup="setExtruderTemp(graph.name)" v-bind:value="temps[graph.name].target" type="range" orient="vertical"><output style="position: relative; top: 8px;" v-bind:for="'slider'+graph.name">{{ temps[graph.name].target }}</output> &deg;C
+                                    </div>
+                                    <div style="width: 25%; float: left; text-align: center;">
+                                        <p>&nbsp;</p>
+                                        <div class="temp_ist"><div :id="'temp_'+graph.name+'_actual'"></div></div>
+                                    </div>
+                                </div>
+                                <div v-for="graph in graphs" v-if="graph.name == 'bed'" style="text-align: left;">
+                                    <div style="width: 25%; float: left; text-align: center;">
+                                        {{graph.name}}<br />
+                                        <input :id="'slider'+graph.name" class="slider is-fullwidth is-info is-circle has-output" step="1" min="0" max="90" v-on:mouseup="setBedTemp()" v-bind:value="temps[graph.name].target" type="range" orient="vertical"><output style="position: relative; top: 8px;" v-bind:for="'slider'+graph.name">{{ temps[graph.name].target }}</output>
+                                    </div>
+                                    <div style="width: 25%; float: left; text-align: center;">
+                                        <p>&nbsp;</p>
+                                        <div class="temp_ist"><div :id="'temp_'+graph.name+'_actual'"></div></div>
+                                    </div>
+                                </div>
+                                <div v-for="graph in graphs" v-if="graph.name == 'chamber'" style="text-align: left;">
+                                    <div style="width: 25%; float: left; text-align: center;">
+                                        {{graph.name}}<br />
+                                        <input :id="'slider'+graph.name" class="slider is-fullwidth is-circle has-output" step="1" min="0" max="50" v-on:mouseup="setChamberTemp()" v-bind:value="temps[graph.name].target" type="range" ><output style="position: relative; top: 8px;" v-bind:for="'slider'+graph.name">{{ temps[graph.name].target }}</output>
+                                    </div>
+                                    <div style="width: 25%; float: left; text-align: center;">
+                                        <p>&nbsp;</p>
+                                        <div class="temp_ist"><div :id="'temp_'+graph.name+'_actual'"></div></div>
+                                    </div>
+                                </div>
+<!--
+                                <div style="width: 25%; float: left; text-align: center;">
+                                    <p>Extruder:</p>
+                                    <input id="sliderExtruder" class="slider is-fullwidth is-danger is-small is-circle has-output" step="1" min="0" max="250" v-bind:value="temps.tool0.target" type="range" orient="vertical" v-on:mouseup="setExtruderTemp()"><output id="sliderextruderoutput" for="sliderExtruder">{{ temps.tool0.target }}</output> &deg;C
+                                </div>
+                                <div style="width: 25%; float: left; text-align: center;">
+                                    <p>&nbsp;</p>
+                                    <div class="temp_ist"><div id="temp_tool0_actual"></div></div>
+                                </div>
+                                <div style="width: 25%; float: left; text-align: center;">
+                                    <p>Bed:</p>
+                                    <input id="sliderBed" class="slider is-fullwidth is-info is-small is-circle has-output" step="1" min="0" max="90" v-bind:value="temps.bed.target" type="range" orient="vertical" v-on:mouseup="setBedTemp()"><output id="sliderbedoutput" for="sliderBed">{{temps.bed.target}}</output> &deg;C
+                                </div>
+                                <div style="width: 25%; float: left; text-align: center;">
+                                    <p>&nbsp;</p>
+                                    <div class="temp_ist"><div id="temp_bed_actual"></div></div>
+                                </div>
+!-->
                             </div>
-                            <div class="dropdown-menu" role="menu">
-                            <div class="dropdown-content">
-                                <div class="dropdown-item" id="dropdown-item_printer_commands">
-                                <a v-for="value in $gcodes[$localStorage.get('printer_firmware')]" class="dropdown-item" v-bind:data-id="value.cmd" v-on:click="pcmds(value.gcmd)"><i class="fas" v-bind:class="value.icon"></i> {{ value.label }}</a>
+
+                            <div v-if="graphs.length > 2" style="margin-top: 20px;">
+                                <div v-for="graph in graphs" v-if="graph.name != 'bed' && graph.name != 'chamber'" style="text-align: left;">
+                                    {{graph.name}}<br />
+                                    <input :id="'slider'+graph.name" class="slider is-fullwidth is-circle has-output" step="1" min="0" max="250" v-on:mouseup="setExtruderTemp(graph.name)" v-bind:value="temps[graph.name].target" type="range"><output style="position: relative; top: 8px;" v-bind:for="'slider'+graph.name">{{ temps[graph.name].target }}</output>
+                                </div>
+                                <div v-for="graph in graphs" v-if="graph.name == 'bed'" style="text-align: left;">
+                                    {{graph.name}}<br />
+                                    <input :id="'slider'+graph.name" class="slider is-fullwidth is-circle has-output" step="1" min="0" max="90" v-on:mouseup="setBedTemp()" v-bind:value="temps[graph.name].target" type="range"><output style="position: relative; top: 8px;" v-bind:for="'slider'+graph.name">{{ temps[graph.name].target }}</output>
+                                </div>
+                                <div v-for="graph in graphs" v-if="graph.name == 'chamber'" style="text-align: left;">
+                                    {{graph.name}}<br />
+                                    <input :id="'slider'+graph.name" class="slider is-fullwidth is-circle has-output" step="1" min="0" max="50" v-on:mouseup="setChamberTemp()" v-bind:value="temps[graph.name].target" type="range"><output style="position: relative; top: 8px;" v-bind:for="'slider'+graph.name">{{ temps[graph.name].target }}</output>
                                 </div>
                             </div>
+
+                            <div class="dropdown is-hoverable is-up" style="margin: 20px 0px 0px 0px;">
+                                <div class="dropdown-trigger">
+                                <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
+                                    <span>Printer commands</span>
+
+                                    <span class="icon is-small">
+                                    <i class="fas fa-angle-up" aria-hidden="true"></i>
+                                    </span>
+                                </button>
+                                </div>
+                                <div class="dropdown-menu" role="menu">
+                                <div class="dropdown-content">
+                                    <div class="dropdown-item" id="dropdown-item_printer_commands">
+                                    <a v-for="value in $gcodes[$localStorage.get('printer_firmware')]" class="dropdown-item" v-bind:data-id="value.cmd" v-on:click="pcmds(value.gcmd)"><i class="fas" v-bind:class="value.icon"></i> {{ value.label }}</a>
+                                    </div>
+                                </div>
+                                </div>
                             </div>
-                        </div>
                         </div>
                     </div>
                     </transition>
