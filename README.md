@@ -12,6 +12,7 @@ install & configure octoprint
   octoprint plugins needed:
     -> OctoPrint-DisplayLayerProgress (https://github.com/OllisGit/OctoPrint-DisplayLayerProgress)
 
+
 npm install -g serve
 ```
 
