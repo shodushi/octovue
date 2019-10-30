@@ -265,19 +265,31 @@
               <div class="field" style="text-align: left;">
                 <label class="label">Printerport</label>
                 <div class="control">
-                  <input class="input" type="text" v-model="printerport" placeholder="/dev/ttyACM0">
+                  <div class="select">
+                    <select v-model="printerport">
+                      <option v-for="port in avail_printerports">{{port}}</option>
+                    </select>
+                  </div>
                 </div>
               </div>
               <div class="field" style="text-align: left;">
                 <label class="label">Baudrate</label>
                 <div class="control">
-                  <input class="input" type="text" v-model="baudrate" placeholder="115200">
+                  <div class="select">
+                    <select v-model="baudrate">
+                      <option v-for="rate in avail_baudrates">{{rate}}</option>
+                    </select>
+                  </div>
                 </div>
               </div>
               <div class="field" style="text-align: left;">
                 <label class="label">printer profile</label>
                 <div class="control">
-                  <input class="input" type="text" v-model="printerProfile" placeholder="_default">
+                  <div class="select">
+                    <select v-model="printerProfile">
+                      <option v-for="profile in printerProfiles">{{profile.id}}</option>
+                    </select>
+                  </div>
                 </div>
               </div>
               <div class="field" style="text-align: left;">
@@ -393,8 +405,6 @@ export default {
     };
   },
   created: function() {
-
-    console.log(this.temps);
     var self = this;
     var octoDropzone = new Dropzone(document.body, {
       init: function() {
@@ -421,7 +431,7 @@ export default {
   },
   mounted: function() {
     if(this.$localStorage.get('octo_ip') == null || this.$localStorage.get('apikey') == null) { return false;}
-    setTimeout(this.loadCam, 500)
+    setTimeout(this.loadOctoprintSettings, 1)
     setTimeout(this.getPowerState, 1)
     setTimeout(this.getLightState, 1)
     setTimeout(this.loadFiles, 1)
@@ -531,18 +541,20 @@ export default {
       });
     },
     getOctoprintConnection: function() {
-      var self = this;
       axios({ method: "GET", "url": this.$localStorage.get('octo_ip')+"/api/connection", headers: {'X-Api-Key': this.$localStorage.get('apikey')} }).then(result => {
-        self.$store.state.connectionSettings = result.data;
+        this.$store.state.connectionSettings = result.data;
         console.log(result.data);
-        self.$store.state.pageLoader = false;
+        this.$store.state.pageLoader = false;
+        this.$store.state.printerProfiles = result.data.options.printerProfiles;
+        this.$store.state.avail_printerports = result.data.options.ports;
+        this.$store.state.avail_baudrates = result.data.options.baudrates;
       }, error => {
-          self.displayMsg('octoprint_conn_error');
+          this.displayMsg('octoprint_conn_error');
           console.error(error);
-          if(self.$store.state.octoprintConnectionTries < self.$store.state.octoprintConnectionMaxTries) {
+          if(this.$store.state.octoprintConnectionTries < self.$store.state.octoprintConnectionMaxTries) {
             setTimeout(function(){
-              self.$store.state.octoprintConnectionTries = self.$store.state.octoprintConnectionTries + 1;
-              self.getOctoprintConnection();
+              this.$store.state.octoprintConnectionTries = self.$store.state.octoprintConnectionTries + 1;
+              this.getOctoprintConnection();
             }, 1000);
           } else {
             this.$store.state.pageLoaderAddText = "Connection failed, seems like OctoPrint server is not available!?";

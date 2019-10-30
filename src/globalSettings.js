@@ -292,19 +292,20 @@ export const globalSettings = {
           console.error(error);
       });
     },
-    loadCam: function() {
-      var self = this;
+    loadOctoprintSettings: function() {
       axios({ method: "GET", "url": this.$localStorage.get('octo_ip')+"/api/settings", headers: {'X-Api-Key': this.$localStorage.get('apikey')} }).then(result => {
+        console.log("-----------------------", result);
+        //console.log(result.data);
         this.$store.state.cam = result.data.webcam.streamUrl;
       }, error => {
           console.error(error);
       });
     },
-    getOctoprintConnection: function() {
+    /*getOctoprintConnection: function() {
       var self = this;
       axios({ method: "GET", "url": this.$localStorage.get('octo_ip')+"/api/connection", headers: {'X-Api-Key': this.$localStorage.get('apikey')} }).then(result => {
         self.$store.state.connectionSettings = result.data;
-        console.log(result.data);
+        //console.log(result.data);
         self.$store.state.pageLoader = false;
       }, error => {
           self.displayMsg('octoprint_conn_error');
@@ -318,7 +319,7 @@ export const globalSettings = {
             this.$store.state.pageLoaderAddText = "Connection failed, seems like OctoPrint server is not available!?";
           }
       });
-    },
+    },*/
     getOctoPrintProfiles: function() {
       axios({ method: "GET", "url": this.$localStorage.get('octo_ip')+"/api/printerprofiles", headers: {'X-Api-Key': this.$localStorage.get('apikey')} }).then(result => {
         this.$store.printerProfiles = result.data;
@@ -1038,6 +1039,8 @@ export const globalSettings = {
       'settingsmodal',
       'printerState',
       'printerProfiles',
+      'avail_printerports',
+      'avail_baudrates',
       'temps',
       'graphs',
       'logs',

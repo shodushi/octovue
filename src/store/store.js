@@ -12,7 +12,6 @@ export const store = new Vuex.Store({
         settingsmodal: false,
         terminalmodal: false,
         printerState: {"type": "PrinterStateChanged", "payload":{"state_string":"Offline","state_id":"OFFLINE"}},
-        printerProfiles: {},
         temps: {"bed":{"actual":"0","target":"0"}, "chamber":{"actual":"0","target":"0"}, "tool0":{"actual":"0","target":"0"}, "time": "0"},
         logs: {},
         cam: "",
@@ -49,6 +48,9 @@ export const store = new Vuex.Store({
         thingpage: 1,
         stats: {"success": 0, "failed": 0},
         graphs: [],
+        avail_printerports: [],
+        avail_baudrates:[],
+        printerProfiles: {},
         line_temps: {
             labels: [''],
             datasets: [],
