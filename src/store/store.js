@@ -82,7 +82,7 @@ export const store = new Vuex.Store({
                 yAxes: [{
                     display: true,
                     scaleLabel: {
-                        display: true,
+                        display: false,
                         labelString: 'Temperature'
                     }
                 }]
