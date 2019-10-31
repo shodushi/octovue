@@ -65,7 +65,7 @@ Hint:
 Configuration will be lost, when accessed from another browser or browser cache is cleared.
 
 To make your configuration persistent, click "export config" button
-and place "octovue_config.txt" into "dist/" folder.
+and place "octovue_config.txt" into "dist" folder.
 
 ```
 
