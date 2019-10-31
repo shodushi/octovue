@@ -42,9 +42,14 @@ b) copy "dist" directory into any webserver document root in your network
 
 ## Configuration
 ```
-enter all infos in initial config screen and save. Configuration will be lost, when accessed form another browser or browser cache is cleared.
+Enter all infos in initial config screen and save.
 
-To make your configuration persistent, click "export config" button and place "octovue_config.txt" into dist folder.
+Hint:
+
+Configuration will be lost, when accessed form another browser or browser cache is cleared.
+
+To make your configuration persistent, click "export config" button
+and place "octovue_config.txt" into dist folder.
 
 ```
 
