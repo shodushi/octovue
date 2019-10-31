@@ -198,7 +198,7 @@
             <div class="navbar-item">
               <div class="field is-grouped">
                 <p class="control">
-                  <a class="bd-tw-button button is-small" v-on:click="toggleTerminal()">
+                  <a class="bd-tw-button button is-small is-info" v-on:click="toggleTerminal()">
                     <span class="icon">
                       <i class="fas fa-terminal"></i>
                     </span>
@@ -206,7 +206,7 @@
                   </a>
                 </p>
                 <p class="control">
-                  <a class="button is-primary is-small" v-on:click="toggleInfo()">
+                  <a class="button is-info is-small" v-on:click="toggleInfo()">
                     <span class="icon">
                       <i class="fas fa-info-circle"></i>
                     </span>
@@ -214,11 +214,11 @@
                   </a>
                 </p>
                 <p class="control">
-                  <a class="bd-tw-button button is-small" v-on:click="showSettings()">
-                    <span class="icon">
+                  <a class="bd-tw-button button is-small is-info">
+                  <router-link class="navbar-item" to='/settings'><span class="icon" style="color: white;">
                       <i class="fas fa-cog"></i>
-                    </span>
-                  </a>
+                    </span></router-link>
+                    </a>
                 </p>
               </div>
             </div>
@@ -263,132 +263,6 @@
           </div>
         </div>
       </transition>
-
-      <div class="modal" v-bind:class="{ 'is-active' : settingsmodal }">
-        <div class="modal-background"></div>
-        <div class="modal-card">
-          <header class="modal-card-head">
-            <p class="modal-card-title">Settings</p>
-            <button class="delete" aria-label="close" v-on:click="showSettings"></button>
-          </header>
-          <section class="modal-card-body">
-            <div class="content">
-              <div class="field" style="text-align: left;">
-                <label class="label">OctoPrint address:</label>
-                <div class="control">
-                  <input class="input" type="text" v-model="octo_ip" placeholder="http://192.168.1.10:5000">
-                </div>
-              </div>
-              <div class="field" style="text-align: left;">
-                <label class="label">OctoPrint apikey:</label>
-                <div class="control">
-                  <input class="input" type="text" v-model="apikey" placeholder="86DA1D669334418CB773A50A142A4E72">
-                </div>
-              </div>
-
-              <div class="field" style="text-align: left;">
-                <label class="label">Printerport</label>
-                <div class="control">
-                  <div class="select">
-                    <select v-model="printerport">
-                      <option v-for="port in avail_printerports">{{port}}</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div class="field" style="text-align: left;">
-                <label class="label">Baudrate</label>
-                <div class="control">
-                  <div class="select">
-                    <select v-model="baudrate">
-                      <option v-for="rate in avail_baudrates">{{rate}}</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div class="field" style="text-align: left;">
-                <label class="label">printer profile</label>
-                <div class="control">
-                  <div class="select">
-                    <select v-model="printerProfile">
-                      <option v-for="profile in printerProfiles">{{profile.id}}</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div class="field" style="text-align: left;">
-                <label class="label">Printer type</label>
-                <div class="control">
-                  <div class="select">
-                    <select v-model="printer_firmware">
-                      <option>marlin</option>
-                      <option>reprap</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div class="field" style="text-align: left;">
-                <div class="control">
-                <input id="previewimages" type="checkbox" name="previewimages" class="switch is-rounded is-outlined" checked="checked" v-model="previewimages">
-                <label for="previewimages">show preview images in filebrowser</label>
-                </div>
-              </div>
-
-              <div class="field" style="text-align: left;">
-                <div class="control">
-                <input id="powerhandling" type="checkbox" name="powerhandling" class="switch is-rounded is-outlined" checked="" v-model="powerhandling">
-                <label for="powerhandling">enable printer powerswitch</label>
-                </div>
-              </div>
-
-              <div class="field" v-if="powerhandling" style="text-align: left;">
-                <label class="label">Powerswitch IP:</label>
-                <div class="control">
-                  <input class="input" type="text" v-model="tasmota_ip" placeholder="192.168.120.81">
-                </div>
-              </div>
-
-              <div class="field" style="text-align: left;">
-                <div class="control">
-                <input id="lighthandling" type="checkbox" name="lighthandling" class="switch is-rounded is-outlined" checked="" v-model="lighthandling">
-                <label for="lighthandling">enable light switch</label>
-                </div>
-              </div>
-
-              <div class="field" v-if="lighthandling" style="text-align: left;">
-                <label class="label">Light device IP:</label>
-                <div class="control">
-                  <input class="input" type="text" v-model="led_ip" placeholder="192.168.120.81">
-                </div>
-              </div>
-
-              <div class="field" style="text-align: left;">
-                <label class="label">CORS anywhere proxy IP:</label>
-                <div class="control">
-                  <input class="input" type="text" v-model="cors_proxy" placeholder="http://192.168.120.244:8090">
-                </div>
-              </div>
-            </div>
-          </section>
-          <footer class="modal-card-foot">
-            <label for="importfile" class="button">
-              <span class="icon is-small">
-                <i class="fas fa-file-upload"></i>
-              </span>
-              &nbsp; import config
-            </label>
-            <button class="button" v-on:click="exportConfig()">
-              <span class="icon is-small">
-                <i class="fas fa-file-download"></i>
-              </span>
-              &nbsp; export config</label>
-            </button>
-            <input id="importfile" style="visibility:hidden;" type="file" @change="importConfig($event)">
-            <button class="button" v-on:click="submitConfig()">save</button>
-          </footer>
-        </div>
-      </div>
 
       <router-view />
 
@@ -465,6 +339,7 @@ export default {
     setTimeout(this.getOctoprintConnection, 1)
     setTimeout(this.getOctoPrintProfiles, 1);
     setTimeout(this.sockConnection, 2);
+    setTimeout(this.getOctoPrintCommands, 500);
     if(this.printerState.payload.state_string != "Operational" && this.printerState.payload.state_string != "Connecting" && this.printerState.payload.state_string != "Paused") {
       this.$store.state.isNotConnection = true;
       this.$store.state.isConnection = false;
@@ -567,10 +442,17 @@ export default {
           console.error(error);
       });
     },
+    getOctoPrintCommands: function() {
+      axios({ method: "GET", url: this.$localStorage.get('octo_ip')+"/api/system/commands/core", headers: {'X-Api-Key': this.$localStorage.get('apikey'), 'Content-Type': 'application/json;charset=UTF-8'}}).then(result => {
+         this.$store.state.octoprintCommands = result.data;
+         console.log(result.data);
+      }, error => {
+          console.error(error);
+      });
+    },
     checkConnection: function() {
       axios({ method: "GET", "url": this.octo_ip+"/api/connection", headers: {'X-Api-Key': this.apikey} }).then(result => {
         this.$store.state.connectionSettings = result.data;
-        console.log(result.data);
         this.$store.state.printerProfiles = result.data.options.printerProfiles;
         this.$store.state.avail_printerports = result.data.options.ports;
         this.$store.state.avail_baudrates = result.data.options.baudrates;
@@ -580,14 +462,12 @@ export default {
     getOctoprintConnection: function() {
       axios({ method: "GET", "url": this.$localStorage.get('octo_ip')+"/api/connection", headers: {'X-Api-Key': this.$localStorage.get('apikey')} }).then(result => {
         this.$store.state.connectionSettings = result.data;
-        console.log(result.data);
         this.$store.state.pageLoader = false;
         this.$store.state.printerProfiles = result.data.options.printerProfiles;
         this.$store.state.avail_printerports = result.data.options.ports;
         this.$store.state.avail_baudrates = result.data.options.baudrates;
       }, error => {
           this.displayMsg('octoprint_conn_error');
-          console.error(error);
           if(this.$store.state.octoprintConnectionTries < self.$store.state.octoprintConnectionMaxTries) {
             setTimeout(function(){
               this.$store.state.octoprintConnectionTries = self.$store.state.octoprintConnectionTries + 1;
@@ -597,30 +477,6 @@ export default {
             this.$store.state.pageLoaderAddText = "Connection failed, seems like OctoPrint server is not available!?";
           }
       });
-    },
-    showSettings: function() {
-      this.octo_ip = this.$localStorage.get('octo_ip');
-      this.apikey = this.$localStorage.get('apikey');
-      this.printerport = this.$localStorage.get('printerport');
-      this.baudrate = this.$localStorage.get('baudrate');
-      this.printerProfile = this.$localStorage.get('printerProfile');
-      this.printer_firmware = this.$localStorage.get('printer_firmware');
-      this.previewimages = false;
-      if(this.$localStorage.get('previewimages') == "yes") {
-        this.previewimages = true;
-      }
-      this.powerhandling = false;
-      if(this.$localStorage.get('powerhandling') == "yes") {
-        this.powerhandling = true;
-      }
-      this.tasmota_ip = this.$localStorage.get('tasmota_ip');
-      this.lighthandling = false;
-      if(this.$localStorage.get('lighthandling') == "yes") {
-        this.lighthandling = true;
-      }
-      this.led_ip = this.$localStorage.get('led_ip');
-      this.cors_proxy = this.$localStorage.get('cors_proxy');
-      this.$store.state.settingsmodal = !this.$store.state.settingsmodal;
     },
     submitConfig: function() {
       this.$localStorage.set('octo_ip', this.octo_ip);

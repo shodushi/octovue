@@ -294,32 +294,11 @@ export const globalSettings = {
     },
     loadOctoprintSettings: function() {
       axios({ method: "GET", "url": this.$localStorage.get('octo_ip')+"/api/settings", headers: {'X-Api-Key': this.$localStorage.get('apikey')} }).then(result => {
-        console.log("-----------------------", result);
-        //console.log(result.data);
         this.$store.state.cam = result.data.webcam.streamUrl;
       }, error => {
           console.error(error);
       });
     },
-    /*getOctoprintConnection: function() {
-      var self = this;
-      axios({ method: "GET", "url": this.$localStorage.get('octo_ip')+"/api/connection", headers: {'X-Api-Key': this.$localStorage.get('apikey')} }).then(result => {
-        self.$store.state.connectionSettings = result.data;
-        //console.log(result.data);
-        self.$store.state.pageLoader = false;
-      }, error => {
-          self.displayMsg('octoprint_conn_error');
-          console.error(error);
-          if(self.$store.state.octoprintConnectionTries < self.$store.state.octoprintConnectionMaxTries) {
-            setTimeout(function(){
-              self.$store.state.octoprintConnectionTries = self.$store.state.octoprintConnectionTries + 1;
-              self.getOctoprintConnection();
-            }, 1000);
-          } else {
-            this.$store.state.pageLoaderAddText = "Connection failed, seems like OctoPrint server is not available!?";
-          }
-      });
-    },*/
     getOctoPrintProfiles: function() {
       axios({ method: "GET", "url": this.$localStorage.get('octo_ip')+"/api/printerprofiles", headers: {'X-Api-Key': this.$localStorage.get('apikey')} }).then(result => {
         this.$store.printerProfiles = result.data;
@@ -1084,7 +1063,8 @@ export const globalSettings = {
       'line_temps',
       'line_temps_options',
       'pie_stats_printing',
-      'pie_stats_printing_options'
+      'pie_stats_printing_options',
+      'octoprintCommands'
     ]),
     terminalLogs: {
       get() {

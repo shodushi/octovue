@@ -51,6 +51,7 @@ export const store = new Vuex.Store({
         avail_printerports: [],
         avail_baudrates:[],
         printerProfiles: {},
+        octoprintCommands: [],
         line_temps: {
             labels: [''],
             datasets: [],
