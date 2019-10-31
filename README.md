@@ -10,8 +10,8 @@ An alternative UI for octoprint based on vue.js and bulma css framework
  - Search thingiverse inside OctoVue for models and download them
  - nice printpage with graphs and gauges for temperatures (for now up to 7 hotends + heated bed and heated enclosure supported)
  - statistics page with overview of printed files (successful / failed)
- - control printer power in case you power your printer with a Sonoff POW (with tasmota fw) from OctoVue
- - control enclosure light (external control unit like nodeMCU) from OctoVue
+ - control printer power in case you power your printer with a Sonoff POW (with tasmota fw) from OctoVue (maybe installation of <a href="https://github.com/Rob--W/cors-anywhere" target="_blank">CORS anywhere proxy</a> on a computer in your network needed)
+ - control enclosure light (external control unit like nodeMCU) from OctoVue (maybe installation of <a href="https://github.com/Rob--W/cors-anywhere" target="_blank">CORS anywhere proxy</a> on a computer in your network needed)
 
 
 ## prerequisites
