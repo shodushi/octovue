@@ -1,6 +1,6 @@
 <template>
 
-  <div style="margin: 0 auto; padding: 5% 10% 0px 10%; overflow: hidden">
+  <div id="settingsPage" style="margin: 0 auto; padding: 5% 10% 0px 10%; overflow: hidden">
 
     <table style="width: 100%;">
       <tr>
@@ -90,35 +90,35 @@
           <section class="section" v-if="subnav == 'appearance'">
             <div class="container">
               <img src="/img/fullscreen-icon.png" style="float: left; height: 2rem; margin-right: 10px;"><h2 class="title">Appearance</h2>
-              <div class="field" style="text-align: left;">
+              <div class="field is-separate" style="text-align: left;">
                 <div class="control">
                 <input id="previewimages" type="checkbox" name="previewimages" class="switch is-rounded is-outlined" checked="checked" v-model="previewimages">
                 <label for="previewimages">show preview images in filebrowser</label>
                 </div>
               </div>
 
-              <div class="field" style="text-align: left;">
+              <div class="field" style="text-align: left;" :class="{'is-separate': !powerhandling}">
                 <div class="control">
                 <input id="powerhandling" type="checkbox" name="powerhandling" class="switch is-rounded is-outlined" checked="" v-model="powerhandling">
                 <label for="powerhandling">enable printer powerswitch</label>
                 </div>
               </div>
 
-              <div class="field" v-if="powerhandling" style="text-align: left;">
+              <div class="field is-separate" v-if="powerhandling" style="text-align: left;">
                 <label class="label">Powerswitch IP:</label>
                 <div class="control">
                   <input class="input" type="text" v-model="tasmota_ip" placeholder="192.168.120.81">
                 </div>
               </div>
 
-              <div class="field" style="text-align: left;">
+              <div class="field" style="text-align: left;" :class="{'is-separate': !lighthandling}">
                 <div class="control">
                 <input id="lighthandling" type="checkbox" name="lighthandling" class="switch is-rounded is-outlined" checked="" v-model="lighthandling">
                 <label for="lighthandling">enable light switch</label>
                 </div>
               </div>
 
-              <div class="field" v-if="lighthandling" style="text-align: left;">
+              <div class="field is-separate" v-if="lighthandling" style="text-align: left;">
                 <label class="label">Light device IP:</label>
                 <div class="control">
                   <input class="input" type="text" v-model="led_ip" placeholder="192.168.120.81">
@@ -301,3 +301,13 @@ export default {
   
 }
 </script>
+
+<style>
+#settingsPage .field {
+    margin-top: 20px;
+}
+#settingsPage .is-separate {
+  border-bottom: 1px solid #C0C0C0;
+  padding-bottom: 20px;
+}
+</style>
