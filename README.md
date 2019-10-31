@@ -24,20 +24,20 @@ install & configure octoprint
   octoprint plugins needed:
     -> OctoPrint-DisplayLayerProgress (https://github.com/OllisGit/OctoPrint-DisplayLayerProgress)
 
-
-npm install -g serve
 ```
 
 ## Installation
 ```
 git clone https://github.com/shodushi/octovue.git
 
+cd octuvue
+
 npm install
 ```
 
 ## Run
 ```
-run the non-optimized version:
+run the non-optimized / test version:
 
 npm run serve
 
@@ -46,8 +46,12 @@ run the optimized version:
 
 npm run build
 
-a) serve -s -l 80 dist
-        OR
+a) npm install -g serve
+   
+   serve -s -l 80 dist
+   
+          OR
+
 b) copy "dist" directory into any webserver document root in your network
 
 ```
