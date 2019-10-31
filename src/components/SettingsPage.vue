@@ -33,10 +33,9 @@
               <div class="field" style="text-align: left;">
                 <label class="label">OctoPrint controls</label>
                 <div class="buttons" v-for="command in octoprintCommands">
-                  <button class="button is-primary is-light" v-on:click="submitConfig()">{{command.name}}</button>
+                  <button class="button is-primary is-light" v-on:click="octoPrintCommand(command.action)">{{command.name}}</button>
                 </div>
               </div>
-
             </div>
           </section>
 
@@ -166,6 +165,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import axios from "axios";
 
 export default {
   data() {
@@ -289,6 +289,13 @@ export default {
           self.cors_proxy = json.cors_proxy;
       };
       readFile.readAsText(uploadedFile);
+    },
+    octoPrintCommand: function(action) {
+      axios({ method: "POST", url: this.$localStorage.get('octo_ip')+"/api/system/commands/core/"+action, headers: {'X-Api-Key': this.$localStorage.get('apikey'), 'Content-Type': 'application/json;charset=UTF-8'}}).then(result => {
+         console.log(result);
+      }, error => {
+          console.error(error);
+      });
     }
   }
   
