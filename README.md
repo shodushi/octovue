@@ -25,7 +25,6 @@ npm install
 
 ## Run
 ```
-
 run the non-optimized version:
 
 npm run serve
@@ -34,9 +33,21 @@ npm run serve
 run the optimized version:
 
 npm run build
-serve -s dist
+
+a) serve -s -l 80 dist
+        OR
+b) copy "dist" directory into any webserver document root in your network
 
 ```
+
+## Configuration
+```
+enter all infos in initial config screen and save. Configuration will be lost, when accessed form another browser or browser cache is cleared.
+
+To make your configuration persistent, click "export config" button and place "octovue_config.txt" into dist folder.
+
+```
+
 
 
 ## Preview

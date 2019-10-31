@@ -7,9 +7,9 @@
         <td style="width: 20%; border-right: 1px solid #C0C0C0;">
           <aside class="menu">
             <ul class="menu-list">
-              <li><a @click="subnav = 'octoprint'"><img src="/img/octoprint-icon.png" style="float: left; height: 1rem; margin-right: 10px;">OctoPrint</a></li>
-              <li><a @click="subnav = 'printer'"><img src="/img/printer-icon.png" style="float: left; height: 1rem; margin-right: 10px;">Printer</a></li>
-              <li><a @click="subnav = 'appearance'"><img src="/img/fullscreen-icon.png" style="float: left; height: 1rem; margin-right: 10px;"> Appearance</a></li>
+              <li><a @click="subnav = 'octoprint'" style="line-height: 1.5rem;"><img src="/img/octoprint-icon.png" style="float: left; height: 1.5rem; width: 1.7rem; margin-right: 10px;">OctoPrint</a></li>
+              <li><a @click="subnav = 'printer'" style="line-height: 1.5rem;"><img src="/img/printer-icon.png" style="float: left; height: 1.5rem; width: 1.7rem; margin-right: 10px;">Printer</a></li>
+              <li><a @click="subnav = 'appearance'" style="line-height: 1.5rem;"><img src="/img/fullscreen-icon.png" style="float: left; height: 1.5rem; width: 1.7rem; margin-right: 10px;"> Appearance</a></li>
             </ul>
           </aside>
         </td>
