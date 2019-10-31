@@ -8,7 +8,7 @@ An alternative UI for octoprint based on vue.js and bulma css framework
  - looking more modern than octoprint :-)
  - preview gcode files, if image available (place image named the same like gcode file into same directory. For example you have Vase.gcode, put preview image/photo named "Vase.png" in same directory)
  - Search thingiverse inside OctoVue for models and download them
- - nice printpage with graphs and gauges for temperatures
+ - nice printpage with graphs and gauges for temperatures (for now up to 7 hotends + heated bed and heated enclosure supported)
  - statistics page with overview of printed files (successful / failed)
  - control printer power in case you power your printer with a Sonoff POW (with tasmota fw) from OctoVue
  - control enclosure light (external control unit like nodeMCU) from OctoVue
