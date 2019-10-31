@@ -31,10 +31,10 @@
           <div class="buttons" id="fileoperations" style="margin-top: 30px;">
             <div style="width: 50%; padding: 10px;">
               <span id="btn_pause" class="button is-fullwidth"  v-bind:disabled="this.printerState.payload.state_string != 'Printing'" v-if="printerState.payload.state_string != 'Paused'" v-on:click="pauseJob()">pause</span>
-              <span id="btn_resume" class="button is-fullwidth" v-bind:disabled="this.printerState.payload.state_string != 'Printing'" v-if="printerState.payload.state_string == 'Paused'" v-on:click="resumeJob()">resume</span>
+              <span id="btn_resume" class="button is-fullwidth" v-bind:disabled="printerState.payload.state_string != 'Paused'" v-if="printerState.payload.state_string == 'Paused'" v-on:click="resumeJob()">resume</span>
             </div>
             <div style="width: 50%;">
-              <span id="btn_cancel" class="button is-fullwidth is-danger" v-bind:disabled="this.printerState.payload.state_string != 'Printing'" v-on:click="cancelJob()">cancel</span>
+              <span id="btn_cancel" class="button is-fullwidth is-danger" v-bind:disabled="this.printerState.payload.state_string != 'Printing' && this.printerState.payload.state_string != 'Paused'" v-on:click="cancelJob()">cancel</span>
             </div>
           </div>
           </div>
