@@ -62,7 +62,7 @@ Enter all infos in initial config screen and save.
 
 Hint:
 
-Configuration will be lost, when accessed form another browser or browser cache is cleared.
+Configuration will be lost, when accessed from another browser or browser cache is cleared.
 
 To make your configuration persistent, click "export config" button
 and place "octovue_config.txt" into dist folder.
