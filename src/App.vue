@@ -1,7 +1,7 @@
 <template>
   <div id="app">
 
-    <div id="configuration" v-if="$localStorage.get('octo_ip') == null">
+    <div id="configuration" v-if="$localStorage.get('octo_ip') == null && !next">
       <section class="section">
 
         <h1 class="title">Welcome to OctoVue</h1>
@@ -25,75 +25,99 @@
                 </div>
               </div>
 
-              <div class="field" style="text-align: left;">
+              <div class="field is-grouped" style="margin-top: 7%;" v-if="octo_ip != '' && apikey != '' && connectionSettings.options.printerProfiles.length == 0">
+                <div class="control">
+                  <button class="button is-info" v-on:click="checkConnection()">check connection</button>
+                </div>
+              </div>
+
+              <div id="wrapper" v-if="connectionSettings.options.printerProfiles.length > 0">
+                <div class="field" style="text-align: left;">
                 <label class="label">Printerport</label>
                 <div class="control">
-                  <input class="input" type="text" v-model="printerport" placeholder="/dev/ttyACM0">
+                  <div class="select">
+                    <select v-model="printerport">
+                      <option>choose</option>
+                      <option v-for="port in avail_printerports">{{port}}</option>
+                    </select>
+                  </div>
                 </div>
               </div>
               <div class="field" style="text-align: left;">
                 <label class="label">Baudrate</label>
                 <div class="control">
-                  <input class="input" type="text" v-model="baudrate" placeholder="115200">
+                  <div class="select">
+                    <select v-model="baudrate">
+                      <option>choose</option>
+                      <option v-for="rate in avail_baudrates">{{rate}}</option>
+                    </select>
+                  </div>
                 </div>
               </div>
               <div class="field" style="text-align: left;">
                 <label class="label">printer profile</label>
                 <div class="control">
-                  <input class="input" type="text" v-model="printerProfile" placeholder="_default">
-                </div>
-              </div>
-              <div class="field" style="text-align: left;">
-                <label class="label">Printer type</label>
-                <div class="control">
                   <div class="select">
-                    <select v-model="printer_firmware">
-                      <option>marlin</option>
-                      <option>reprap</option>
+                    <select v-model="printerProfile">
+                      <option>choose</option>
+                      <option v-for="profile in printerProfiles">{{profile.id}}</option>
                     </select>
                   </div>
                 </div>
               </div>
-
-              <div class="field" style="text-align: left;">
-                <div class="control">
-                <input id="previewimages" type="checkbox" name="previewimages" class="switch is-rounded is-outlined" checked="checked" v-model="previewimages">
-                <label for="previewimages">show preview images in filebrowser</label>
+                <div class="field" style="text-align: left;">
+                  <label class="label">Printer type</label>
+                  <div class="control">
+                    <div class="select">
+                      <select v-model="printer_firmware">
+                        <option>choose</option>
+                        <option>marlin</option>
+                        <option>reprap</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-              <div class="field" style="text-align: left;">
-                <div class="control">
-                <input id="powerhandling" type="checkbox" name="powerhandling" class="switch is-rounded is-outlined" checked="" v-model="powerhandling">
-                <label for="powerhandling">enable printer powerswitch</label>
+                <div class="field" style="text-align: left;">
+                  <div class="control">
+                  <input id="previewimages" type="checkbox" name="previewimages" class="switch is-rounded is-outlined" checked="checked" v-model="previewimages">
+                  <label for="previewimages">show preview images in filebrowser</label>
+                  </div>
                 </div>
-              </div>
 
-              <div class="field" v-if="powerhandling" style="text-align: left;">
-                <label class="label">Powerswitch IP:</label>
-                <div class="control">
-                  <input class="input" type="text" v-model="tasmota_ip" placeholder="192.168.120.81">
+                <div class="field" style="text-align: left;">
+                  <div class="control">
+                  <input id="powerhandling" type="checkbox" name="powerhandling" class="switch is-rounded is-outlined" checked="" v-model="powerhandling">
+                  <label for="powerhandling">enable printer powerswitch</label>
+                  </div>
                 </div>
-              </div>
 
-              <div class="field" style="text-align: left;">
-                <div class="control">
-                <input id="lighthandling" type="checkbox" name="lighthandling" class="switch is-rounded is-outlined" checked="" v-model="lighthandling">
-                <label for="lighthandling">enable light switch</label>
+                <div class="field" v-if="powerhandling" style="text-align: left;">
+                  <label class="label">Powerswitch IP:</label>
+                  <div class="control">
+                    <input class="input" type="text" v-model="tasmota_ip" placeholder="192.168.120.81">
+                  </div>
                 </div>
-              </div>
 
-              <div class="field" v-if="lighthandling" style="text-align: left;">
-                <label class="label">Light device IP:</label>
-                <div class="control">
-                  <input class="input" type="text" v-model="led_ip" placeholder="192.168.120.81">
+                <div class="field" style="text-align: left;">
+                  <div class="control">
+                  <input id="lighthandling" type="checkbox" name="lighthandling" class="switch is-rounded is-outlined" checked="" v-model="lighthandling">
+                  <label for="lighthandling">enable light switch</label>
+                  </div>
                 </div>
-              </div>
 
-              <div class="field" style="text-align: left;">
-                <label class="label">CORS anywhere proxy IP:</label>
-                <div class="control">
-                  <input class="input" type="text" v-model="cors_proxy" placeholder="http://192.168.120.244:8090">
+                <div class="field" v-if="lighthandling" style="text-align: left;">
+                  <label class="label">Light device IP:</label>
+                  <div class="control">
+                    <input class="input" type="text" v-model="led_ip" placeholder="192.168.120.81">
+                  </div>
+                </div>
+
+                <div class="field" style="text-align: left;">
+                  <label class="label">CORS anywhere proxy IP:</label>
+                  <div class="control">
+                    <input class="input" type="text" v-model="cors_proxy" placeholder="http://192.168.120.244:8090">
+                  </div>
                 </div>
               </div>
 
@@ -106,7 +130,7 @@
                     &nbsp; import config
                   </label>
                   <input id="importfile" style="visibility:hidden;" type="file" @change="importConfig($event)">
-                  <button class="button is-link" v-on:click="submitConfig()">Submit</button>
+                  <button class="button is-link" v-on:click="submitConfig()" v-if="connectionSettings.options.printerProfiles.length > 0">Submit</button>
                 </div>
               </div>
 
@@ -120,7 +144,7 @@
       </section>
     </div>
 
-    <div id="main" v-if="$localStorage.get('octo_ip') != null">
+    <div id="main" v-if="$localStorage.get('octo_ip') != null && next">
       <div :class="{'is-active': pageLoader}" class="pageloader"><span class="title">connecting to OctoPrint instance<br /><span class="title" v-if="octoprintConnectionTries >= octoprintConnectionMaxTries">{{pageLoaderAddText}}</span></span></div>
       <article id="messagebox" class="message is-danger">
         <div id="messagebox_body" class="message-body"></div>
@@ -390,12 +414,13 @@ export default {
   },
   data() {
     return {
+      next: false,
       octo_ip: "",
       apikey: "",
-      printerport: "",
-      baudrate: "",
-      printerProfile: "",
-      printer_firmware: "marlin",
+      printerport: "choose",
+      baudrate: "choose",
+      printerProfile: "choose",
+      printer_firmware: "choose",
       previewimages: true,
       powerhandling: "",
       tasmota_ip: "",
@@ -430,7 +455,9 @@ export default {
     this.configFromFile();
   },
   mounted: function() {
-    if(this.$localStorage.get('octo_ip') == null || this.$localStorage.get('apikey') == null) { return false;}
+    if(this.$localStorage.get('octo_ip') == null || this.$localStorage.get('apikey') == null) { return false;} else {
+      this.next = true;
+    }
     setTimeout(this.loadOctoprintSettings, 1)
     setTimeout(this.getPowerState, 1)
     setTimeout(this.getLightState, 1)
@@ -538,6 +565,16 @@ export default {
         this.$store.state.cam = result.data.webcam.streamUrl;
       }, error => {
           console.error(error);
+      });
+    },
+    checkConnection: function() {
+      axios({ method: "GET", "url": this.octo_ip+"/api/connection", headers: {'X-Api-Key': this.apikey} }).then(result => {
+        this.$store.state.connectionSettings = result.data;
+        console.log(result.data);
+        this.$store.state.printerProfiles = result.data.options.printerProfiles;
+        this.$store.state.avail_printerports = result.data.options.ports;
+        this.$store.state.avail_baudrates = result.data.options.baudrates;
+      }, error => {
       });
     },
     getOctoprintConnection: function() {
@@ -662,6 +699,7 @@ export default {
           }
           self.led_ip = json.led_ip;
           self.cors_proxy = json.cors_proxy;
+          self.checkConnection();
       };
       readFile.readAsText(uploadedFile);
     }
