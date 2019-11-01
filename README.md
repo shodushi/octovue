@@ -4,7 +4,7 @@ An alternative UI for octoprint based on vue.js and bulma css framework
 
 
 ## Functionality
- - of course print gcodes :-)
+ - of course upload and print gcodes :-)
  - looking more modern than octoprint :-)
  - preview gcode files, if image available (place image named the same like gcode file into same directory. For example you have Vase.gcode, put preview image/photo named "Vase.png" in same directory)
  - Search thingiverse inside OctoVue for models and download them
@@ -15,49 +15,69 @@ An alternative UI for octoprint based on vue.js and bulma css framework
 
 
 ## prerequisites
-```
-install & configure octoprint
-  octoprint settings:
-  	-> enable cors
-  	-> enable api
 
-  octoprint plugins needed:
-    -> OctoPrint-DisplayLayerProgress (https://github.com/OllisGit/OctoPrint-DisplayLayerProgress)
+* install & configure octoprint
+  * octoprint settings:
+  	* enable cors
+  	* enable api
 
-```
+* octoprint plugins needed:
+  * OctoPrint-DisplayLayerProgress (https://github.com/OllisGit/OctoPrint-DisplayLayerProgress)
+
+
+### Install NodeJS
+
+Go to node.js download page and check right click on the version of ARM that you need and choose Copy Link address.
+
+```mkdir ~/tmp && cd ~/tmp```
+
+```wget https://nodejs.org/dist/v8.9.3/node-v8.9.3-linux-armv7l.tar.xz```
+
+```tar -xvf node-v8.9.3-linux-armv7l.tar.xz```
+
+```cd node-v8.9.3-linux-armv7l```
+
+```sudo cp -R * /usr/local/```
+
+
+
+check if everything went well:
+
+```node --version && npm --version```
+
+```cd ~ && rm -rf ~/tmp```
+
+
 
 ## Installation
-```
-git clone https://github.com/shodushi/octovue.git
+```cd ~/```
 
-cd octuvue
+```git clone https://github.com/shodushi/octovue.git```
 
-npm install
-```
+```cd octuvue```
+
+```npm install```
+
+```npm run build```
+
+
 
 ## Run
+
 ```
-run the non-optimized / test version:
-
-npm run serve
-
-
-run the optimized version:
-
-npm run build
-
 a) npm install -g serve
-   
-   serve -s -l 80 dist
-   
+
+   serve -s -l 8000 dist
+
           OR
 
 b) copy "dist" directory into any webserver document root in your network
 
+cp -r ~/octovue/src/build/* /var/www/
 ```
 
 ## Configuration
-```
+
 Enter all infos in initial config screen and save.
 
 Hint:
@@ -65,9 +85,9 @@ Hint:
 Configuration will be lost, when accessed from another browser or browser cache is cleared.
 
 To make your configuration persistent, click "export config" button
-and place "octovue_config.txt" into "dist" folder.
+and upload "octovue_config.txt" into "dist" folder.
 
-```
+
 
 
 
