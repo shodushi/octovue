@@ -68,13 +68,13 @@ check if everything went well:
 a) $ sudo npm install -g serve
    $ nohup serve -s -l 8001 dist &
 
-   browse to http://YOUR-RASPBERRY-IP:8001
+browse to http://YOUR-RASPBERRY-IP:8001
 
           OR
 
 b) copy "dist" directory into any webserver document root in your network
 
-$ cp -r ~/octovue/dist/* /var/www/
+  $ cp -r ~/octovue/dist/* /var/www/
 
 browse to http://YOUR-WEBSERVER-IP
 ```
