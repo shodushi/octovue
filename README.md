@@ -54,7 +54,7 @@ check if everything went well:
 
 ```git clone https://github.com/shodushi/octovue.git```
 
-```cd octuvue```
+```cd octovue```
 
 ```npm install```
 
@@ -66,14 +66,18 @@ check if everything went well:
 
 ```
 a) npm install -g serve
+   cd src
+   serve -s -l 8001 dist
 
-   serve -s -l 8000 dist
+   browse to http://YOUR-RASPBERRY-IP:8001
 
           OR
 
 b) copy "dist" directory into any webserver document root in your network
 
 cp -r ~/octovue/src/build/* /var/www/
+
+browse to http://YOUR-WEBSERVER-IP
 ```
 
 ## Configuration
