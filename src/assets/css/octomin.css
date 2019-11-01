@@ -1,20 +1,7 @@
-#dropzoneProgress {
-  display: none;
-  position: absolute;
-  top: 40%;
-  left: 25%;
-  width: 50%;
-  height: 100px;
-  background-color: white;
-  color: black;
-  border: 1px dashed black;
-  z-index: 999;
-  text-align: center;
-  font-size: 20px;
+/*filebrowser*/
+#filebrowser_head td {
+  border: none;
 }
-#dropzoneProgress .imgContainer { vertical-align: middle; }
-#dropzoneProgress .textContainer { display: inline-block; }
-
 tr.is-selected {
   background-color: #c9ffed !important;
   color: black !important;
@@ -52,6 +39,35 @@ tr.is-selected {
 .file_buttons_thingiverse span {
   margin: 5px 5px 0px 5px;
 }
+.thingiverse {
+  font-weight: bold;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+  border: 1px solid #000;
+  text-align: center;
+  width: 20px;
+  height: 20px;
+}
+#dropzoneProgress {
+  display: none;
+  position: absolute;
+  top: 40%;
+  left: 25%;
+  width: 50%;
+  height: 100px;
+  background-color: white;
+  color: black;
+  border: 1px dashed black;
+  z-index: 999;
+  text-align: center;
+  font-size: 20px;
+}
+#dropzoneProgress .imgContainer { vertical-align: middle; }
+#dropzoneProgress .textContainer { display: inline-block; }
+
+
+
+/*temperature slider*/
 .temp_ist {
   position: relative;
   width: 20px;
@@ -82,18 +98,9 @@ tr.is-selected {
   color: #1c92eb;
   font-weight: bold;
 }
-#messagebox {
-  position: absolute;
-  top: 20%;
-  left: 10px;
-  z-index: 999;
-  width: 40%;
-  height: auto;
-  display: none;
-}
-#messagebox div {
-  font-size: 100%;
-}
+
+
+/*terminal*/
 #terminal {
   position: absolute;
   top: 100px;
@@ -114,18 +121,15 @@ tr.is-selected {
   background-color: rgba(0,0,0,0.8);
   color: #fff;
 }
-#filebrowser_head td {
-  border: none;
-}
+
+/*transitions*/
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 1s
 }
-
 .fade-enter,
 .fade-leave-to
 /* .fade-leave-active in <2.1.8 */
-
 {
   opacity: 0
 }
@@ -137,15 +141,10 @@ tr.is-selected {
   transform: translateX(-100%), translateY(-100%);
   opacity: 0;
 }
-.thingiverse {
-  font-weight: bold;
-  -moz-border-radius: 50%;
-  border-radius: 50%;
-  border: 1px solid #000;
-  text-align: center;
-  width: 20px;
-  height: 20px;
-}
+
+
+
+/*printpage*/
 .pp_boxes {
   font-size: 1.8em;
   color: #22d0b2;
@@ -157,6 +156,28 @@ tr.is-selected {
 #piecharts .columns .column {
   padding: 20px 20px 20px 20px;
 }
+
+
+
+/*common stuff*/
 .nav-divider {
   width: 11px; height: 80%; margin: 5px 10px 0px 20px; background-color: #C0C0C0; border: 5px solid white;
+}
+.has-margin {
+  margin-left: 20px;
+}
+#messagebox {
+  position: absolute;
+  top: 20%;
+  left: 10px;
+  z-index: 999;
+  width: 40%;
+  height: auto;
+  display: none;
+}
+#messagebox div {
+  font-size: 100%;
+}
+.column {
+  margin: 10px 10px 10px 10px !important;
 }

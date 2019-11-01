@@ -1,0 +1,39 @@
+body {
+    background-color: #2c2b2c !important;
+}
+nav, .footer {
+    background-color: #222122 !important;
+    color: white !important;
+}
+a, h1, h2, h3, .title, #printPage_temp div {
+    color: #dcdadc !important;
+}
+#filebrowser_head, .card, #filebrowser_head, .tabs, .table, #files, .column {
+    background-color: #3d3d3d !important;
+    color: white !important;
+}
+.table.is-striped tbody tr:not(.is-selected):nth-child(even) {
+    background-color: #222122 !important;
+}
+.table.is-striped tbody tr:is(.is-selected):nth-child(odd) {
+    background-color: #494949 !important;
+}
+
+.tabs.is-boxed li.is-active a {
+    background-color: #222122 !important;
+}
+.tabs.is-boxed a:hover {
+    background-color: #494949 !important;
+}
+
+
+.table.is-striped tbody tr:hover {
+    background-color: #696869 !important;
+}
+
+
+
+
+
+
+

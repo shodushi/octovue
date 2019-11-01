@@ -89,7 +89,7 @@ export const globalSettings = {
           if(msg.event.type != null) {
               if(msg.event.type == "PrinterStateChanged") {
                   this.$store.state.printerState = msg.event;
-                  if(this.$store.state.printerState.payload.state_string != "Operational" && this.$store.state.printerState.payload.state_string != "Connecting" && this.$store.state.printerState.payload.state_string != "Paused") {
+                  if(this.$store.state.printerState.payload.state_string != "Operational" && this.$store.state.printerState.payload.state_string != "Printing" && this.$store.state.printerState.payload.state_string != "Paused") {
                     this.$store.state.isNotConnection = true;
                     this.$store.state.isConnection = false;
                     this.$store.state.isConnecting = false;
@@ -174,7 +174,7 @@ export const globalSettings = {
         }
         if(msg.current.state != null) {
           this.$store.state.printerState.payload.state_string = msg.current.state.text;
-          if(this.$store.state.printerState.payload.state_string != "Operational" && this.$store.state.printerState.payload.state_string != "Connecting" && this.$store.state.printerState.payload.state_string != "Cancelling" && this.$store.state.printerState.payload.state_string != "Paused") {
+          if(this.$store.state.printerState.payload.state_string != "Operational" && this.$store.state.printerState.payload.state_string != "Printing" && this.$store.state.printerState.payload.state_string != "Cancelling" && this.$store.state.printerState.payload.state_string != "Paused") {
             this.$store.state.isNotConnection = true;
             this.$store.state.isConnection = false;
             this.$store.state.isConnecting = false;
@@ -216,7 +216,7 @@ export const globalSettings = {
       }
     },
     powerswitch: function() {
-      axios({ method: "GET", "url": this.$localStorage.get('cors_proxy')+"/"+this.$localStorage.get('tasmota_ip')+"/cm?cmnd=Power%20TOGGLE" }).then(result => {
+      axios({ method: "GET", "url": this.$localStorage.get('cors_proxy')+"/"+this.$localStorage.get('tasmota_ip')+this.$localStorage.get('tasmota_toggle') }).then(result => {
         this.$store.state.powerState = result.data.POWER.toLowerCase();
         //this.powerState = result.data.POWER.toLowerCase();
         if(this.powerState == "off") {
@@ -232,7 +232,7 @@ export const globalSettings = {
     },
     getPowerState: function() {
       if(this.$localStorage.get('powerhandling') == "yes") {
-        axios({ method: "GET", "url": this.$localStorage.get('cors_proxy')+"/"+this.$localStorage.get('tasmota_ip')+"/cm?cmnd=Status" }).then(result => {
+        axios({ method: "GET", "url": this.$localStorage.get('cors_proxy')+"/"+this.$localStorage.get('tasmota_ip')+this.$localStorage.get('tasmota_status') }).then(result => {
           if(result.data.Status.Power == 0) {
             this.$store.state.powerState = 'off';
             this.$store.state.isNotPower = true;
@@ -248,7 +248,7 @@ export const globalSettings = {
       }
     },
     lightswitch: function() {
-      axios({ method: "POST", "url": this.$localStorage.get('cors_proxy')+"/"+this.$localStorage.get('led_ip')+"/light/3d_drucker_led/toggle" }).then(result => {
+      axios({ method: "POST", "url": this.$localStorage.get('cors_proxy')+"/"+this.$localStorage.get('led_ip')+this.$localStorage.get('led_toggle') }).then(result => {
         this.getLightState();
       }, error => {
         console.error(error);
@@ -256,7 +256,7 @@ export const globalSettings = {
     },
     getLightState: function() {
       if(this.$localStorage.get('lighthandling') == "yes") {
-        axios({ method: "GET", "url": this.$localStorage.get('cors_proxy')+"/"+this.$localStorage.get('led_ip')+"/light/3d_drucker_led/state" }).then(result => {
+        axios({ method: "GET", "url": this.$localStorage.get('cors_proxy')+"/"+this.$localStorage.get('led_ip')+this.$localStorage.get('led_status') }).then(result => {
           this.$store.state.lightState = result.data.state.toLowerCase();
           if(this.lightState == "off") {
             this.$store.state.isNotLight = true;
@@ -445,6 +445,14 @@ export const globalSettings = {
       }, error => {
       });
     },
+    transport: function(method, endpoint, url, object) {
+      return axios({ method: method, "url": this.$localStorage.get(endpoint)+url, headers: {'X-Api-Key': this.$localStorage.get('apikey'), 'Content-Type': 'application/json;charset=UTF-8'}, data: object }).then(response => {
+        return response;
+      }, error => {
+        console.log("error in "+endpoint+"/"+url+": ", error);
+        return error;
+      });
+    },
     changeFileSource: function(src) {
       this.$store.state.file_origin = src;
       this.loadFiles();
@@ -469,13 +477,13 @@ export const globalSettings = {
       $('#btn_cancel').attr("disabled", true);
     },
     loadFiles: function() {
-      axios({ method: "GET", "url": this.$localStorage.get('octo_ip')+"/api/files?recursive=true", headers: {'X-Api-Key': this.$localStorage.get('apikey')} }).then(result => {
-        this.$store.state.fileList = [];
-        this.$store.state.fileList = result.data.files;
-        this.listFiles();
-        this.getStats();
-      }, error => {
-          console.error(error);
+      this.transport("GET", "octo_ip", "/api/files?recursive=true", null).then(result => {
+        if(typeof(result) == "object") {
+          this.$store.state.fileList = [];
+          this.$store.state.fileList = result.data.files;
+          this.listFiles();
+          this.getStats();
+        }
       });
     },
     imgFallback(event) {
@@ -483,7 +491,6 @@ export const globalSettings = {
     },
     listFiles: function() {
       var self = this;
-
       this.$store.selectedfile = "";
       $("#filestable tr").removeClass("is-selected");
       $(".file_buttons span").css("display", "none");
@@ -618,125 +625,99 @@ export const globalSettings = {
       zoomElement.style.display = "none";
     },
     loadprintFile: function(print) {
-      var url = this.$localStorage.get('octo_ip')+"/api/files/"+this.$store.state.selectedfile.origin+"/"+this.$store.state.selectedfile.display;
       var obj = {};
       obj.command = "select";
       obj.print = print;
-
-      axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$localStorage.get('apikey'), 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
-        if(print) {
-          $('#btn_cancel').attr("disabled", false);
-          this.$router.push('printpage')
+      this.transport("POST", "octo_ip", "/api/files/"+this.$store.state.selectedfile.origin+"/"+this.$store.state.selectedfile.display, obj).then(result => {
+        if(typeof(result) == "object") {
+          if(print) {
+            $('#btn_cancel').attr("disabled", false);
+            this.$router.push('printpage')
+          }
         }
-      }, error => {
-          console.error(error);
       });
-      /*
-            axios.post(url, JSON.stringify(obj), { headers: {'X-Api-Key': this.$localStorage.get('apikey')} }).then(result => {
-              if(print) {
-                $('#btn_cancel').attr("disabled", false);
-              }
-            }, error => {
-                console.error(error);
-            });
-      */
     },
     deleteFile: function() {
       var url = "";
       if(this.$store.state.selectedfolder == "") {
-        url = this.$localStorage.get('octo_ip')+"/api/files/local/"+this.$store.state.selectedfile.display;
+        url = "/api/files/local/"+this.$store.state.selectedfile.display;
       } else {
-        url = this.$localStorage.get('octo_ip')+"/api/files/local/"+this.$store.state.selectedfolder+"/"+this.$store.state.selectedfile.display;
+        url = "/api/files/local/"+this.$store.state.selectedfolder+"/"+this.$store.state.selectedfile.display;
       }
-      axios({ method: "DELETE", "url": url, headers: {'X-Api-Key': this.$localStorage.get('apikey')} }).then(result => {
-        this.$store.state.selectedfile = null;
-        $("#fileoperations span").attr("disabled", true);
-        this.loadFiles();
-      }, error => {
-          console.error(error);
+      this.transport("DELETE", "octo_ip", url, null).then(result => {
+        if(typeof(result) == "object") {
+          this.$store.state.selectedfile = null;
+          $("#fileoperations span").attr("disabled", true);
+          this.loadFiles();
+        }
       });
     },
     cancelJob: function() {
-      var url = this.$localStorage.get('octo_ip')+"/api/job";
       var obj = {};
       obj.command = "cancel";
-      axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$localStorage.get('apikey'), 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
-        $('#btn_cancel').attr("disabled", true);
-      }, error => {
-          console.error(error);
+      this.transport("POST", "octo_ip", "/api/job", JSON.stringify(obj)).then(result => {
+        if(typeof(result) == "object") {
+          $('#btn_cancel').attr("disabled", true);
+        }
       });
     },
     pauseJob: function() {
-      var url = this.$localStorage.get('octo_ip')+"/api/job";
       var obj = {};
       obj.command = "pause";
       obj.action = "pause";
-      axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$localStorage.get('apikey'), 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
-      }, error => {
-          console.error(error);
-      });
+      this.transport("POST", "octo_ip", "/api/job", JSON.stringify(obj)).then(result => {});
     },
     resumeJob: function() {
-      var url = this.$localStorage.get('octo_ip')+"/api/job";
       var obj = {};
       obj.command = "pause";
       obj.action = "resume";
-      axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$localStorage.get('apikey'), 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
-      }, error => {
-          console.error(error);
-      });
+      this.transport("POST", "octo_ip", "/api/job", JSON.stringify(obj)).then(result => {});
     },
     setExtruderTemp: function(tool) {
       var temp = $("#slider"+tool).val();
-      var url = this.$localStorage.get('octo_ip')+"/api/printer/tool";
       var obj = {};
       obj.command = "target";
       obj.targets = {};
       obj.targets[tool] = parseInt(temp);
       this.temps[tool].target = temp;
-      axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$localStorage.get('apikey'), 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
-        var temptool0_ist = (100/temp)*this.$store.state.temps.tool0.actual;
-        $("#temp_tool0_actual").css("height", temptool0_ist+"%");
-      }, error => {
-          console.error(error);
+      this.transport("POST", "octo_ip", "/api/printer/tool", JSON.stringify(obj)).then(result => {
+        if(typeof(result) == "object") {
+          var temptool0_ist = (100/temp)*this.$store.state.temps.tool0.actual;
+          $("#temp_tool0_actual").css("height", temptool0_ist+"%");
+        }
       });
     },
     setBedTemp: function() {
       var temp = $("#sliderbed").val();
-      var url = this.$localStorage.get('octo_ip')+"/api/printer/bed";
       var obj = {};
       obj.command = "target";
       obj.target = parseInt(temp);
       this.$store.state.temps.bed.target = temp;
-      axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$localStorage.get('apikey'), 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
-        var tempbed_ist = (100/temp)*this.$store.state.temps.bed.actual;
-        $("#temp_bed_actual").css("height", tempbed_ist+"%");
-      }, error => {
-          console.error(error);
+      this.transport("POST", "octo_ip", "/api/printer/bed", JSON.stringify(obj)).then(result => {
+        if(typeof(result) == "object") {
+          var tempbed_ist = (100/temp)*this.$store.state.temps.bed.actual;
+          $("#temp_bed_actual").css("height", tempbed_ist+"%");
+        }
       });
     },
     setChamberTemp: function() {
       var temp = $("#sliderchamber").val();
-      var url = this.$localStorage.get('octo_ip')+"/api/printer/chamber";
       var obj = {};
       obj.command = "target";
       obj.target = parseInt(temp);
       this.$store.state.temps.chamber.target = temp;
-      axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$localStorage.get('apikey'), 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
-        var tempbed_ist = (100/temp)*this.$store.state.temps.bed.actual;
-        $("#temp_bed_actual").css("height", tempbed_ist+"%");
-      }, error => {
-          console.error(error);
+      this.transport("POST", "octo_ip", "/api/printer/chamber", JSON.stringify(obj)).then(result => {
+        if(typeof(result) == "object") {
+          var tempbed_ist = (100/temp)*this.$store.state.temps.bed.actual;
+          $("#temp_bed_actual").css("height", tempbed_ist+"%");
+        }
       });
     },
     pcmds: function(gcmd) {
       var url = this.$localStorage.get('octo_ip')+"/api/printer/command";
       var obj = {};
       obj.command = gcmd;
-      axios({ method: "POST", url: url, headers: {'X-Api-Key': this.$localStorage.get('apikey'), 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then({
-      }, error => {
-          console.error(error);
-      });
+      this.transport("POST", "octo_ip", "/api/printer/command", JSON.stringify(obj)).then(result => {});
     },
     windowOpen: function(url) {
       window.open(url, "_blank"); 
@@ -992,12 +973,16 @@ export const globalSettings = {
               this.$localStorage.set('powerhandling', 'no');
             }
             this.$localStorage.set('tasmota_ip', config.tasmota_ip);
+            this.$localStorage.set('tasmota_toggle', config.tasmota_toggle);
+            this.$localStorage.set('tasmota_status', config.tasmota_status);
             if(config.lighthandling) {
               this.$localStorage.set('lighthandling', 'yes');
             } else {
               this.$localStorage.set('lighthandling', 'no');
             }
             this.$localStorage.set('led_ip', config.led_ip);
+            this.$localStorage.set('led_toggle', config.led_toggle);
+            this.$localStorage.set('led_status', config.led_status);
             this.$localStorage.set('cors_proxy', config.cors_proxy);
             if(this.$localStorage.get('octo_ip') != null && this.$localStorage.get('apikey') != null) {
               this.$router.go();

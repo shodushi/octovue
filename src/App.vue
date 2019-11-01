@@ -279,7 +279,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import Chart from 'vue-bulma-chartjs';
 
 export default {
@@ -298,7 +297,11 @@ export default {
       previewimages: true,
       powerhandling: "",
       tasmota_ip: "",
+      tasmota_toggle: "",
+      tasmota_status: "",
       lighthandling: "",
+      light_toggle: "",
+      light_status: "",
       led_ip: "",
       cors_proxy: ""
     };
@@ -332,6 +335,7 @@ export default {
     if(this.$localStorage.get('octo_ip') == null || this.$localStorage.get('apikey') == null) { return false;} else {
       this.next = true;
     }
+    $("#theme").attr("href", "css/themes/dark.css");
     setTimeout(this.loadOctoprintSettings, 1)
     setTimeout(this.getPowerState, 1)
     setTimeout(this.getLightState, 1)
@@ -340,14 +344,14 @@ export default {
     setTimeout(this.getOctoPrintProfiles, 1);
     setTimeout(this.sockConnection, 2);
     setTimeout(this.getOctoPrintCommands, 500);
-    if(this.printerState.payload.state_string != "Operational" && this.printerState.payload.state_string != "Connecting" && this.printerState.payload.state_string != "Paused") {
+    if(this.printerState.payload.state_string != "Operational" && this.printerState.payload.state_string != "Printing" && this.printerState.payload.state_string != "Paused") {
       this.$store.state.isNotConnection = true;
       this.$store.state.isConnection = false;
       this.$store.state.isConnecting = false;
       this.$store.state.connectionState = "off";
     } else if(this.printerState.payload.state_string == "Connecting") {
       this.$store.state.isNotConnection = false;
-      this.$store.state.isConnection = true;
+      this.$store.state.isConnection = false;
       this.$store.state.isConnecting = true;
       this.$store.state.connectionState = "...";
     } else {
@@ -359,56 +363,56 @@ export default {
   },
   methods: {
     powerswitch: function() {
-      axios({ method: "GET", "url": this.$localStorage.get('cors_proxy')+"/"+this.$localStorage.get('tasmota_ip')+"/cm?cmnd=Power%20TOGGLE" }).then(result => {
-        this.$store.state.powerState = result.data.POWER.toLowerCase();
-        if(this.powerState == "off") {
-          this.$store.state.isNotPower = true;
-          this.$store.state.isPower = false;
-        } else {
-          this.$store.state.isNotPower = false;
-          this.$store.state.isPower = true;
+      this.transport("GET", "cors_proxy", "/"+this.$localStorage.get('tasmota_ip')+"/cm?cmnd=Power%20TOGGLE", null).then(result => {
+        if(typeof(result) == "object") {
+          this.$store.state.powerState = result.data.POWER.toLowerCase();
+          if(this.powerState == "off") {
+            this.$store.state.isNotPower = true;
+            this.$store.state.isPower = false;
+          } else {
+            this.$store.state.isNotPower = false;
+            this.$store.state.isPower = true;
+          }
         }
-      }, error => {
-          console.error(error);
       });
     },
     getPowerState: function() {
       if(this.$localStorage.get('powerhandling') == "yes") {
-        axios({ method: "GET", "url": this.$localStorage.get('cors_proxy')+"/"+this.$localStorage.get('tasmota_ip')+"/cm?cmnd=Status" }).then(result => {
-          if(result.data.Status.Power == 0) {
-            this.$store.state.powerState = 'off';
-            this.$store.state.isNotPower = true;
-            this.$store.state.isPower = false;
-          } else {
-            this.$store.state.powerState = 'on';
-            this.$store.state.isNotPower = false;
-            this.$store.state.isPower = true;
+        this.transport("GET", "cors_proxy", "/"+this.$localStorage.get('tasmota_ip')+"/cm?cmnd=Status", null).then(result => {
+          if(typeof(result) == "object") {
+            if(result.data.Status.Power == 0) {
+              this.$store.state.powerState = 'off';
+              this.$store.state.isNotPower = true;
+              this.$store.state.isPower = false;
+            } else {
+              this.$store.state.powerState = 'on';
+              this.$store.state.isNotPower = false;
+              this.$store.state.isPower = true;
+            }
           }
-        }, error => {
-            console.error(error);
         });
       }
     },
     lightswitch: function() {
-      axios({ method: "POST", "url": this.$localStorage.get('cors_proxy')+"/"+this.$localStorage.get('led_ip')+"/light/3d_drucker_led/toggle" }).then(result => {
-        this.getLightState();
-      }, error => {
-        console.error(error);
+      this.transport("POST", "cors_proxy", "/"+this.$localStorage.get('led_ip')+"/light/3d_drucker_led/toggle", null).then(result => {
+        if(typeof(result) == "object") {
+          this.getLightState();
+        }
       });
     },
     getLightState: function() {
       if(this.$localStorage.get('lighthandling') == "yes") {
-        axios({ method: "GET", "url": this.$localStorage.get('cors_proxy')+"/"+this.$localStorage.get('led_ip')+"/light/3d_drucker_led/state" }).then(result => {
-          this.$store.state.lightState = result.data.state.toLowerCase();
-          if(this.lightState == "off") {
-            this.$store.state.isNotLight = true;
-            this.$store.state.isLight = false;
-          } else {
-            this.$store.state.isNotLight = false;
-            this.$store.state.isLight = true;
+        this.transport("GET", "cors_proxy", "/"+this.$localStorage.get('led_ip')+"/light/3d_drucker_led/state", null).then(result => {
+          if(typeof(result) == "object") {
+            this.$store.state.lightState = result.data.state.toLowerCase();
+            if(this.lightState == "off") {
+              this.$store.state.isNotLight = true;
+              this.$store.state.isLight = false;
+            } else {
+              this.$store.state.isNotLight = false;
+              this.$store.state.isLight = true;
+            }
           }
-        }, error => {
-            console.error(error);
         });
       }
     },
@@ -425,48 +429,49 @@ export default {
       } else {
         obj.command = "disconnect";
       }
-      axios({ method: "POST", url: this.$localStorage.get('octo_ip')+"/api/connection", headers: {'X-Api-Key': this.$localStorage.get('apikey'), 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
-        this.$store.state.isNotConnection = false;
-        this.$store.state.isConnection = true;
-        this.$store.state.isConnecting = true;
-        this.$store.state.connectionState = "...";
-      }, error => {
-          console.error(error);
+      this.transport("POST", "octo_ip", "/api/connection", JSON.stringify(obj)).then(result => {
+        if(typeof(result) == "object") {
+          this.$store.state.isNotConnection = false;
+          this.$store.state.isConnection = true;
+          this.$store.state.isConnecting = true;
+          this.$store.state.connectionState = "...";
+        }
       });
     },
     loadCam: function() {
       var self = this;
-      axios({ method: "GET", "url": this.$localStorage.get('octo_ip')+"/api/settings", headers: {'X-Api-Key': this.$localStorage.get('apikey')} }).then(result => {
-        this.$store.state.cam = result.data.webcam.streamUrl;
-      }, error => {
-          console.error(error);
+      this.transport("GET", "octo_ip", "/api/settings", null).then(result => {
+        if(typeof(result) == "object") {
+          this.$store.state.cam = result.data.webcam.streamUrl;
+        }
       });
     },
     getOctoPrintCommands: function() {
-      axios({ method: "GET", url: this.$localStorage.get('octo_ip')+"/api/system/commands/core", headers: {'X-Api-Key': this.$localStorage.get('apikey'), 'Content-Type': 'application/json;charset=UTF-8'}}).then(result => {
-         this.$store.state.octoprintCommands = result.data;
-         console.log(result.data);
-      }, error => {
-          console.error(error);
+      this.transport("GET", "octo_ip", "/api/system/commands/core", null).then(result => {
+        if(typeof(result) == "object") {
+          this.$store.state.octoprintCommands = result.data;
+        }
       });
     },
     checkConnection: function() {
-      axios({ method: "GET", "url": this.octo_ip+"/api/connection", headers: {'X-Api-Key': this.apikey} }).then(result => {
-        this.$store.state.connectionSettings = result.data;
-        this.$store.state.printerProfiles = result.data.options.printerProfiles;
-        this.$store.state.avail_printerports = result.data.options.ports;
-        this.$store.state.avail_baudrates = result.data.options.baudrates;
-      }, error => {
+      this.transport("GET", "octo_ip", "/api/connection", null).then(result => {
+        if(typeof(result) == "object") {
+          this.$store.state.connectionSettings = result.data;
+          this.$store.state.printerProfiles = result.data.options.printerProfiles;
+          this.$store.state.avail_printerports = result.data.options.ports;
+          this.$store.state.avail_baudrates = result.data.options.baudrates;
+        }
       });
     },
     getOctoprintConnection: function() {
-      axios({ method: "GET", "url": this.$localStorage.get('octo_ip')+"/api/connection", headers: {'X-Api-Key': this.$localStorage.get('apikey')} }).then(result => {
-        this.$store.state.connectionSettings = result.data;
-        this.$store.state.pageLoader = false;
-        this.$store.state.printerProfiles = result.data.options.printerProfiles;
-        this.$store.state.avail_printerports = result.data.options.ports;
-        this.$store.state.avail_baudrates = result.data.options.baudrates;
-      }, error => {
+      this.transport("GET", "octo_ip", "/api/connection", null).then(result => {
+        if(typeof(result) == "object") {
+          this.$store.state.connectionSettings = result.data;
+          this.$store.state.pageLoader = false;
+          this.$store.state.printerProfiles = result.data.options.printerProfiles;
+          this.$store.state.avail_printerports = result.data.options.ports;
+          this.$store.state.avail_baudrates = result.data.options.baudrates;
+        } else {
           this.displayMsg('octoprint_conn_error');
           if(this.$store.state.octoprintConnectionTries < self.$store.state.octoprintConnectionMaxTries) {
             setTimeout(function(){
@@ -476,6 +481,7 @@ export default {
           } else {
             this.$store.state.pageLoaderAddText = "Connection failed, seems like OctoPrint server is not available!?";
           }
+        }
       });
     },
     submitConfig: function() {
@@ -496,12 +502,16 @@ export default {
         this.$localStorage.set('powerhandling', 'no');
       }
       this.$localStorage.set('tasmota_ip', this.tasmota_ip);
+      this.$localStorage.set('tasmota_toggle', this.tasmota_toggle);
+      this.$localStorage.set('tasmota_status', this.tasmota_status);
       if(this.lighthandling) {
         this.$localStorage.set('lighthandling', 'yes');
       } else {
         this.$localStorage.set('lighthandling', 'no');
       }
       this.$localStorage.set('led_ip', this.led_ip);
+      this.$localStorage.set('led_toggle', this.led_toggle);
+      this.$localStorage.set('led_status', this.led_status);
       this.$localStorage.set('cors_proxy', this.cors_proxy);
       this.$store.state.settingsmodal = false;
       this.$router.go();
@@ -517,8 +527,12 @@ export default {
         previewimages: this.$localStorage.get('previewimages'),
         powerhandling: this.$localStorage.get('powerhandling'),
         tasmota_ip: this.$localStorage.get('tasmota_ip'),
+        tasmota_toggle: this.$localStorage.get('tasmota_toggle'),
+        tasmota_status: this.$localStorage.get('tasmota_status'),
         lighthandling: this.$localStorage.get('lighthandling'),
         led_ip: this.$localStorage.get('led_ip'),
+        led_toggle: this.$localStorage.get('led_toggle'),
+        led_status: this.$localStorage.get('led_status'),
         cors_proxy: this.$localStorage.get('cors_proxy')
       };
       var hiddenElement = document.createElement('a');
@@ -549,11 +563,15 @@ export default {
             self.powerhandling = true;
           }
           self.tasmota_ip = json.tasmota_ip;
+          self.tasmota_toggle = json.tasmota_toggle;
+          self.tasmota_status = json.tasmota_status;
           self.lighthandling = false;
           if(json.lighthandling == "yes") {
             self.lighthandling = true;
           }
           self.led_ip = json.led_ip;
+          self.led_toggle = json.led_toggle;
+          self.led_status = json.led_status;
           self.cors_proxy = json.cors_proxy;
           self.checkConnection();
       };

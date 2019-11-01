@@ -10,6 +10,7 @@
               <li><a @click="subnav = 'octoprint'" style="line-height: 1.5rem;"><img src="/img/octoprint-icon.png" style="float: left; height: 1.5rem; width: 1.7rem; margin-right: 10px;">OctoPrint</a></li>
               <li><a @click="subnav = 'printer'" style="line-height: 1.5rem;"><img src="/img/printer-icon.png" style="float: left; height: 1.5rem; width: 1.7rem; margin-right: 10px;">Printer</a></li>
               <li><a @click="subnav = 'appearance'" style="line-height: 1.5rem;"><img src="/img/fullscreen-icon.png" style="float: left; height: 1.5rem; width: 1.7rem; margin-right: 10px;"> Appearance</a></li>
+              <li><a @click="subnav = 'extdevices'" style="line-height: 1.5rem;"><img src="/img/ext-devs.png" style="float: left; height: 1.5rem; width: 1.7rem; margin-right: 10px;"> External devices</a></li>
             </ul>
           </aside>
         </td>
@@ -97,6 +98,20 @@
                 </div>
               </div>
 
+              <div class="field is-separate" style="text-align: left;" v-if="false">
+                <label class="label">OctoVue theme</label>
+                <div class="buttons has-addons">
+                  <span class="button" v-bind:class="{ 'is-selected': theme_light, 'is-primary': theme_light}" v-on:click="theme_light = true, theme_dark = false">Light</span>
+                  <span class="button" v-bind:class="{ 'is-selected': theme_dark, 'is-primary': theme_dark}" v-on:click="theme_dark = true, theme_light = false">Dark</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="section" v-if="subnav == 'extdevices'">
+            <div class="container">
+              <img src="/img/ext-devs.png" style="float: left; height: 2rem; margin-right: 10px;"><h2 class="title">External devices</h2>
+
               <div class="field" style="text-align: left;" :class="{'is-separate': !powerhandling}">
                 <div class="control">
                 <input id="powerhandling" type="checkbox" name="powerhandling" class="switch is-rounded is-outlined" checked="" v-model="powerhandling">
@@ -104,10 +119,24 @@
                 </div>
               </div>
 
-              <div class="field is-separate" v-if="powerhandling" style="text-align: left;">
-                <label class="label">Powerswitch IP:</label>
-                <div class="control">
+              <div class="field" v-if="powerhandling" style="text-align: left;">
+                <label class="label has-margin">Powerswitch IP:</label>
+                <div class="control has-margin">
                   <input class="input" type="text" v-model="tasmota_ip" placeholder="192.168.120.81">
+                </div>
+              </div>
+
+              <div class="field" v-if="powerhandling" style="text-align: left;">
+                <label class="label has-margin">Powerswitch toggle parameter:</label>
+                <div class="control has-margin">
+                  <input class="input" type="text" v-model="tasmota_toggle" placeholder="/cm?cmnd=Power%20TOGGLE">
+                </div>
+              </div>
+              
+              <div class="field is-separate" v-if="powerhandling" style="text-align: left;">
+                <label class="label has-margin">Powerswitch status parameter:</label>
+                <div class="control has-margin">
+                  <input class="input" type="text" v-model="tasmota_status" placeholder="/cm?cmnd=Status">
                 </div>
               </div>
 
@@ -118,10 +147,24 @@
                 </div>
               </div>
 
-              <div class="field is-separate" v-if="lighthandling" style="text-align: left;">
-                <label class="label">Light device IP:</label>
-                <div class="control">
+              <div class="field" v-if="lighthandling" style="text-align: left;">
+                <label class="label has-margin">Light device IP:</label>
+                <div class="control has-margin">
                   <input class="input" type="text" v-model="led_ip" placeholder="192.168.120.81">
+                </div>
+              </div>
+
+              <div class="field" v-if="lighthandling" style="text-align: left;">
+                <label class="label has-margin">Light device toggle parameter:</label>
+                <div class="control has-margin">
+                  <input class="input" type="text" v-model="led_toggle" placeholder="/light/3d_drucker_led/toggle">
+                </div>
+              </div>
+              
+              <div class="field is-separate" v-if="lighthandling" style="text-align: left;">
+                <label class="label has-margin">Light device status parameter:</label>
+                <div class="control has-margin">
+                  <input class="input" type="text" v-model="led_status" placeholder="/light/3d_drucker_led/state">
                 </div>
               </div>
 
@@ -133,6 +176,9 @@
               </div>
             </div>
           </section>
+
+
+
         </td>
         <td style="width: 5%; padding: 0px 0px 0px 30px; text-align: right;">
           <label for="importfile" class="button is-fullwidth">
@@ -180,10 +226,18 @@ export default {
       previewimages: true,
       powerhandling: "",
       tasmota_ip: "",
+      tasmota_toggle: "",
+      tasmota_status: "",
       lighthandling: "",
+      light_toggle: "",
+      light_status: "",
       led_ip: "",
+      led_toggle: "",
+      led_status: "",
       cors_proxy: "",
-      subnav: ""
+      subnav: "",
+      theme_light: true,
+      theme_dark: false
     };
   },
   mounted: function() {
@@ -202,11 +256,15 @@ export default {
       this.powerhandling = true;
     }
     this.tasmota_ip = this.$localStorage.get('tasmota_ip');
+    this.tasmota_toggle = this.$localStorage.get('tasmota_toggle');
+    this.tasmota_status = this.$localStorage.get('tasmota_status');
     this.lighthandling = false;
     if(this.$localStorage.get('lighthandling') == "yes") {
       this.lighthandling = true;
     }
     this.led_ip = this.$localStorage.get('led_ip');
+    this.led_toggle = this.$localStorage.get('led_toggle');
+    this.led_status = this.$localStorage.get('led_status');
     this.cors_proxy = this.$localStorage.get('cors_proxy');
   },
   methods: {
@@ -221,8 +279,12 @@ export default {
         previewimages: this.$localStorage.get('previewimages'),
         powerhandling: this.$localStorage.get('powerhandling'),
         tasmota_ip: this.$localStorage.get('tasmota_ip'),
+        tasmota_toggle: this.$localStorage.get('tasmota_toggle'),
+        tasmota_status: this.$localStorage.get('tasmota_status'),
         lighthandling: this.$localStorage.get('lighthandling'),
         led_ip: this.$localStorage.get('led_ip'),
+        led_toggle: this.$localStorage.get('led_toggle'),
+        led_status: this.$localStorage.get('led_status'),
         cors_proxy: this.$localStorage.get('cors_proxy')
       };
       var hiddenElement = document.createElement('a');
@@ -249,12 +311,16 @@ export default {
         this.$localStorage.set('powerhandling', 'no');
       }
       this.$localStorage.set('tasmota_ip', this.tasmota_ip);
+      this.$localStorage.set('tasmota_toggle', this.tasmota_toggle);
+      this.$localStorage.set('tasmota_status', this.tasmota_status);
       if(this.lighthandling) {
         this.$localStorage.set('lighthandling', 'yes');
       } else {
         this.$localStorage.set('lighthandling', 'no');
       }
       this.$localStorage.set('led_ip', this.led_ip);
+      this.$localStorage.set('led_toggle', this.led_toggle);
+      this.$localStorage.set('led_status', this.led_status);
       this.$localStorage.set('cors_proxy', this.cors_proxy);
       this.$store.state.settingsmodal = false;
       this.$router.go();
@@ -281,24 +347,39 @@ export default {
             self.powerhandling = true;
           }
           self.tasmota_ip = json.tasmota_ip;
+          self.tasmota_toggle = json.tasmota_toggle;
+          self.tasmota_status = json.tasmota_status;
           self.lighthandling = false;
           if(json.lighthandling == "yes") {
             self.lighthandling = true;
           }
           self.led_ip = json.led_ip;
+          self.led_toggle = json.led_toggle;
+          self.led_status = json.led_status;
           self.cors_proxy = json.cors_proxy;
       };
       readFile.readAsText(uploadedFile);
     },
     octoPrintCommand: function(action) {
-      axios({ method: "POST", url: this.$localStorage.get('octo_ip')+"/api/system/commands/core/"+action, headers: {'X-Api-Key': this.$localStorage.get('apikey'), 'Content-Type': 'application/json;charset=UTF-8'}}).then(result => {
-         console.log(result);
-      }, error => {
-          console.error(error);
-      });
+      this.transport("POST", "octo_ip", "/api/system/commands/core/"+action, null).then(result => {});
+    }
+  },
+  watch: {
+    theme_light: function () {
+      /*
+      var values = [], keys = Object.keys(localStorage), i = keys.length;
+      while ( i-- ) {
+          values.push( {'key': keys[i], 'value': localStorage.getItem(keys[i])} );
+      }
+      console.log(values);
+
+      if(this.theme_light) {
+        $("#theme").attr("href", "");
+      } else {
+        $("#theme").attr("href", "css/themes/dark.css");
+      }*/
     }
   }
-  
 }
 </script>
 
