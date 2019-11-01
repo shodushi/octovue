@@ -29,44 +29,44 @@ An alternative UI for octoprint based on vue.js and bulma css framework
 
 Go to node.js download page and check right click on the version of ARM that you need and choose Copy Link address.
 
-```mkdir ~/tmp && cd ~/tmp```
+```$ mkdir ~/tmp && cd ~/tmp```
 
-```wget https://nodejs.org/dist/v8.9.3/node-v8.9.3-linux-armv7l.tar.xz```
+```$ wget https://nodejs.org/dist/v8.9.3/node-v8.9.3-linux-armv7l.tar.xz```
 
-```tar -xvf node-v8.9.3-linux-armv7l.tar.xz```
+```$ tar -xvf node-v8.9.3-linux-armv7l.tar.xz```
 
-```cd node-v8.9.3-linux-armv7l```
+```$ cd node-v8.9.3-linux-armv7l```
 
-```sudo cp -R * /usr/local/```
+```$ sudo cp -R * /usr/local/```
 
 
 
 check if everything went well:
 
-```node --version && npm --version```
+```$ node --version && npm --version```
 
-```cd ~ && rm -rf ~/tmp```
+```$ cd ~ && rm -rf ~/tmp```
 
 
 
 ## Installation
-```cd ~/```
+```$ cd ~/```
 
-```git clone https://github.com/shodushi/octovue.git```
+```$ git clone https://github.com/shodushi/octovue.git```
 
-```cd octovue```
+```$ cd octovue```
 
-```npm install```
+```$ npm install```
 
-```npm run build```
+```$ npm run build```
 
 
 
 ## Run
 
 ```
-a) sudo npm install -g serve
-   nohup serve -s -l 8001 dist &
+a) $ sudo npm install -g serve
+   $ nohup serve -s -l 8001 dist &
 
    browse to http://YOUR-RASPBERRY-IP:8001
 
@@ -74,7 +74,7 @@ a) sudo npm install -g serve
 
 b) copy "dist" directory into any webserver document root in your network
 
-cp -r ~/octovue/dist/* /var/www/
+$ cp -r ~/octovue/dist/* /var/www/
 
 browse to http://YOUR-WEBSERVER-IP
 ```
