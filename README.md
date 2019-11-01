@@ -66,7 +66,6 @@ check if everything went well:
 
 ```
 a) npm install -g serve
-   cd src
    serve -s -l 8001 dist
 
    browse to http://YOUR-RASPBERRY-IP:8001
@@ -75,7 +74,7 @@ a) npm install -g serve
 
 b) copy "dist" directory into any webserver document root in your network
 
-cp -r ~/octovue/src/build/* /var/www/
+cp -r ~/octovue/dist/* /var/www/
 
 browse to http://YOUR-WEBSERVER-IP
 ```
