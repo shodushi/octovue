@@ -65,8 +65,8 @@ check if everything went well:
 ## Run
 
 ```
-a) npm install -g serve
-   serve -s -l 8001 dist
+a) sudo npm install -g serve
+   nohup serve -s -l 8001 dist &
 
    browse to http://YOUR-RASPBERRY-IP:8001
 
