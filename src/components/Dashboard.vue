@@ -1,7 +1,7 @@
 <template>
   <div id="dashboardPage" style="min-height: 800px;">
     <dnd-grid-container :layout.sync="layout" :cellSize="cellSize" :maxColumnCount="maxColumnCount" :maxRowCount="maxRowCount" :margin="margin" :bubbleUp="bubbleUp">
-      <dnd-grid-box v-for="box in layout" :boxId="box.id" :key="box.id" dragSelector="div.card-header" resizeVisible>
+      <dnd-grid-box v-for="box in layout" :boxId="box.id" :key="box.id" dragSelector="div.dash-box-header" resizeVisible>
         <div class="card dash-box">
           <div class="dash-box-header">
             Box {{ box.id }}

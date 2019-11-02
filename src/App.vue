@@ -241,6 +241,14 @@
           <button class="delete" aria-label="delete" v-on:click="showAddWidget = false"></button>
         </div>
         <div class="message-body">
+
+          <div class="field" style="text-align: left;">
+            <label class="label">Title</label>
+            <div class="control">
+              <input class="input" type="text" placeholder="Temperatures">
+            </div>
+          </div>
+          
           <div class="field" style="text-align: left;">
             <label class="label">Type</label>
             <div class="control">
@@ -249,6 +257,8 @@
                   <option>choose</option>
                   <option>gauge</option>
                   <option>line-chart</option>
+                  <option>image container</option>
+                  <option>label</option>
                 </select>
               </div>
             </div>
