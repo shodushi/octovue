@@ -198,14 +198,6 @@
           <div class="navbar-end">
             <div class="navbar-item">
               <div class="field is-grouped">
-                <p class="control" v-if="$router.history.current.fullPath == '/dashboard'">
-                  <a class="bd-tw-button button is-small is-default" v-on:click="showAddWidget = true">
-                    <span class="icon">
-                      <i class="fas fa-plus"></i>
-                    </span>
-                    <span>widget</span>
-                  </a>
-                </p>
                 <p class="control">
                   <a class="bd-tw-button button is-small is-info" v-on:click="toggleTerminal()">
                     <span class="icon">
@@ -234,74 +226,6 @@
           </div>
         </div>
       </nav>
-
-      <article class="message" id="addWidget" v-if="showAddWidget">
-        <div class="message-header">
-          <p>Add widget</p>
-          <button class="delete" aria-label="delete" v-on:click="showAddWidget = false"></button>
-        </div>
-        <div class="message-body">
-
-          <div class="field" style="text-align: left;">
-            <label class="label">Title</label>
-            <div class="control">
-              <input class="input" type="text" placeholder="Temperatures">
-            </div>
-          </div>
-          
-          <div class="field" style="text-align: left;">
-            <label class="label">Type</label>
-            <div class="control">
-              <div class="select">
-                <select>
-                  <option>choose</option>
-                  <option>gauge</option>
-                  <option>line-chart</option>
-                  <option>image container</option>
-                  <option>label</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="field" style="text-align: left;">
-            <label class="label">Value</label>
-            <div class="control">
-              <div class="select">
-                <select>
-                  <option>choose</option>
-                  <option>tool0_actual</option>
-                  <option>tool0_target</option>
-                  <option>bed_actual</option>
-                  <option>bed_target</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="control">
-            <button class="button is-link" v-on:click="addWidget()">add widget</button>
-          </div>
-        </div>
-      </article>
-
-
-      <div class="modal" >
-        <div class="modal-card">
-          <header class="modal-card-head">
-            <p class="modal-card-title">Modal title</p>
-            <button class="delete" aria-label="close" v-on:click="showAddWidget = false"></button>
-          </header>
-          <section class="modal-card-body">
-            <!-- Content ... -->
-          </section>
-          <footer class="modal-card-foot">
-            <button class="button is-success">Save changes</button>
-            <button class="button" v-on:click="showAddWidget = false">Cancel</button>
-          </footer>
-        </div>
-      </div>
-
 
       <div class="modal" v-bind:class="{ 'is-active' : infomodal }">
         <div class="modal-background"></div>
@@ -380,8 +304,7 @@ export default {
       light_toggle: "",
       light_status: "",
       led_ip: "",
-      cors_proxy: "",
-      showAddWidget: "",
+      cors_proxy: ""
     };
   },
   created: function() {
@@ -410,6 +333,7 @@ export default {
     this.configFromFile();
   },
   mounted: function() {
+    //this.$localStorage.set('dashboardLayout', 'undefined');
     if(this.$localStorage.get('theme') != null && this.$localStorage.get('theme') != 'undefined') {
       $("#theme").attr("href", "css/themes/"+this.$localStorage.get('theme')+".css");
     } else {
@@ -441,6 +365,58 @@ export default {
       this.$store.state.isConnection = true;
       this.$store.state.isConnecting = false;
       this.$store.state.connectionState = "on";
+    }
+    if(this.$localStorage.get('dashboardLayout') == null || this.$localStorage.get('dashboardLayout') == 'undefined') {
+      var dashboardLayout = [
+        {
+            id: 1,
+            title: 'Box 1',
+            hidden: false,
+            position: {
+                x: 4,
+                y: 0,
+                w: 2,
+                h: 1
+            }
+        },
+        {
+            id: 2,
+            title: 'Box Zwei',
+            hidden: false,
+            pinned: false,
+            position: {
+                x: 6,
+                y: 0,
+                w: 1,
+                h: 2
+            }
+        },
+        {
+            id: 3,
+            title: 'Box Three',
+            hidden: false,
+            pinned: false,
+            position: {
+                x: 4,
+                y: 1,
+                w: 2,
+                h: 3
+            }
+        },
+        {
+            id: 4,
+            title: 'Box 4 Suess Sauer',
+            hidden: false,
+            pinned: false,
+            position: {
+                x: 6,
+                y: 2,
+                w: 3,
+                h: 1
+            }
+        }
+      ];
+      this.$localStorage.set('dashboardLayout', JSON.stringify(dashboardLayout));
     }
   },
   methods: {
