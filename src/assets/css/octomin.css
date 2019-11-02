@@ -181,3 +181,36 @@ tr.is-selected {
 .column {
   margin: 10px 10px 10px 10px !important;
 }
+
+
+/*dashboard*/
+
+#dashboardPage {
+  margin: 50px 20px 20px 20px;
+}
+.dash-box {
+  width: 100%;
+  height: 100%;
+}
+.dash-box-header {
+  padding: 2px 8px 2px 8px;
+}
+.card-header {
+  box-shadow: none;
+  cursor: pointer;
+}
+.dash-box-body {
+  text-align: left;
+  padding: 2px 8px 2px 8px;
+}
+#addWidget {
+  width: 400px;
+  margin: 0 auto;
+  position: absolute;
+  top: 20%;
+  right: 20%;
+  z-index: 999;
+}
+#addWidget .message-body {
+  text-align: left;
+}

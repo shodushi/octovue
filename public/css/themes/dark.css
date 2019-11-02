@@ -1,3 +1,6 @@
+html {
+    background-color: #222122 !important;    
+}
 body {
     background-color: #2c2b2c !important;
 }
@@ -5,7 +8,11 @@ nav, .footer {
     background-color: #222122 !important;
     color: white !important;
 }
-a, h1, h2, h3, .title, #printPage_temp div {
+.nav-divider {
+    background-color: white !important;
+    border: 5px solid #222122 !important;
+}
+a, h1, h2, h3, .title, .subtitle, #printPage_temp div, .label {
     color: #dcdadc !important;
 }
 #filebrowser_head, .card, #filebrowser_head, .tabs, .table, #files, .column {
@@ -25,15 +32,7 @@ a, h1, h2, h3, .title, #printPage_temp div {
 .tabs.is-boxed a:hover {
     background-color: #494949 !important;
 }
-
-
-.table.is-striped tbody tr:hover {
+.table.is-striped tbody tr:hover, .menu-list li a:hover {
     background-color: #696869 !important;
 }
-
-
-
-
-
-
 

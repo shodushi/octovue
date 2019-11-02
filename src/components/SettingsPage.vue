@@ -1,10 +1,10 @@
 <template>
 
-  <div id="settingsPage" style="margin: 0 auto; padding: 5% 10% 0px 10%; overflow: hidden">
+  <div id="settingsPage" style="margin: 0 auto; padding: 5% 10% 0px 10%; overflow: hidden; min-height: 800px;">
 
-    <table style="width: 100%;">
+    <table style="width: 100%; height: 100%;">
       <tr>
-        <td style="width: 20%; border-right: 1px solid #C0C0C0;">
+        <td style="width: 20%; border-right: 1px solid #C0C0C0;  height: 100%;">
           <aside class="menu">
             <ul class="menu-list">
               <li><a @click="subnav = 'octoprint'" style="line-height: 1.5rem;"><img src="/img/octoprint-icon.png" style="float: left; height: 1.5rem; width: 1.7rem; margin-right: 10px;">OctoPrint</a></li>
@@ -94,15 +94,15 @@
               <div class="field is-separate" style="text-align: left;">
                 <div class="control">
                 <input id="previewimages" type="checkbox" name="previewimages" class="switch is-rounded is-outlined" checked="checked" v-model="previewimages">
-                <label for="previewimages">show preview images in filebrowser</label>
+                <label class="label" for="previewimages">show preview images in filebrowser</label>
                 </div>
               </div>
 
-              <div class="field is-separate" style="text-align: left;" v-if="false">
+              <div class="field is-separate" style="text-align: left;">
                 <label class="label">OctoVue theme</label>
                 <div class="buttons has-addons">
-                  <span class="button" v-bind:class="{ 'is-selected': theme_light, 'is-primary': theme_light}" v-on:click="theme_light = true, theme_dark = false">Light</span>
-                  <span class="button" v-bind:class="{ 'is-selected': theme_dark, 'is-primary': theme_dark}" v-on:click="theme_dark = true, theme_light = false">Dark</span>
+                  <span class="button" v-bind:class="{ 'is-selected': theme == 'light', 'is-primary': theme == 'light'}" v-on:click="theme = 'light'">Light</span>
+                  <span class="button" v-bind:class="{ 'is-selected': theme == 'dark', 'is-primary': theme == 'dark'}" v-on:click="theme = 'dark'">Dark</span>
                 </div>
               </div>
             </div>
@@ -115,7 +115,7 @@
               <div class="field" style="text-align: left;" :class="{'is-separate': !powerhandling}">
                 <div class="control">
                 <input id="powerhandling" type="checkbox" name="powerhandling" class="switch is-rounded is-outlined" checked="" v-model="powerhandling">
-                <label for="powerhandling">enable printer powerswitch</label>
+                <label class="label" for="powerhandling">enable printer powerswitch</label>
                 </div>
               </div>
 
@@ -143,7 +143,7 @@
               <div class="field" style="text-align: left;" :class="{'is-separate': !lighthandling}">
                 <div class="control">
                 <input id="lighthandling" type="checkbox" name="lighthandling" class="switch is-rounded is-outlined" checked="" v-model="lighthandling">
-                <label for="lighthandling">enable light switch</label>
+                <label class="label" for="lighthandling">enable light switch</label>
                 </div>
               </div>
 
@@ -236,11 +236,11 @@ export default {
       led_status: "",
       cors_proxy: "",
       subnav: "",
-      theme_light: true,
-      theme_dark: false
+      theme: ""
     };
   },
   mounted: function() {
+    
     this.octo_ip = this.$localStorage.get('octo_ip');
     this.apikey = this.$localStorage.get('apikey');
     this.printerport = this.$localStorage.get('printerport');
@@ -266,6 +266,11 @@ export default {
     this.led_toggle = this.$localStorage.get('led_toggle');
     this.led_status = this.$localStorage.get('led_status');
     this.cors_proxy = this.$localStorage.get('cors_proxy');
+    if(this.$localStorage.get('theme') == null) {
+      this.theme = "light";
+    } else {
+      this.theme = this.$localStorage.get('theme');
+    }
   },
   methods: {
     exportConfig: function() {
@@ -285,7 +290,8 @@ export default {
         led_ip: this.$localStorage.get('led_ip'),
         led_toggle: this.$localStorage.get('led_toggle'),
         led_status: this.$localStorage.get('led_status'),
-        cors_proxy: this.$localStorage.get('cors_proxy')
+        cors_proxy: this.$localStorage.get('cors_proxy'),
+        theme: this.$localStorage.get('theme')
       };
       var hiddenElement = document.createElement('a');
       hiddenElement.href = 'data:attachment/text,' + encodeURI(JSON.stringify(config));
@@ -322,7 +328,7 @@ export default {
       this.$localStorage.set('led_toggle', this.led_toggle);
       this.$localStorage.set('led_status', this.led_status);
       this.$localStorage.set('cors_proxy', this.cors_proxy);
-      this.$store.state.settingsmodal = false;
+      this.$localStorage.set('theme', this.theme);
       this.$router.go();
     },
     importConfig: function(event) {
@@ -357,6 +363,7 @@ export default {
           self.led_toggle = json.led_toggle;
           self.led_status = json.led_status;
           self.cors_proxy = json.cors_proxy;
+          self.theme = json.theme;
       };
       readFile.readAsText(uploadedFile);
     },
@@ -365,19 +372,15 @@ export default {
     }
   },
   watch: {
-    theme_light: function () {
+    theme: function () {
       /*
       var values = [], keys = Object.keys(localStorage), i = keys.length;
       while ( i-- ) {
           values.push( {'key': keys[i], 'value': localStorage.getItem(keys[i])} );
       }
       console.log(values);
-
-      if(this.theme_light) {
-        $("#theme").attr("href", "");
-      } else {
-        $("#theme").attr("href", "css/themes/dark.css");
-      }*/
+      */
+     $("#theme").attr("href", "css/themes/"+this.theme+".css");
     }
   }
 }

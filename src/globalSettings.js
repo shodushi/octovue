@@ -984,6 +984,11 @@ export const globalSettings = {
             this.$localStorage.set('led_toggle', config.led_toggle);
             this.$localStorage.set('led_status', config.led_status);
             this.$localStorage.set('cors_proxy', config.cors_proxy);
+            if(config.theme != null) {
+              this.$localStorage.set('theme', config.theme);
+            } else {
+              this.$localStorage.set('theme', 'light');
+            }
             if(this.$localStorage.get('octo_ip') != null && this.$localStorage.get('apikey') != null) {
               this.$router.go();
             }
