@@ -30,6 +30,7 @@
               <select v-model="w_type">
                 <option>choose</option>
                 <option>gauge</option>
+                <option>pie-chart</option>
                 <option>line-chart</option>
                 <option>image container</option>
                 <option>label</option>
@@ -67,7 +68,7 @@
           <div class="dash-box-header">
             {{ box.title }}
           </div>
-          <div class="dash-box-body">
+          <div class="dash-box-body" :id="'bbody'+box.id">
             {{ box.body }}
           </div>
         </div>
@@ -79,10 +80,15 @@
 <script>
 import { Container, Box } from '@dattn/dnd-grid'
 import '@dattn/dnd-grid/dist/dnd-grid.css'
+
+import pieChart from './dashboard/pieChart.vue'
+import Vue from 'vue'
+
 export default {
   components: {
     DndGridContainer: Container,
-    DndGridBox: Box
+    DndGridBox: Box,
+    'pie-chart': pieChart
   },
   data() {
     return {
@@ -98,15 +104,20 @@ export default {
       showAddWidget: "",
       w_title: "",
       w_type: "",
-      w_value: ""
+      w_value: "",
+      widgetData: []
     }
   },
   methods: {
     addWidget: function() {
+      var bodycontent;
+
       var widget = {
         id: this.layout[this.layout.length-1].id++,
         title: this.w_title,
-        body: this.w_type+"|"+this.w_value,
+        body: this.w_type,
+        type: this.w_type,
+        value: this.w_value,
         hidden: false,
         pinned: false,
         position: {
@@ -118,11 +129,15 @@ export default {
       };
       this.layout.push(widget);
       this.showAddWidget = false;
+    },
+    fillWidgets: function() {
+      //<div style="width: 200px; height: 200px;"><pie-chart :ref="'aa'" :chartdata="pie_stats_printing" :options="pie_stats_printing_options"></pie-chart></div>
     }
   },
   created: function() {
   },
   mounted: function() {
+    setTimeout(this.fillWidgets, 1);
     this.layout = JSON.parse(this.$localStorage.get('dashboardLayout'));
   },
   watch: {

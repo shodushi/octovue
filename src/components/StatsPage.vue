@@ -3,7 +3,7 @@
 
     <div class="columns" style="padding-top: 10px;">
       <div class="column is-one-fiths">
-        <chart ref="pie_stats_printing" :type="'pie'" v-bind:data="pie_stats_printing" :options="pie_stats_printing_options"></chart>
+        <chart ref="pie_stats_printing" :type="'pie'" :data="pie_stats_printing" :options="pie_stats_printing_options"></chart>
       </div>
       <div class="column is-four-fifths">
 
