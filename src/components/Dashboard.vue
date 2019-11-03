@@ -32,7 +32,7 @@
                 <option>gauge</option>
                 <option>pie-chart</option>
                 <option>line-chart</option>
-                <option>image container</option>
+                <option>image-container</option>
                 <option>label</option>
               </select>
             </div>
@@ -49,7 +49,7 @@
                 <option>tool0_target</option>
                 <option>bed_actual</option>
                 <option>bed_target</option>
-                <option>cam url</option>
+                <option>cam-url</option>
               </select>
             </div>
           </div>
@@ -68,8 +68,10 @@
           <div class="dash-box-header">
             {{ box.title }}
           </div>
-          <div class="dash-box-body" :id="'bbody'+box.id">
-            {{ box.body }}
+          <div class="dash-box-body" :id="'bbody'+box.id" style="display: -ms-flex; display: -webkit-flex; display: flex;">
+            <pie-chart v-if="box.type == 'pie-chart'" style="width: 70%; height: 70%;" :ref="'aa'" :chartdata="pie_stats_printing" :options="pie_stats_printing_options"></pie-chart>
+            <img v-if="box.type == 'image-container'" :src="$store.state.cam"  @error="imgFallback" alt="Printer image">
+            <!--position: absolute;right: 0; bottom: 0; height: 90%;width: 100%;!-->
           </div>
         </div>
       </dnd-grid-box>
@@ -152,5 +154,11 @@ export default {
 #btn_addWidget {
   position: absolute;
   top: 9%; right: 1%;
+}
+.dash-box-body>pie-chart {
+  position: absolute;right: 0; bottom: 0; height: 90%; width: 100%;
+}
+.dash-box-body>img {
+  position: absolute;right: 0; bottom: 0; height: 90%; width: 100%;
 }
 </style>
