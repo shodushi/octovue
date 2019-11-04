@@ -8,6 +8,14 @@
         <span>widget</span>
       </a>
     </p>
+    <p class="control" id="btn_clearWidgets">
+      <a class="bd-tw-button button is-small is-default" v-on:click="clearWidgets">
+        <span class="icon">
+          <i class="fas fa-plus"></i>
+        </span>
+        <span>clear widgets</span>
+      </a>
+    </p>
 
     <article class="message" id="addWidget" v-if="showAddWidget">
       <div class="message-header">
@@ -43,7 +51,7 @@
           <label class="label">Value</label>
           <div class="control">
             <div class="select">
-              <select v-model="w_value">
+              <select v-model="w_source">
                 <option>choose</option>
                 <option>tool0_actual</option>
                 <option>tool0_target</option>
@@ -69,8 +77,7 @@
             {{ box.title }}
           </div>
           <div class="dash-box-body" :id="'bbody'+box.id" style="display: -ms-flex; display: -webkit-flex; display: flex;">
-            <pie-chart v-if="box.type == 'pie-chart'" style="width: 70%; height: 70%;" :ref="'aa'" :chartdata="pie_stats_printing" :options="pie_stats_printing_options"></pie-chart>
-            <img v-if="box.type == 'image-container'" :src="$store.state.cam"  @error="imgFallback" alt="Printer image">
+            <widget style="width: 70%; height: 70%;" :ref="'aa'" :type="box.type"></widget>
             <!--position: absolute;right: 0; bottom: 0; height: 90%;width: 100%;!-->
           </div>
         </div>
@@ -83,14 +90,14 @@
 import { Container, Box } from '@dattn/dnd-grid'
 import '@dattn/dnd-grid/dist/dnd-grid.css'
 
-import pieChart from './dashboard/pieChart.vue'
+import Widget from './dashboard/Widget.vue'
 import Vue from 'vue'
 
 export default {
   components: {
     DndGridContainer: Container,
     DndGridBox: Box,
-    'pie-chart': pieChart
+    'widget': Widget 
   },
   data() {
     return {
@@ -104,22 +111,19 @@ export default {
       margin: 15,
       layout: [],
       showAddWidget: "",
-      w_title: "",
+      w_title: "Title",
       w_type: "",
-      w_value: "",
+      w_source: "",
       widgetData: []
     }
   },
   methods: {
     addWidget: function() {
-      var bodycontent;
-
       var widget = {
-        id: this.layout[this.layout.length-1].id++,
+        id: Math.floor(1000000 + Math.random() * 900000),
         title: this.w_title,
-        body: this.w_type,
         type: this.w_type,
-        value: this.w_value,
+        source: this.w_source,
         hidden: false,
         pinned: false,
         position: {
@@ -132,15 +136,17 @@ export default {
       this.layout.push(widget);
       this.showAddWidget = false;
     },
-    fillWidgets: function() {
-      //<div style="width: 200px; height: 200px;"><pie-chart :ref="'aa'" :chartdata="pie_stats_printing" :options="pie_stats_printing_options"></pie-chart></div>
+    clearWidgets: function() {
+      this.layout = [];
     }
   },
   created: function() {
   },
   mounted: function() {
+    //this.$localStorage.set('dashboardLayout', "[]");
     setTimeout(this.fillWidgets, 1);
     this.layout = JSON.parse(this.$localStorage.get('dashboardLayout'));
+    console.log(this.layout);
   },
   watch: {
     layout: function (before, after) {
@@ -155,10 +161,8 @@ export default {
   position: absolute;
   top: 9%; right: 1%;
 }
-.dash-box-body>pie-chart {
-  position: absolute;right: 0; bottom: 0; height: 90%; width: 100%;
-}
-.dash-box-body>img {
-  position: absolute;right: 0; bottom: 0; height: 90%; width: 100%;
+#btn_clearWidgets {
+  position: absolute;
+  top: 9%; right: 8%;
 }
 </style>

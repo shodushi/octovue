@@ -92,13 +92,15 @@ export const store = new Vuex.Store({
             },
         },
         pie_stats_printing: {
-            datasets: [{
-            data: [0, 0],
-            backgroundColor: [
-                '#31cf65',
-                '#fc3c63'
-            ]
-            }],
+            datasets: [
+                {
+                    data: [0, 0],
+                    backgroundColor: [
+                        '#31cf65',
+                        '#fc3c63'
+                    ]
+                }
+            ],
             labels: ['successful', 'failed']
         },
         pie_stats_printing_options: {
