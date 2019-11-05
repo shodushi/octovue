@@ -71,13 +71,13 @@
 
 
     <dnd-grid-container :layout.sync="layout" :cellSize="cellSize" :maxColumnCount="maxColumnCount" :maxRowCount="maxRowCount" :margin="margin" :bubbleUp="bubbleUp">
-      <dnd-grid-box v-for="box in layout" :boxId="box.id" :key="box.id" dragSelector="div.dash-box-header" resizeVisible>
+      <dnd-grid-box v-for="box in layout" :boxId="box.id" :key="box.id" dragSelector=".dragSelector" resizeVisible>
         <div class="card dash-box">
-          <div class="dash-box-header">
+          <!--<div class="dash-box-header" style="border: 1px solid green">
             {{ box.title }}
-          </div>
-          <div class="dash-box-body" :id="'bbody'+box.id" style="display: -ms-flex; display: -webkit-flex; display: flex;">
-            <widget style="width: 70%; height: 70%;" :ref="'aa'" :type="box.type"></widget>
+          </div>!-->
+          <div class="dash-box-body dragSelector" :id="'bbody'+box.id">
+            <widget class="widget dragSelector" :reference="box.type+'_'+box.source" :type="box.type" :source="box.source"></widget>
             <!--position: absolute;right: 0; bottom: 0; height: 90%;width: 100%;!-->
           </div>
         </div>
@@ -91,7 +91,6 @@ import { Container, Box } from '@dattn/dnd-grid'
 import '@dattn/dnd-grid/dist/dnd-grid.css'
 
 import Widget from './dashboard/Widget.vue'
-import Vue from 'vue'
 
 export default {
   components: {
@@ -159,10 +158,25 @@ export default {
 <style scoped>
 #btn_addWidget {
   position: absolute;
-  top: 9%; right: 1%;
+  top: 10%; right: 1%;
+  z-index: 999;
 }
 #btn_clearWidgets {
   position: absolute;
-  top: 9%; right: 8%;
+  top: 10%; right: 8%;
+  z-index: 999;
+}
+.dash-box {
+  overflow: hidden;
+  padding-bottom: 0%;
+}
+.dash-box-body {
+  width: 100%;
+  height: 100%;
+  /*display: -ms-flex; display: -webkit-flex; display: flex;*/
+}
+.dash-box-body>.widget {
+  width: 100%;
+  height: 100%;
 }
 </style>
