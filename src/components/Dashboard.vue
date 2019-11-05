@@ -53,8 +53,10 @@
             <div class="select">
               <select v-model="w_source">
                 <option>choose</option>
+                <option>tool0</option>
                 <option>tool0_actual</option>
                 <option>tool0_target</option>
+                <option>bed</option>
                 <option>bed_actual</option>
                 <option>bed_target</option>
                 <option>cam-url</option>
@@ -69,10 +71,10 @@
       </div>
     </article>
 
-
     <dnd-grid-container :layout.sync="layout" :cellSize="cellSize" :maxColumnCount="maxColumnCount" :maxRowCount="maxRowCount" :margin="margin" :bubbleUp="bubbleUp">
       <dnd-grid-box v-for="box in layout" :boxId="box.id" :key="box.id" dragSelector=".dragSelector" resizeVisible>
         <div class="card dash-box">
+          <div class="boxoptions" :id="'boxoptions'+box.id" v-on:click="deleteWidget(box.id)"><i class="far fa-times-circle" style="color: #C0C0C0"></i></div>
           <!--<div class="dash-box-header" style="border: 1px solid green">
             {{ box.title }}
           </div>!-->
@@ -135,6 +137,13 @@ export default {
       this.layout.push(widget);
       this.showAddWidget = false;
     },
+    deleteWidget: function(widgetId) {
+      for(var i = 0; i < this.layout.length; i++) {
+        if(this.layout[i].id == widgetId) {
+          this.layout.splice(i, 1);
+        }
+      }
+    },
     clearWidgets: function() {
       this.layout = [];
     }
@@ -178,5 +187,11 @@ export default {
 .dash-box-body>.widget {
   width: 100%;
   height: 100%;
+}
+.boxoptions {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 2px 5px 0px 0px;
 }
 </style>
