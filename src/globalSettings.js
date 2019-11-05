@@ -362,8 +362,8 @@ export const globalSettings = {
             datasets: [{
               data: [0, 0, 100],
               backgroundColor: [
-                  '#2b9eeb',
-                  '#2b9eeb',
+                  colors[4],
+                  colors_alpha[4],
                   '#C0C0C0'
               ]
               }],
@@ -377,16 +377,16 @@ export const globalSettings = {
           var linegraph_actual = {
             label: key+'_actual',
             fill: false,
-            backgroundColor: '#2b9eeb',
-            borderColor: '#2b9eeb',
+            backgroundColor: colors[4],
+            borderColor: colors[4],
             borderWidth: 2,
             data: [0],
           };
           var linegraph_target = {
             label: key+'_target',
             fill: false,
-            backgroundColor: '#2b9eeb',
-            borderColor: '#2b9eeb',
+            backgroundColor: colors_alpha[4],
+            borderColor: colors_alpha[4],
             borderWidth: 6,
             data: [0],
           }
