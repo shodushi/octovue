@@ -236,7 +236,8 @@ export default {
       led_status: "",
       cors_proxy: "",
       subnav: "",
-      theme: ""
+      theme: "",
+      dashboardLayout: "",
     };
   },
   mounted: function() {
@@ -271,6 +272,7 @@ export default {
     } else {
       this.theme = this.$localStorage.get('theme');
     }
+    this.dashboardLayout = this.$localStorage.get('dashboardLayout');
   },
   methods: {
     exportConfig: function() {
@@ -291,7 +293,8 @@ export default {
         led_toggle: this.$localStorage.get('led_toggle'),
         led_status: this.$localStorage.get('led_status'),
         cors_proxy: this.$localStorage.get('cors_proxy'),
-        theme: this.$localStorage.get('theme')
+        theme: this.$localStorage.get('theme'),
+        dashboardLayout: this.$localStorage.get('dashboardLayout')
       };
       var hiddenElement = document.createElement('a');
       hiddenElement.href = 'data:attachment/text,' + encodeURI(JSON.stringify(config));
@@ -329,6 +332,7 @@ export default {
       this.$localStorage.set('led_status', this.led_status);
       this.$localStorage.set('cors_proxy', this.cors_proxy);
       this.$localStorage.set('theme', this.theme);
+      this.$localStorage.set('dashboardLayout', this.dashboardLayout);
       this.$router.go();
     },
     importConfig: function(event) {
@@ -364,6 +368,7 @@ export default {
           self.led_status = json.led_status;
           self.cors_proxy = json.cors_proxy;
           self.theme = json.theme;
+          self.dashboardLayout = json.dashboardLayout;
       };
       readFile.readAsText(uploadedFile);
     },

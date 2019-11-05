@@ -13,7 +13,7 @@
         <span class="icon">
           <i class="fas fa-plus"></i>
         </span>
-        <span>clear widgets</span>
+        <span>{{debug}} clear widgets</span>
       </a>
     </p>
 
@@ -72,15 +72,11 @@
     </article>
 
     <dnd-grid-container :layout.sync="layout" :cellSize="cellSize" :maxColumnCount="maxColumnCount" :maxRowCount="maxRowCount" :margin="margin" :bubbleUp="bubbleUp">
-      <dnd-grid-box v-for="box in layout" :boxId="box.id" :key="box.id" dragSelector=".dragSelector" resizeVisible>
+      <dnd-grid-box :ref="'gridbox'+box.id" v-for="box in layout" :id="'grid-box'+box.id" :boxId="box.id" :key="box.id" dragSelector=".dragSelector" resizeVisible>
         <div class="card dash-box">
           <div class="boxoptions" :id="'boxoptions'+box.id" v-on:click="deleteWidget(box.id)"><i class="far fa-times-circle" style="color: #C0C0C0"></i></div>
-          <!--<div class="dash-box-header" style="border: 1px solid green">
-            {{ box.title }}
-          </div>!-->
           <div class="dash-box-body dragSelector" :id="'bbody'+box.id">
-            <widget class="widget dragSelector" :reference="box.type+'_'+box.source" :type="box.type" :source="box.source"></widget>
-            <!--position: absolute;right: 0; bottom: 0; height: 90%;width: 100%;!-->
+            <widget class="widget dragSelector" :reference="box.type+'_'+box.source" :id="'widget'+box.id" :type="box.type" :source="box.source"></widget>
           </div>
         </div>
       </dnd-grid-box>
@@ -108,14 +104,15 @@ export default {
       },
       maxColumnCount: Infinity,
       maxRowCount: Infinity,
-      bubbleUp: true,
+      bubbleUp: false,
       margin: 15,
       layout: [],
       showAddWidget: "",
       w_title: "Title",
       w_type: "",
       w_source: "",
-      widgetData: []
+      widgetData: [],
+      debug: ""
     }
   },
   methods: {
@@ -149,12 +146,19 @@ export default {
     }
   },
   created: function() {
+    
   },
   mounted: function() {
+    $('#test').fitText(13.5, { minFontSize: '50px', maxFontSize: '140px' });
     //this.$localStorage.set('dashboardLayout', "[]");
-    setTimeout(this.fillWidgets, 1);
+    //setTimeout(this.fillWidgets, 1);
     this.layout = JSON.parse(this.$localStorage.get('dashboardLayout'));
-    console.log(this.layout);
+    //var el = document.getElementById('grid-box1886399');
+    //el.addEventListener('update:layout', this.handleDragStart, false);
+    //console.log("Test Div:", this.$el)
+    //el.addEventListener(event, func);
+    //el.on("update:layout", function(e){console.log(e.detail.result)});
+    //alert(document.getElementById('test'));
   },
   watch: {
     layout: function (before, after) {
@@ -193,5 +197,7 @@ export default {
   top: 0;
   right: 0;
   padding: 2px 5px 0px 0px;
+  z-index: 999;
+  cursor: pointer;
 }
 </style>
