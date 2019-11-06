@@ -1,3 +1,7 @@
+body {
+  font-size: 18px;
+}
+
 /*filebrowser*/
 #filebrowser_head td {
   border: none;
