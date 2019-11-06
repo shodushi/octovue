@@ -155,14 +155,14 @@
       </div>
 
       <nav class="navbar is-transparent">
-        <div class="navbar-brand" style="width: 20px;">
+        <div class="navbar-brand" style="width: 1px;">
           <a class="navbar-item" href="/">
-            OctoVue
+            <img src="/img/octovue_logo.png" style="margin-right: 5px;"/>OctoVue
           </a>
         </div>
 
         <div id="navbarExampleTransparentExample" class="navbar-menu">
-          <div class="navbar-start" style="width: 60%;">
+          <div class="navbar-start" style="width: 80%;">
             <div id="meta" class="field is-grouped is-grouped-multiline" style="margin: 14px 0px 0px 20%;">
               <div class="control" id="control_power" v-if="$localStorage.get('powerhandling') == 'yes'">
                 <div class="tags has-addons">
@@ -195,7 +195,7 @@
             
           </div>
 
-          <div class="navbar-end">
+          <div class="navbar-end" style="width: 10%">
             <div class="navbar-item">
               <div class="field is-grouped">
                 <p class="control">
