@@ -73,8 +73,8 @@
 
     <dnd-grid-container :layout.sync="layout" :cellSize="cellSize" :maxColumnCount="maxColumnCount" :maxRowCount="maxRowCount" :margin="margin" :bubbleUp="bubbleUp">
       <dnd-grid-box class="widget" :ref="'gridbox'+box.id" v-for="box in layout" :id="'grid-box'+box.id" :boxId="box.id" :key="box.id" dragSelector=".dragSelector" resizeVisible>
-        <div class="card dash-box">
-          <div class="boxoptions" :id="'boxoptions'+box.id" v-on:click="deleteWidget(box.id)"><i class="far fa-times-circle" style="color: #C0C0C0"></i></div>
+        <div class="card dash-box" v-on:mouseover="boxhover('grid-box'+box.id, 'visible')" v-on:mouseleave="boxhover('grid-box'+box.id, 'hidden')">
+          <div class="boxoptions" v-on:click="deleteWidget(box.id)"><i class="far fa-times-circle" style="color: #C0C0C0"></i></div>
           <div class="dash-box-body dragSelector" :id="'bbody'+box.id">
             <widget class="widget dragSelector" :reference="box.type+'_'+box.source" :id="'widget'+box.id" :type="box.type" :source="box.source"></widget>
           </div>
@@ -144,11 +144,11 @@ export default {
     clearWidgets: function() {
       this.layout = [];
     },
-    resized: function(el) {
-      //console.log(el);
-      //var div = document.getElementById(el.path[2].attributes[2].nodeValue);
-      //console.log("w: "+div.offsetWidth+";h: "+div.offsetHeight);
-      //$('#'+el.path[2].attributes[2].nodeValue).css('font-size: 3.7vmin' );
+    boxhover: function(id, value) {
+      console.log('#'+id+' > .boxoptions'+value);
+      $('#'+id+' > div > .boxoptions').css({
+        visibility: value
+      });
     }
   },
   created: function() {
@@ -156,33 +156,6 @@ export default {
   },
   mounted: function() {
     this.layout = JSON.parse(this.$localStorage.get('dashboardLayout'));
-    var self = this;
-
-    setTimeout(function(){
-      
-      for(var i = 0;i< self.layout.length;i++) {
-        //console.log('#grid-box'+self.layout[i].id);
-        //console.log(document.getElementById('grid-box'+self.layout[i].id));
-
-        var el = document.getElementById('grid-box'+self.layout[i].id);
-        var resizeElement = el,
-          resizeCallback = function() {
-        };
-        addResizeListener(resizeElement, self.resized);
-        
-      }
-    }, 1000);
-    
-    
-    //$('#test').fitText(13.5, { minFontSize: '50px', maxFontSize: '140px' });
-    //this.$localStorage.set('dashboardLayout', "[]");
-    //setTimeout(this.fillWidgets, 1);
-    //var el = document.getElementById('grid-box1886399');
-    //el.addEventListener('update:layout', this.handleDragStart, false);
-    //console.log("Test Div:", this.$el)
-    //el.addEventListener(event, func);
-    //el.on("update:layout", function(e){console.log(e.detail.result)});
-    //alert(document.getElementById('test'));
   },
   watch: {
     layout: function (before, after) {
@@ -224,5 +197,6 @@ export default {
   padding: 2px 5px 0px 0px;
   z-index: 999;
   cursor: pointer;
+  visibility: hidden;
 }
 </style>
