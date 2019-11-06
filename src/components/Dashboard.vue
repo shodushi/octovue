@@ -24,42 +24,44 @@
       </div>
       <div class="message-body">
 
-        <div class="field" style="text-align: left;">
+        <!--<div class="field" style="text-align: left;">
           <label class="label">Title</label>
           <div class="control">
             <input class="input" type="text" placeholder="Temperatures" v-model="w_title">
           </div>
-        </div>
+        </div>!-->
         
         <div class="field" style="text-align: left;">
           <label class="label">Type</label>
           <div class="control">
             <div class="select">
               <select v-model="w_type">
-                <option>choose</option>
-                <option>gauge</option>
-                <option>pie-chart</option>
-                <option>line-chart</option>
-                <option>image-container</option>
-                <option>label</option>
+                <option value="">Choose an option</option>
+                <option value="gauge">Gauge</option>
+                <option value="pie-chart">Pie chart</option>
+                <option value="line-chart">Line chart</option>
+                <option value="image-container">Image container</option>
+                <option value="label">Label</option>
               </select>
             </div>
           </div>
         </div>
 
-        <div class="field" style="text-align: left;">
+        <div class="field" style="text-align: left;" v-if="w_type != ''">
           <label class="label">Value</label>
           <div class="control">
             <div class="select">
               <select v-model="w_source">
-                <option>choose</option>
-                <option>tool0</option>
-                <option>tool0_actual</option>
-                <option>tool0_target</option>
-                <option>bed</option>
-                <option>bed_actual</option>
-                <option>bed_target</option>
-                <option>cam-url</option>
+                <option value="">Choose an option</option>
+                <option value="tool0" v-if="w_type == 'gauge' || w_type == 'label'">Tool0 combined</option>
+                <option value="tool0_actual" v-if="w_type == 'gauge' || w_type == 'label'">Tool0 actual temperature</option>
+                <option value="tool0_target" v-if="w_type == 'gauge' || w_type == 'label'">Tool0 target temperature</option>
+                <option value="bed" v-if="w_type == 'gauge' || w_type == 'label'">Bed combined</option>
+                <option value="bed_actual" v-if="w_type == 'gauge' || w_type == 'label'">Bed actual temperature</option>
+                <option value="bed_target" v-if="w_type == 'gauge' || w_type == 'label'">Bed target temperature</option>
+                <option value="cam-url" v-if="w_type == 'image-container'">Camera feed</option>
+                <option value="line_temps" v-if="w_type == 'line-chart'">Tool temperatures</option>
+                <option value="pie_stats_printing" v-if="w_type == 'pie-chart'">Print statistics</option>
               </select>
             </div>
           </div>
@@ -159,7 +161,6 @@ export default {
   },
   watch: {
     layout: function (before, after) {
-      //console.log(this.layout);
       this.$localStorage.set('dashboardLayout', JSON.stringify(this.layout));
     }
   }
