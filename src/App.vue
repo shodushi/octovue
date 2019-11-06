@@ -648,56 +648,7 @@ export default {
   color: #2c3e50;
   margin: 0px;
 }
-/*filebrowser*/
-#filebrowser_head td {
-  border: none;
-}
-tr.is-selected {
-  background-color: #c9ffed !important;
-  color: black !important;
-}
-.thumb {
-  background-repeat: no-repeat;
-  width: auto;
-  height: auto;
-  margin: 0;
-  padding: 0;
-}
-.overlay_wrapper {
-  position: relative;
-}
-.zoomoverlay {
-  border: 1px solid #d8d8d8;
-  width: 340px;
-  height: 272px;
-  display: none;
-  background-repeat: no-repeat;
-  position: absolute;
-  top: -128px;
-  left: 242px;
-  background-color: white;
-  background-size: 800px 600px;
-}
-.file_buttons {
-  z-index: 800;
-  margin: 10px 0px 0px 0px;
-}
-.file_buttons span {
-  display: none;
-  margin: 5px 5px 0px 5px;
-}
-.file_buttons_thingiverse span {
-  margin: 5px 5px 0px 5px;
-}
-.thingiverse {
-  font-weight: bold;
-  -moz-border-radius: 50%;
-  border-radius: 50%;
-  border: 1px solid #000;
-  text-align: center;
-  width: 20px;
-  height: 20px;
-}
+
 #dropzoneProgress {
   display: none;
   position: absolute;
