@@ -53,12 +53,7 @@
             <div class="select">
               <select v-model="w_source">
                 <option value="">Choose an option</option>
-                <option value="tool0" v-if="w_type == 'gauge' || w_type == 'label'">Tool0 combined</option>
-                <option value="tool0_actual" v-if="w_type == 'gauge' || w_type == 'label'">Tool0 actual temperature</option>
-                <option value="tool0_target" v-if="w_type == 'gauge' || w_type == 'label'">Tool0 target temperature</option>
-                <option value="bed" v-if="w_type == 'gauge' || w_type == 'label'">Bed combined</option>
-                <option value="bed_actual" v-if="w_type == 'gauge' || w_type == 'label'">Bed actual temperature</option>
-                <option value="bed_target" v-if="w_type == 'gauge' || w_type == 'label'">Bed target temperature</option>
+                <option v-bind:value="tool.tool" v-for="tool in tools" v-if="w_type == 'gauge' || w_type == 'label'">{{tool.name}}</option>
                 <option value="cam-url" v-if="w_type == 'image-container'">Camera feed</option>
                 <option value="line_temps" v-if="w_type == 'line-chart'">Tool temperatures</option>
                 <option value="pie_stats_printing" v-if="w_type == 'pie-chart'">Print statistics</option>
@@ -119,6 +114,7 @@ export default {
   },
   methods: {
     addWidget: function() {
+      alert(this.w_source);
       var widget = {
         id: Math.floor(1000000 + Math.random() * 900000),
         title: this.w_title,
@@ -129,8 +125,8 @@ export default {
         position: {
             x: 6,
             y: 0,
-            w: 1,
-            h: 2
+            w: 5,
+            h: 5
         }
       };
       this.layout.push(widget);
@@ -147,7 +143,6 @@ export default {
       this.layout = [];
     },
     boxhover: function(id, value) {
-      console.log('#'+id+' > .boxoptions'+value);
       $('#'+id+' > div > .boxoptions').css({
         visibility: value
       });
@@ -158,10 +153,42 @@ export default {
   },
   mounted: function() {
     this.layout = JSON.parse(this.$localStorage.get('dashboardLayout'));
+      
   },
   watch: {
     layout: function (before, after) {
       this.$localStorage.set('dashboardLayout', JSON.stringify(this.layout));
+    }
+  },
+  computed: {
+    tools: function () {
+      console.log(this.temps);
+      var tools = [];
+      var temptool = "";
+      var tempname = ""
+      for(var v in this.temps) {
+        tempname = v+" combined temperatures";
+        tools.push({
+          tool: v,
+          name: tempname.charAt(0).toUpperCase() + tempname.slice(1),
+        })
+
+        temptool = v+".actual"
+        tempname = v+" actual temperature";
+        tools.push({
+          tool: temptool,
+          name: tempname.charAt(0).toUpperCase() + tempname.slice(1),
+        })
+
+        temptool = v+".target"
+        tempname = v+" target temperature";
+        tools.push({
+          tool: temptool,
+          name: tempname.charAt(0).toUpperCase() + tempname.slice(1),
+        })
+      }
+      console.log(tools);
+      return tools;
     }
   }
 }
