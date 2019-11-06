@@ -639,7 +639,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -647,5 +647,168 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin: 0px;
+}
+/*filebrowser*/
+#filebrowser_head td {
+  border: none;
+}
+tr.is-selected {
+  background-color: #c9ffed !important;
+  color: black !important;
+}
+.thumb {
+  background-repeat: no-repeat;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+}
+.overlay_wrapper {
+  position: relative;
+}
+.zoomoverlay {
+  border: 1px solid #d8d8d8;
+  width: 340px;
+  height: 272px;
+  display: none;
+  background-repeat: no-repeat;
+  position: absolute;
+  top: -128px;
+  left: 242px;
+  background-color: white;
+  background-size: 800px 600px;
+}
+.file_buttons {
+  z-index: 800;
+  margin: 10px 0px 0px 0px;
+}
+.file_buttons span {
+  display: none;
+  margin: 5px 5px 0px 5px;
+}
+.file_buttons_thingiverse span {
+  margin: 5px 5px 0px 5px;
+}
+.thingiverse {
+  font-weight: bold;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+  border: 1px solid #000;
+  text-align: center;
+  width: 20px;
+  height: 20px;
+}
+#dropzoneProgress {
+  display: none;
+  position: absolute;
+  top: 40%;
+  left: 25%;
+  width: 50%;
+  height: 100px;
+  background-color: white;
+  color: black;
+  border: 1px dashed black;
+  z-index: 999;
+  text-align: center;
+  font-size: 20px;
+}
+#dropzoneProgress .imgContainer { vertical-align: middle; }
+#dropzoneProgress .textContainer { display: inline-block; }
+
+
+/*temperature slider*/
+.temp_ist {
+  position: relative;
+  width: 20px;
+  height: 130px;
+  background-color: #f6f6f6;
+  border: 1px solid #b6b6b6;
+  vertical-align: bottom;
+}
+.temp_ist div {
+  position: absolute;
+  bottom: 0px;
+  width: 18px;
+  max-height: 128px;
+}
+.temp_ist #temp_tool0_actual {
+  background-color: #ff3055;
+}
+.temp_ist #temp_bed_actual {
+  background-color: #1c92eb;
+}
+#sliderextruderoutput {
+  background-color: white;
+  color: #ff3055;
+  font-weight: bold;
+}
+#sliderbedoutput {
+  background-color: white;
+  color: #1c92eb;
+  font-weight: bold;
+}
+/*terminal*/
+#terminal {
+  position: absolute;
+  top: 100px;
+  left: 20%;
+  width: 70%;
+  max-width: 800px;
+  height: 600px;
+  z-index: 999;
+}
+#terminal_header {
+  background-color: #ffdd57;
+  color: black;
+  cursor: grab;
+  padding: 4px;
+}
+#terminal_console {
+  height: 500px;
+  background-color: rgba(0,0,0,0.8);
+  color: #fff;
+}
+
+/*transitions*/
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 1s
+}
+.fade-enter,
+.fade-leave-to
+/* .fade-leave-active in <2.1.8 */
+{
+  opacity: 0
+}
+.slide-enter-active, .slide-leave-active  {
+  transition: all .6s ease;
+}
+.slide-enter, .slide-leave-to
+{
+  transform: translateX(-100%), translateY(-100%);
+  opacity: 0;
+}
+.nav-divider {
+  width: 11px; height: 80%; margin: 5px 10px 0px 20px; background-color: #C0C0C0; border: 5px solid white;
+}
+
+/*common stuff*/
+.has-margin {
+  margin-left: 20px;
+}
+#messagebox {
+  position: absolute;
+  top: 20%;
+  left: 10px;
+  z-index: 999;
+  width: 40%;
+  height: auto;
+  display: none;
+}
+#messagebox div {
+  font-size: 100%;
+}
+.column {
+  margin: 10px 10px 10px 10px !important;
 }
 </style>

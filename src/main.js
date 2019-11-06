@@ -11,7 +11,6 @@ import 'bulma-slider/dist/js/bulma-slider.min.js'
 import 'bulma-slider/dist/css/bulma-slider.min.css'
 import 'bulma-pageloader/dist/css/bulma-pageloader.min.css'
 import 'bulma-switch/dist/css/bulma-switch.min.css'
-require('@/assets/css/octomin.css')
 
 Vue.config.productionTip = false
 

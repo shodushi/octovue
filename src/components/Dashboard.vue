@@ -11,7 +11,7 @@
     <p class="control" id="btn_clearWidgets">
       <a class="bd-tw-button button is-small is-default" v-on:click="clearWidgets">
         <span class="icon">
-          <i class="fas fa-plus"></i>
+          <i class="fas fa-trash"></i>
         </span>
         <span>{{debug}} clear widgets</span>
       </a>
@@ -23,13 +23,6 @@
         <button class="delete" aria-label="delete" v-on:click="showAddWidget = false"></button>
       </div>
       <div class="message-body">
-
-        <!--<div class="field" style="text-align: left;">
-          <label class="label">Title</label>
-          <div class="control">
-            <input class="input" type="text" placeholder="Temperatures" v-model="w_title">
-          </div>
-        </div>!-->
         
         <div class="field" style="text-align: left;">
           <label class="label">Type</label>
@@ -69,6 +62,7 @@
     </article>
 
     <dnd-grid-container :layout.sync="layout" :cellSize="cellSize" :maxColumnCount="maxColumnCount" :maxRowCount="maxRowCount" :margin="margin" :bubbleUp="bubbleUp">
+
       <dnd-grid-box class="widget" :ref="'gridbox'+box.id" v-for="box in layout" :id="'grid-box'+box.id" :boxId="box.id" :key="box.id" dragSelector=".dragSelector" resizeVisible>
         <div class="card dash-box" v-on:mouseover="boxhover('grid-box'+box.id, 'visible')" v-on:mouseleave="boxhover('grid-box'+box.id, 'hidden')">
           <div class="boxoptions" v-on:click="deleteWidget(box.id)"><i class="far fa-times-circle" style="color: #C0C0C0"></i></div>
@@ -77,6 +71,7 @@
           </div>
         </div>
       </dnd-grid-box>
+
     </dnd-grid-container>
   </div>
 </template>
@@ -114,7 +109,6 @@ export default {
   },
   methods: {
     addWidget: function() {
-      alert(this.w_source);
       var widget = {
         id: Math.floor(1000000 + Math.random() * 900000),
         title: this.w_title,
@@ -162,7 +156,6 @@ export default {
   },
   computed: {
     tools: function () {
-      console.log(this.temps);
       var tools = [];
       var temptool = "";
       var tempname = ""
@@ -187,7 +180,6 @@ export default {
           name: tempname.charAt(0).toUpperCase() + tempname.slice(1),
         })
       }
-      console.log(tools);
       return tools;
     }
   }
@@ -205,18 +197,29 @@ export default {
   top: 10%; right: 8%;
   z-index: 999;
 }
+
+#dashboardPage {
+  margin: 50px 20px 20px 20px;
+}
+#addWidget {
+  width: 400px;
+  margin: 0 auto;
+  position: absolute;
+  top: 15%;
+  right: 1%;
+  z-index: 999;
+}
+#addWidget .message-body {
+  text-align: left;
+}
 .dash-box {
-  overflow: hidden;
-  padding-bottom: 0%;
+  width: 100%;
+  height: 100%;
 }
 .dash-box-body {
   width: 100%;
   height: 100%;
   /*display: -ms-flex; display: -webkit-flex; display: flex;*/
-}
-.dash-box-body>.widget {
-  width: 100%;
-  height: 100%;
 }
 .boxoptions {
   position: absolute;

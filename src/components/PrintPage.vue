@@ -90,3 +90,21 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+
+/*printpage*/
+.pp_boxes {
+  font-size: 1.8em;
+  color: #22d0b2;
+  font-weight: bold;
+}
+#printPage_temp {
+  margin-top: 50px;
+}
+#piecharts .columns .column {
+  padding: 20px 20px 20px 20px;
+}
+
+
+</style>
