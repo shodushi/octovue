@@ -1,20 +1,29 @@
 <template>
-  <chart class="piechart" v-if="type == 'pie-chart'" :ref="reference" :type="'pie'" :data="widgetData" :options="widgetOptions"></chart>
-
-  <chart class="linechart" v-else-if="type == 'line-chart'" :ref="reference" :type="'line'" :data="widgetData" :options="widgetOptions"></chart>
+  <div v-if="type == 'pie-chart'">
+    <chart class="piechart"  :ref="reference" :type="'pie'" :data="widgetData" :options="widgetOptions"></chart>
+    <div class="missing" v-if="widgetData == null">{{source}} not found</div>
+  </div>
+  
+  <div v-else-if="type == 'line-chart'">
+    <chart class="linechart" :ref="reference" :type="'line'" :data="widgetData" :options="widgetOptions"></chart>
+    <div class="missing" v-if="widgetData == null">{{source}} not found</div>
+  </div>
   
   <div class="image-container" v-else-if="type == 'image-container'" :style="{ backgroundImage: 'url(\'' + widgetData + '\')' }"></div>
 
   <div class="gauge dragSelector" v-else-if="type == 'gauge'">
-    <chart v-if="found" :ref="reference" :type="'pie'" v-bind:data="widgetData" :options="widgetOptions" class="dragSelector gaugeChart"></chart>
-    <div v-if="found" class="gaugeFooter">
+    <chart :ref="reference" :type="'pie'" v-bind:data="widgetData" :options="widgetOptions" class="dragSelector gaugeChart"></chart>
+    <div class="gaugeFooter">
       <div class="gauge_value dragSelector">{{this.value}}</div>
       <div class="gauge_label dragSelector"><img :src="imgsrc">{{this.source}}</div>
     </div>
-    <div class="missing" v-if="!found">{{source}} not found</div>
+    <div class="missing" v-if="widgetData == null">{{source}} not found</div>
   </div>
 
-  <div class="widgetlabel" :id="id" v-else-if="type == 'label'">{{ widgetData }}<div class="source">{{this.source}}</div></div>
+  <div class="widgetlabel" :id="id" v-else-if="type == 'label'">
+    {{ widgetData }}<div class="source">{{this.source}}</div>
+    <div class="missing" v-if="widgetData == null">{{source}} not found</div>
+  </div>
   
 </template>
 
@@ -25,8 +34,7 @@ export default {
     return {
       mounted: false,
       value: "",
-      imgsrc: "",
-      found: true,
+      imgsrc: ""
     }
   },
   mounted: function() {
@@ -72,37 +80,31 @@ export default {
       }
       
       if(this.type == "gauge") {
-        var found = false;
+        
         for(var i = 0; i< this.graphs.length; i++) {
           if(this.graphs[i].name == this.source.split(".")[0]) {
-            this.found = true;
-          }
-        }
-        if(this.found) {
-          for(var i = 0; i< this.graphs.length; i++) {
-            if(this.graphs[i].name == this.source.split(".")[0]) {
-              if(this.mounted) {
-                if(this.source.split(".")[1] == null) {
-                  this.value = this.temps[this.source.split(".")[0]].actual+"/"+this.temps[this.source.split(".")[0]].target;
-                } else {
-                  this.value = this.temps[this.source.split(".")[0]][this.source.split(".")[1]];
-                }
-                if(this.source.split(".")[0] == "bed") {
-                  this.imgsrc = "img/bed-icon2.png";
-                } else if(this.source.split(".")[0] == "chamber") {
-                  this.imgsrc = "img/chamber-icon2.png";
-                } else {
-                    this.imgsrc = "img/hotend-icon2.png";
-                }
-                this.$refs[this.reference].chart.update();
+            if(this.mounted) {
+              if(this.source.split(".")[1] == null) {
+                this.value = this.temps[this.source.split(".")[0]].actual+"/"+this.temps[this.source.split(".")[0]].target;
+              } else {
+                this.value = this.temps[this.source.split(".")[0]][this.source.split(".")[1]];
               }
-              return this.graphs[i]
+              if(this.source.split(".")[0] == "bed") {
+                this.imgsrc = "img/bed-icon2.png";
+              } else if(this.source.split(".")[0] == "chamber") {
+                this.imgsrc = "img/chamber-icon2.png";
+              } else {
+                  this.imgsrc = "img/hotend-icon2.png";
+              }
+              this.$refs[this.reference].chart.update();
             }
+            return this.graphs[i]
           }
         }
       }
       if(this.type == "label") {
         if(this.mounted) {
+          
           for(var i = 0; i< this.graphs.length; i++) {
             if(this.graphs[i].name == this.source.split(".")[0]) {
               if(this.source.split(".").length > 1) {
@@ -204,6 +206,7 @@ export default {
   justify-content: center;
   align-content: center;
   flex-direction: column;
+  font-size: 16px !important;
   background-color: rgb(255, 236, 236);
 }
 </style>
