@@ -280,6 +280,7 @@
 
 <script>
 import Chart from 'vue-bulma-chartjs';
+import axios from "axios";
 
 export default {
   linkActiveClass: 'is-active',
@@ -454,14 +455,14 @@ export default {
       });
     },
     checkConnection: function() {
-      this.transport("GET", "octo_ip", "/api/connection", null).then(result => {
-        if(typeof(result) == "object") {
-          this.$store.state.connectionSettings = result.data;
-          this.$store.state.printerProfiles = result.data.options.printerProfiles;
-          this.$store.state.avail_printerports = result.data.options.ports;
-          this.$store.state.avail_baudrates = result.data.options.baudrates;
-        }
-      });
+	axios({ method: "GET", "url": this.octo_ip+"/api/connection", headers: {'X-Api-Key': this.apikey} }).then(result => {
+		this.$store.state.connectionSettings = result.data;
+	        this.$store.state.printerProfiles = result.data.options.printerProfiles;
+		this.$store.state.avail_printerports = result.data.options.ports;
+		this.$store.state.avail_baudrates = result.data.options.baudrates;
+        }, error => {
+            console.log(error);
+        });
     },
     getOctoprintConnection: function() {
       this.transport("GET", "octo_ip", "/api/connection", null).then(result => {
