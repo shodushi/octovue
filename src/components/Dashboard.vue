@@ -147,7 +147,6 @@ export default {
   },
   mounted: function() {
     this.layout = JSON.parse(this.$localStorage.get('dashboardLayout'));
-      
   },
   watch: {
     layout: function (before, after) {
@@ -156,6 +155,7 @@ export default {
   },
   computed: {
     tools: function () {
+      console.log(this.$store.state.temps);
       var tools = [];
       var temptool = "";
       var tempname = ""

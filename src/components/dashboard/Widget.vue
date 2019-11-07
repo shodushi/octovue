@@ -6,9 +6,12 @@
   <div class="image-container" v-else-if="type == 'image-container'" :style="{ backgroundImage: 'url(\'' + widgetData + '\')' }"></div>
 
   <div class="gauge dragSelector" v-else-if="type == 'gauge'">
-    <chart :ref="reference" :type="'pie'" v-bind:data="widgetData" :options="widgetOptions" class="dragSelector"></chart>
-    <div class="gauge_value dragSelector">{{this.value}}</div>
-    <div class="gauge_label dragSelector"><img :src="imgsrc">{{this.source}}</div><br />
+    <chart v-if="found" :ref="reference" :type="'pie'" v-bind:data="widgetData" :options="widgetOptions" class="dragSelector gaugeChart"></chart>
+    <div v-if="found" class="gaugeFooter">
+      <div class="gauge_value dragSelector">{{this.value}}</div>
+      <div class="gauge_label dragSelector"><img :src="imgsrc">{{this.source}}</div>
+    </div>
+    <div class="missing" v-if="!found">{{source}} not found</div>
   </div>
 
   <div class="widgetlabel" :id="id" v-else-if="type == 'label'">{{ widgetData }}<div class="source">{{this.source}}</div></div>
@@ -22,13 +25,13 @@ export default {
     return {
       mounted: false,
       value: "",
-      imgsrc: ""
+      imgsrc: "",
+      found: true,
     }
   },
   mounted: function() {
     this.mounted = true;
-
-    if(this.type == 'label') {
+    if(this.type == 'label' || this.type != 'gauge') {
       var el = document.getElementById(this.id);
       var resizeElement = el,
         resizeCallback = function() {
@@ -39,15 +42,17 @@ export default {
   methods: {
     resized: function(el) {
       var el = document.getElementById(this.id);
-      var fontSize = $('#'+this.id).css('font-size').replace("px", "");
-      var childFontSize = $('#'+this.id+' > .source').css('font-size').replace("px", "");
-      if(parseInt(fontSize) < el.offsetWidth-50 && parseInt(fontSize) < el.offsetHeight-50) {
-        $('#'+this.id).css({
-          fontSize: (el.offsetWidth+el.offsetHeight)/9+"px"
-        });
-        $('#'+this.id+' > .source').css({
-          fontSize: (el.offsetWidth+el.offsetHeight)/18+"px"
-        });
+      if(this.type == "label") {
+        var fontSize = $('#'+this.id).css('font-size').replace("px", "");
+        var childFontSize = $('#'+this.id+' > .source').css('font-size').replace("px", "");
+        if(parseInt(fontSize) < el.offsetWidth-50 && parseInt(fontSize) < el.offsetHeight-50) {
+          $('#'+this.id).css({
+            fontSize: (el.offsetWidth+el.offsetHeight)/9+"px"
+          });
+          $('#'+this.id+' > .source').css({
+            fontSize: (el.offsetWidth+el.offsetHeight)/18+"px"
+          });
+        }
       }
     }
   },
@@ -65,8 +70,16 @@ export default {
       if(this.type == "image-container") {
         return this.cam;
       }
+      
       if(this.type == "gauge") {
+        var found = false;
         for(var i = 0; i< this.graphs.length; i++) {
+          if(this.graphs[i].name == this.source.split(".")[0]) {
+            this.found = true;
+          }
+        }
+        if(this.found) {
+          for(var i = 0; i< this.graphs.length; i++) {
             if(this.graphs[i].name == this.source.split(".")[0]) {
               if(this.mounted) {
                 if(this.source.split(".")[1] == null) {
@@ -74,7 +87,6 @@ export default {
                 } else {
                   this.value = this.temps[this.source.split(".")[0]][this.source.split(".")[1]];
                 }
-                //this.value = this.formatDecimal(this.graphs[i].datasets[0].data[0]);
                 if(this.source.split(".")[0] == "bed") {
                   this.imgsrc = "img/bed-icon2.png";
                 } else if(this.source.split(".")[0] == "chamber") {
@@ -82,12 +94,11 @@ export default {
                 } else {
                     this.imgsrc = "img/hotend-icon2.png";
                 }
-
-
                 this.$refs[this.reference].chart.update();
               }
               return this.graphs[i]
             }
+          }
         }
       }
       if(this.type == "label") {
@@ -148,7 +159,8 @@ export default {
   height: 100%;
   width: 100%;
   text-align: center;
-  padding: 0px;
+  vertical-align: middle;
+  padding-top: 2vh;
 }
 .widgetlabel>.source {
   font-size: 14px;
@@ -158,24 +170,40 @@ export default {
   max-width: 80%;
   max-height: 80%;
 }
+.gaugeChart {
+  position: relative;
+  margin: 0 auto;
+}
+.gaugeFooter {
+  position: absolute;
+  top: 60%;
+  left: 0;
+  width: 100%;
+}
 .gauge_value {
   width: 100%;
   text-align: center;
-  position: relative;
-  top: -9vh;
 }
 .gauge_label {
   width: 100%;
   text-align: center;
   font-size: 100%;
   font-weight: bold;
-  position: relative;
-  bottom: 7vh;
-  left: 0;
 }
 .gauge_label>img {
   width: 20%;
   margin-right: 4px;
 }
-
+.missing {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  flex-direction: column;
+  background-color: rgb(255, 236, 236);
+}
 </style>
