@@ -4,11 +4,8 @@
     <div class="missing" v-if="widgetData == null">{{source}} not found</div>
   </div>
   
-  <div v-else-if="type == 'line-chart'">
-    <chart class="linechart" :ref="reference" :type="'line'" :data="widgetData" :options="widgetOptions"></chart>
-    <div class="missing" v-if="widgetData == null">{{source}} not found</div>
-  </div>
-  
+  <chart v-else-if="type == 'line-chart'" class="linechart" :ref="reference" :type="'line'" :data="widgetData" :options="widgetOptions"></chart>
+    
   <div class="image-container" v-else-if="type == 'image-container'" :style="{ backgroundImage: 'url(\'' + widgetData + '\')' }"></div>
 
   <div class="gauge dragSelector" v-else-if="type == 'gauge'">
