@@ -1021,6 +1021,22 @@ export const globalSettings = {
           console.log(result);
         }
       });
+    },
+    toolCommand(command, tool, offsets, amount, factor) {
+      var obj = {};
+      obj.command = command;
+      obj.tool = tool;
+      obj.offsets = offsets;
+      obj.amount = parseInt(amount);
+      obj.factor = parseInt(factor);
+      console.log("obj: ",obj);
+      this.transport("POST", "octo_ip", "/api/printer/tool", obj).then(result => {
+        if(typeof(result) == "object") {
+
+        } else {
+          console.log(result);
+        }
+      });
     }
   },
   computed: {

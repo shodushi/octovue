@@ -90,7 +90,7 @@
   <div class="feedrate" :id="id" v-else-if="type == 'feedrate'">
     <div class="wrapper">
       <h3>Feedrate</h3>
-      <input id="feedrate_slider" class="slider is-fullwidth is-info is-small is-circle" step="1" min="50" max="150" value="100" type="range" v-bind:value="feedrate" v-on:mousemove="setFeedrate()">
+      <input id="feedrate_slider" class="slider is-fullwidth is-info is-small is-circle" step="1" min="50" max="150" value="100" type="range" v-bind:value="feedrate" v-on:mousemove="setFeedrate()" v-on:mouseup="printHead('feedrate', null, null, null, null, feedrate)">
       <output style="position: relative; top: 8px;" v-bind:for="'feedrate_slider'">{{ feedrate }}%</output>
     </div>
   </div>
@@ -103,7 +103,7 @@
     <div class="wrapper">
       <div class="field" style="text-align: left;">
         <div class="select is-small is-fullwidth">
-          <select v-model="selectedtool">
+          <select v-model="selectedtool" @change="toolCommand('select', selectedtool, null, null, null)">
             <option value="choose">choose tool</option>
             <option value="tool0">Hotend</option>
           </select>
@@ -111,22 +111,22 @@
       </div>
       <div class="field" style="text-align: left;">
         <div class="control">
-          <input class="input is-small" type="text" v-model="apikey" placeholder="5" style="width: 70%; float: left; text-align: right"><label class="input is-small is-light" style="width: 20%; float: left;">mm</label>
+          <input class="input is-small" type="text" v-model="toolcommand_value" placeholder="5" style="width: 70%; float: left; text-align: right"><label class="input is-small is-light" style="width: 20%; float: left;">mm</label>
           <div style="clear: both;"></div>
         </div>
       </div>
 
       <div class="field" style="text-align: left;">
         <div class="buttons">
-          <button class="button is-small is-primary is-fullwidth" v-on:click="steps = 100"><span>Extrude</span></button>
+          <button class="button is-small is-primary is-fullwidth" v-on:click="toolCommand('extrude', null, null, toolcommand_value, null)"><span>Extrude</span></button>
         </div>
         <div class="buttons">
-          <button class="button is-small is-primary is-fullwidth" v-on:click="steps = 100"><span>Retract</span></button>
+          <button class="button is-small is-primary is-fullwidth" v-on:click="toolCommand('extrude', null, null, '-'+toolcommand_value, null)"><span>Retract</span></button>
         </div>
       </div>
 
       <hr />
-      <input id="flowrate_slider" class="slider is-fullwidth is-info is-small is-circle" step="1" min="50" max="125" value="100" type="range" v-bind:value="flowrate" v-on:mousemove="setFlowrate()">
+      <input id="flowrate_slider" class="slider is-fullwidth is-info is-small is-circle" step="1" min="50" max="125" value="100" type="range" v-bind:value="flowrate" v-on:mousemove="setFlowrate()" v-on:mouseup="toolCommand('flowrate', null, null, null, flowrate)">
       <output style="position: relative; top: 8px;" v-bind:for="'flowrate_slider'">Flowrate: {{ flowrate }}%</output>
     </div>
   </div>
@@ -144,7 +144,8 @@ export default {
       steps: 10,
       feedrate: 100,
       flowrate: 100,
-      selectedtool: "choose"
+      selectedtool: "choose",
+      toolcommand_value: 5
     }
   },
   mounted: function() {
