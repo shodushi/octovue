@@ -45,7 +45,7 @@
           </div>
         </div>
 
-        <div class="field" style="text-align: left;" v-if="w_type != ''">
+        <div class="field" style="text-align: left;" v-if="w_type != '' && w_type != 'printhead' && w_type != 'feedrate' && w_type != 'printercommands' && w_type != 'toolcommands' && w_type != 'terminalwidget'">
           <label class="label">Value</label>
           <div class="control">
             <div class="select">
@@ -160,7 +160,6 @@ export default {
   },
   computed: {
     tools: function () {
-      console.log(this.$store.state.temps);
       var tools = [];
       var temptool = "";
       var tempname = ""

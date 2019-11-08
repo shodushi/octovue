@@ -133,10 +133,10 @@
 
   <div class="terminalwidget dragSelector" :id="id" v-else-if="type == 'terminalwidget'">
     <div class="field">
-            <div class="control">
-              <textarea id="terminal_console" class="textarea dragSelector" placeholder="" v-model="terminalLogs"></textarea>
-            </div>
-          </div>
+      <div class="control">
+        <textarea id="terminal_console" class="textarea dragSelector" placeholder="" v-model="terminalLogs"></textarea>
+      </div>
+    </div>
   </div>
   
   
@@ -159,7 +159,7 @@ export default {
   },
   mounted: function() {
     this.mounted = true;
-    if(this.type == 'label' || this.type == 'gauge') {
+    if(this.type == 'label' || this.type == 'terminalwidget') {
       var el = document.getElementById(this.id);
       var resizeElement = el,
         resizeCallback = function() {
@@ -189,6 +189,9 @@ export default {
             fontSize: (el.offsetWidth+el.offsetHeight)/18+"px"
           });
         }
+      }
+      if(this.type == "terminalwidget") {
+        $('#terminal_console').css({height: el.offsetHeight+"px"});
       }
     }
   },
@@ -384,13 +387,13 @@ export default {
   width: 80%;
 }
 .terminalwidget {
-  border: 1px solid red;
   height: 100%;
+  width: 100%;
 }
 #terminal_console {
   width: 100vw !important;
-  height: 50vh !important;
   background-color: rgba(0,0,0,0.8);
   color: #fff;
+  resize: none;
 }
 </style>
