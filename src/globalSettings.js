@@ -1004,6 +1004,23 @@ export const globalSettings = {
             console.error(error);
         });
       }
+    },
+    printHead(command, x, y, z, axes, factor) {
+      var obj = {};
+      obj.command = command;
+      obj.x = parseInt(x);
+      obj.y = parseInt(y);
+      obj.z = parseInt(z);
+      obj.axes = axes;
+      obj.factor = factor;
+      console.log("obj: ",obj);
+      this.transport("POST", "octo_ip", "/api/printer/printhead", obj).then(result => {
+        if(typeof(result) == "object") {
+
+        } else {
+          console.log(result);
+        }
+      });
     }
   },
   computed: {

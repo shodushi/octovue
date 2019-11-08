@@ -38,7 +38,7 @@
             </div>
           </div>
           </div>
-              
+
         </div>
 
         <div class="columns" id="printPage_temp">
@@ -105,6 +105,4 @@ export default {
 #piecharts .columns .column {
   padding: 20px 20px 20px 20px;
 }
-
-
 </style>

@@ -35,6 +35,7 @@
                 <option value="line-chart">Line chart</option>
                 <option value="image-container">Image container</option>
                 <option value="label">Label</option>
+                <option value="printercontrols">Printer controls</option>
               </select>
             </div>
           </div>

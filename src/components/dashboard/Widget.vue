@@ -8,7 +8,7 @@
     
   <div class="image-container" v-else-if="type == 'image-container'" :style="{ backgroundImage: 'url(\'' + widgetData + '\')' }"></div>
 
-  <div class="gauge dragSelector" v-else-if="type == 'gauge'">
+  <div class="gauge dragSelector" v-else-if="type == 'gauge'" :id="id">
     <chart :ref="reference" :type="'pie'" v-bind:data="widgetData" :options="widgetOptions" class="dragSelector gaugeChart"></chart>
     <div class="gaugeFooter">
       <div class="gauge_value dragSelector">{{this.value}}</div>
@@ -20,6 +20,47 @@
   <div class="widgetlabel" :id="id" v-else-if="type == 'label'">
     {{ widgetData }}<div class="source">{{this.source}}</div>
     <div class="missing" v-if="widgetData == null">{{source}} not found</div>
+  </div>
+
+  <div class="printercontrols ctrlbuttons dragSelector" v-else-if="type == 'printercontrols'">
+    <div class="dragSelector">
+      <table>
+        <tr>
+          <td colspan="3" style="text-align: center">X / Y</td>
+        </tr>
+        <tr>
+          <td class="dragSelector"></td>
+          <td class="dragSelector"><span class="button ctrlbutton" v-on:click="printHead('jog', 0, 10, 0)"><i class="fas fa-arrow-up"></i></span></td>
+          <td class="dragSelector"></td>
+        </tr>
+        <tr>
+          <td class="dragSelector"><span class="button ctrlbutton" v-on:click="printHead('jog', -10, 0, 0)"><i class="fas fa-arrow-left"></i></span></td>
+          <td class="dragSelector"><span class="button ctrlbutton" v-on:click="printHead('home', null, null, null, ['x', 'y'])"><i class="fas fa-home"></i></span></td>
+          <td class="dragSelector"><span class="button ctrlbutton" v-on:click="printHead('jog', 10, 0, 0)"><i class="fas fa-arrow-right"></i></span></td>
+        </tr>
+        <tr>
+          <td class="dragSelector"></td>
+          <td class="dragSelector"><span class="button ctrlbutton" v-on:click="printHead('jog', 0, -10, 0)"><i class="fas fa-arrow-down"></i></span></td>
+          <td class="dragSelector"></td>
+        </tr>
+      </table>
+    </div>
+    <div class="dragSelector">
+      <table>
+        <tr>
+          <td colspan="3" style="text-align: center">Z</td>
+        </tr>
+        <tr>
+          <td class="dragSelector"><span class="button ctrlbutton" v-on:click="printHead('jog', 0, 0, 10)"><i class="fas fa-arrow-up"></i></span></td>
+        </tr>
+        <tr>
+          <td class="dragSelector"><span class="button ctrlbutton" v-on:click="printHead('home', null, null, null, ['z'])"><i class="fas fa-home"></i></span></td>
+        </tr>
+        <tr>
+          <td class="dragSelector"><span class="button ctrlbutton" v-on:click="printHead('jog', 0, 0, -10)"><i class="fas fa-arrow-down"></i></span></td>
+        </tr>
+      </table>
+    </div>
   </div>
   
 </template>
@@ -36,7 +77,7 @@ export default {
   },
   mounted: function() {
     this.mounted = true;
-    if(this.type == 'label' || this.type != 'gauge') {
+    if(this.type == 'label' || this.type == 'gauge') {
       var el = document.getElementById(this.id);
       var resizeElement = el,
         resizeCallback = function() {
@@ -205,5 +246,23 @@ export default {
   flex-direction: column;
   font-size: 16px !important;
   background-color: rgb(255, 236, 236);
+}
+.printercontrols {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin: 0 auto;
+  height: 100%;
+}
+.printercontrols>div {
+  width: auto;
+  float: left;
+}
+.ctrlbuttons td {
+  padding: 4px;
+}
+.ctrlbutton {
+  max-width: 30px;
+  max-height: 30px;
 }
 </style>
