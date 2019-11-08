@@ -35,7 +35,10 @@
                 <option value="line-chart">Line chart</option>
                 <option value="image-container">Image container</option>
                 <option value="label">Label</option>
-                <option value="printercontrols">Printer controls</option>
+                <option value="printhead">Printhead controls</option>
+                <option value="feedrate">Feedrate controls</option>
+                <option value="printercommands">Printercommands</option>
+                <option value="toolcommands">Toolcommands</option>
               </select>
             </div>
           </div>

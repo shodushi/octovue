@@ -22,44 +22,112 @@
     <div class="missing" v-if="widgetData == null">{{source}} not found</div>
   </div>
 
-  <div class="printercontrols ctrlbuttons dragSelector" v-else-if="type == 'printercontrols'">
-    <div class="dragSelector">
-      <table>
-        <tr>
-          <td colspan="3" style="text-align: center">X / Y</td>
-        </tr>
-        <tr>
-          <td class="dragSelector"></td>
-          <td class="dragSelector"><span class="button ctrlbutton" v-on:click="printHead('jog', 0, 10, 0)"><i class="fas fa-arrow-up"></i></span></td>
-          <td class="dragSelector"></td>
-        </tr>
-        <tr>
-          <td class="dragSelector"><span class="button ctrlbutton" v-on:click="printHead('jog', -10, 0, 0)"><i class="fas fa-arrow-left"></i></span></td>
-          <td class="dragSelector"><span class="button ctrlbutton" v-on:click="printHead('home', null, null, null, ['x', 'y'])"><i class="fas fa-home"></i></span></td>
-          <td class="dragSelector"><span class="button ctrlbutton" v-on:click="printHead('jog', 10, 0, 0)"><i class="fas fa-arrow-right"></i></span></td>
-        </tr>
-        <tr>
-          <td class="dragSelector"></td>
-          <td class="dragSelector"><span class="button ctrlbutton" v-on:click="printHead('jog', 0, -10, 0)"><i class="fas fa-arrow-down"></i></span></td>
-          <td class="dragSelector"></td>
-        </tr>
-      </table>
+  <div class="printhead ctrlbuttons dragSelector" v-else-if="type == 'printhead'">
+    <div class="center">
+      <div class="horizontal dragSelector">
+        <table>
+          <tr>
+            <td colspan="3" style="text-align: center">X / Y</td>
+          </tr>
+          <tr>
+            <td class="dragSelector"></td>
+            <td class="dragSelector"><span class="button ctrlbutton" v-on:click="printHead('jog', 0, steps, 0)"><i class="fas fa-arrow-up"></i></span></td>
+            <td class="dragSelector"></td>
+          </tr>
+          <tr>
+            <td class="dragSelector"><span class="button ctrlbutton" v-on:click="printHead('jog', '-'+steps, 0, 0)"><i class="fas fa-arrow-left"></i></span></td>
+            <td class="dragSelector"><span class="button ctrlbutton" v-on:click="printHead('home', null, null, null, ['x', 'y'])"><i class="fas fa-home"></i></span></td>
+            <td class="dragSelector"><span class="button ctrlbutton" v-on:click="printHead('jog', steps, 0, 0)"><i class="fas fa-arrow-right"></i></span></td>
+          </tr>
+          <tr>
+            <td class="dragSelector"></td>
+            <td class="dragSelector"><span class="button ctrlbutton" v-on:click="printHead('jog', 0, '-'+steps, 0)"><i class="fas fa-arrow-down"></i></span></td>
+            <td class="dragSelector"></td>
+          </tr>
+        </table>
+      </div>
+      <div class="horizontal dragSelector">
+        <table>
+          <tr>
+            <td colspan="3" style="text-align: center">Z</td>
+          </tr>
+          <tr>
+            <td class="dragSelector"><span class="button ctrlbutton" v-on:click="printHead('jog', 0, 0, steps)"><i class="fas fa-arrow-up"></i></span></td>
+          </tr>
+          <tr>
+            <td class="dragSelector"><span class="button ctrlbutton" v-on:click="printHead('home', null, null, null, ['z'])"><i class="fas fa-home"></i></span></td>
+          </tr>
+          <tr>
+            <td class="dragSelector"><span class="button ctrlbutton" v-on:click="printHead('jog', 0, 0, '-'+steps)"><i class="fas fa-arrow-down"></i></span></td>
+          </tr>
+        </table>
+      </div>
     </div>
-    <div class="dragSelector">
-      <table>
-        <tr>
-          <td colspan="3" style="text-align: center">Z</td>
-        </tr>
-        <tr>
-          <td class="dragSelector"><span class="button ctrlbutton" v-on:click="printHead('jog', 0, 0, 10)"><i class="fas fa-arrow-up"></i></span></td>
-        </tr>
-        <tr>
-          <td class="dragSelector"><span class="button ctrlbutton" v-on:click="printHead('home', null, null, null, ['z'])"><i class="fas fa-home"></i></span></td>
-        </tr>
-        <tr>
-          <td class="dragSelector"><span class="button ctrlbutton" v-on:click="printHead('jog', 0, 0, -10)"><i class="fas fa-arrow-down"></i></span></td>
-        </tr>
-      </table>
+    <div class="field has-addons vertical">
+      <p class="control">
+        <button class="button is-small is-primary" v-bind:class="{ 'is-active' : steps == 0.1, 'is-outlined' : steps != 0.1}" v-on:click="steps = 0.1">
+          <span>0.1</span>
+        </button>
+      </p>
+      <p class="control">
+        <button class="button is-small is-primary" v-bind:class="{ 'is-active' : steps == 1, 'is-outlined' : steps != 1}" v-on:click="steps = 1">
+          <span>1</span>
+        </button>
+      </p>
+      <p class="control">
+        <button class="button is-small is-primary" v-bind:class="{ 'is-active' : steps == 10, 'is-outlined' : steps != 10}" v-on:click="steps = 10">
+          <span>10</span>
+        </button>
+      </p>
+      <p class="control">
+        <button class="button is-small is-primary" v-bind:class="{ 'is-active' : steps == 100, 'is-outlined' : steps != 100}" v-on:click="steps = 100">
+          <span>100</span>
+        </button>
+      </p>
+    </div>
+  </div>
+
+  <div class="feedrate" :id="id" v-else-if="type == 'feedrate'">
+    <div class="wrapper">
+      <h3>Feedrate</h3>
+      <input id="feedrate_slider" class="slider is-fullwidth is-info is-small is-circle" step="1" min="50" max="150" value="100" type="range" v-bind:value="feedrate" v-on:mousemove="setFeedrate()">
+      <output style="position: relative; top: 8px;" v-bind:for="'feedrate_slider'">{{ feedrate }}%</output>
+    </div>
+  </div>
+
+  <div class="printercommands" :id="id" v-else-if="type == 'printercommands'">
+    <div class="buttons" v-for="value in $gcodes[$localStorage.get('printer_firmware')]"><button class="button is-small is-fullwidth" v-on:click="pcmds(value.gcmd)"><i class="fas" v-bind:class="value.icon"></i>&nbsp;<span>{{ value.label }}</span></button></div>
+  </div>
+
+  <div class="toolcommands" :id="id" v-else-if="type == 'toolcommands'">
+    <div class="wrapper">
+      <div class="field" style="text-align: left;">
+        <div class="select is-small is-fullwidth">
+          <select v-model="selectedtool">
+            <option value="choose">choose tool</option>
+            <option value="tool0">Hotend</option>
+          </select>
+        </div>
+      </div>
+      <div class="field" style="text-align: left;">
+        <div class="control">
+          <input class="input is-small" type="text" v-model="apikey" placeholder="5" style="width: 70%; float: left; text-align: right"><label class="input is-small is-light" style="width: 20%; float: left;">mm</label>
+          <div style="clear: both;"></div>
+        </div>
+      </div>
+
+      <div class="field" style="text-align: left;">
+        <div class="buttons">
+          <button class="button is-small is-primary is-fullwidth" v-on:click="steps = 100"><span>Extrude</span></button>
+        </div>
+        <div class="buttons">
+          <button class="button is-small is-primary is-fullwidth" v-on:click="steps = 100"><span>Retract</span></button>
+        </div>
+      </div>
+
+      <hr />
+      <input id="flowrate_slider" class="slider is-fullwidth is-info is-small is-circle" step="1" min="50" max="125" value="100" type="range" v-bind:value="flowrate" v-on:mousemove="setFlowrate()">
+      <output style="position: relative; top: 8px;" v-bind:for="'flowrate_slider'">Flowrate: {{ flowrate }}%</output>
     </div>
   </div>
   
@@ -72,7 +140,11 @@ export default {
     return {
       mounted: false,
       value: "",
-      imgsrc: ""
+      imgsrc: "",
+      steps: 10,
+      feedrate: 100,
+      flowrate: 100,
+      selectedtool: "choose"
     }
   },
   mounted: function() {
@@ -86,6 +158,14 @@ export default {
     }
   },
   methods: {
+    setFeedrate: function(){
+      var fr = $("#feedrate_slider").val();
+      this.feedrate = fr;
+    },
+    setFlowrate: function(){
+      var fr = $("#flowrate_slider").val();
+      this.flowrate = fr;
+    },
     resized: function(el) {
       var el = document.getElementById(this.id);
       if(this.type == "label") {
@@ -247,16 +327,24 @@ export default {
   font-size: 16px !important;
   background-color: rgb(255, 236, 236);
 }
-.printercontrols {
+.printhead {
+  margin: 0 auto;
+  height: 100%;
+  justify-content:center;
+  display: flex;
+  flex-direction: column;
+}
+.printhead>.center {
   display:flex;
   align-items:center;
   justify-content:center;
   margin: 0 auto;
-  height: 100%;
 }
-.printercontrols>div {
+.printhead>.vertical {
   width: auto;
-  float: left;
+  clear: both;
+  justify-content:center;
+  margin-top: 2vh;
 }
 .ctrlbuttons td {
   padding: 4px;
@@ -264,5 +352,20 @@ export default {
 .ctrlbutton {
   max-width: 30px;
   max-height: 30px;
+}
+.feedrate, .toolcommands {
+  margin: 0 auto;
+  height: 100%;
+  align-items:center;
+  justify-content:center;
+  display: flex;
+  flex-direction: column;
+}
+.printercommands {
+  padding: 10px;
+  overflow: auto;
+}
+.wrapper {
+  width: 80%;
 }
 </style>
