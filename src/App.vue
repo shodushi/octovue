@@ -662,7 +662,6 @@ export default {
   color: #2c3e50;
   margin: 0px;
 }
-<<<<<<< HEAD
 
 #dropzoneProgress {
   display: none;
@@ -778,6 +777,3 @@ export default {
   margin: 10px 10px 10px 10px !important;
 }
 </style>
-=======
-</style>
->>>>>>> c9ad93e252918c88326cbf8e0d3bf8ab63fbf505
