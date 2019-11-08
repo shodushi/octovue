@@ -863,6 +863,13 @@ export const globalSettings = {
             $("#messagebox").hide( "slow" );
           }, 8000);
           break;
+        case "octoprint_printersetup_error":
+          $("#messagebox_body").html("Please setup printer details in OctoVue settings first.");
+          $("#messagebox").show( "slow" );
+          setTimeout(function(){
+            $("#messagebox").hide( "slow" );
+          }, 8000);
+          break;
         default:
           console.log("unhandled msg error");
       }

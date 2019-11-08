@@ -281,6 +281,7 @@
 
 <script>
 import Chart from 'vue-bulma-chartjs';
+import axios from "axios";
 
 export default {
   linkActiveClass: 'is-active',
@@ -475,26 +476,32 @@ export default {
       }
     },
     printerConnection: function() {
-      var self = this;
-      var obj = {};
-      if(this.$store.state.isNotConnection) {
-        obj.command = "connect";
-        obj.port = this.$localStorage.get('printerport');
-        obj.baudrate = parseInt(this.$localStorage.get('baudrate'));
-        obj.printerProfile = this.$localStorage.get('printerProfile');
-        obj.save = true;
-        obj.autoconnect = false;
+      console.log(this.$localStorage.get('baudrate'));
+      if(this.$localStorage.get('baudrate') == null || this.$localStorage.get('printerport') == null || this.$localStorage.get('printerProfile') == null || this.$localStorage.get('baudrate') == "choose" || this.$localStorage.get('printerport') == "choose" || this.$localStorage.get('printerProfile') == "choose") {
+        this.displayMsg('octoprint_printersetup_error');
       } else {
-        obj.command = "disconnect";
-      }
-      this.transport("POST", "octo_ip", "/api/connection", JSON.stringify(obj)).then(result => {
-        if(typeof(result) == "object") {
-          this.$store.state.isNotConnection = false;
-          this.$store.state.isConnection = true;
-          this.$store.state.isConnecting = true;
-          this.$store.state.connectionState = "...";
+        var self = this;
+        var obj = {};
+        if(this.$store.state.isNotConnection) {
+          obj.command = "connect";
+          obj.port = this.$localStorage.get('printerport');
+          obj.baudrate = parseInt(this.$localStorage.get('baudrate'));
+          obj.printerProfile = this.$localStorage.get('printerProfile');
+          obj.save = true;
+          obj.autoconnect = false;
+        } else {
+          obj.command = "disconnect";
         }
-      });
+        this.transport("POST", "octo_ip", "/api/connection", JSON.stringify(obj)).then(result => {
+          if(typeof(result) == "object") {
+            this.$store.state.isNotConnection = false;
+            this.$store.state.isConnection = true;
+            this.$store.state.isConnecting = true;
+            this.$store.state.connectionState = "...";
+          }
+        });
+      }
+      
     },
     loadCam: function() {
       var self = this;
@@ -512,14 +519,14 @@ export default {
       });
     },
     checkConnection: function() {
-      this.transport("GET", "octo_ip", "/api/connection", null).then(result => {
-        if(typeof(result) == "object") {
+      axios({ method: "GET", "url": this.octo_ip+"/api/connection", headers: {'X-Api-Key': this.apikey} }).then(result => {
           this.$store.state.connectionSettings = result.data;
           this.$store.state.printerProfiles = result.data.options.printerProfiles;
           this.$store.state.avail_printerports = result.data.options.ports;
           this.$store.state.avail_baudrates = result.data.options.baudrates;
-        }
-      });
+        }, error => {
+            console.log(error);
+        });
     },
     getOctoprintConnection: function() {
       this.transport("GET", "octo_ip", "/api/connection", null).then(result => {
