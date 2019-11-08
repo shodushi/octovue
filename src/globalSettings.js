@@ -959,7 +959,8 @@ export const globalSettings = {
     },
     configFromFile: function() {
       if(this.$localStorage.get('octo_ip') == null || this.$localStorage.get('apikey') == null) {
-        axios({ method: "GET", url: window.location.href+"/octovue_config.txt"}).then(result => {
+        var locationHref = window.location.href.replace("/#", "");
+        axios({ method: "GET", url: locationHref+"/octovue_config.txt"}).then(result => {
           if(result.status == 200 && typeof(result.data.octo_ip) !== 'undefined' && typeof(result.data.apikey) !== 'undefined') {
             var config = result.data;
             this.$localStorage.set('octo_ip', config.octo_ip);
