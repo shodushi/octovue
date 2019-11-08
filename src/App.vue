@@ -521,7 +521,6 @@ export default {
     },
     checkConnection: function() {
       axios({ method: "GET", "url": this.octo_ip+"/api/connection", headers: {'X-Api-Key': this.apikey} }).then(result => {
-        console.log(result);
         if(result.status != 200) {
           this.displayMsg('octoprint_conn_error');
         } else {
@@ -534,6 +533,7 @@ export default {
         this.displayMsg('octoprint_conn_error');
         console.log(error.response)
       });
+
     },
     getOctoprintConnection: function() {
       this.transport("GET", "octo_ip", "/api/connection", null).then(result => {
@@ -662,6 +662,7 @@ export default {
   color: #2c3e50;
   margin: 0px;
 }
+<<<<<<< HEAD
 
 #dropzoneProgress {
   display: none;
@@ -777,3 +778,6 @@ export default {
   margin: 10px 10px 10px 10px !important;
 }
 </style>
+=======
+</style>
+>>>>>>> c9ad93e252918c88326cbf8e0d3bf8ab63fbf505
