@@ -341,7 +341,10 @@ export default {
     } else {
       $("#theme").attr("href", "css/themes/light.css");
     }
-    if(this.$localStorage.get('octo_ip') == null || this.$localStorage.get('apikey') == null) { return false;} else {
+    if(this.$localStorage.get('octo_ip') == null || this.$localStorage.get('apikey') == null) {
+      this.configFromFile();
+      //return false;
+    } else {
       this.next = true;
     }
     setTimeout(this.loadOctoprintSettings, 1)
