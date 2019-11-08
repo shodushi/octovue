@@ -1012,7 +1012,7 @@ export const globalSettings = {
       obj.y = parseInt(y);
       obj.z = parseInt(z);
       obj.axes = axes;
-      obj.factor = factor;
+      obj.factor = parseInt(factor);
       console.log("obj: ",obj);
       this.transport("POST", "octo_ip", "/api/printer/printhead", obj).then(result => {
         if(typeof(result) == "object") {

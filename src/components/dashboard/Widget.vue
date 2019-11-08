@@ -126,7 +126,7 @@
       </div>
 
       <hr />
-      <input id="flowrate_slider" class="slider is-fullwidth is-info is-small is-circle" step="1" min="50" max="125" value="100" type="range" v-bind:value="flowrate" v-on:mousemove="setFlowrate()" v-on:mouseup="toolCommand('flowrate', null, null, null, flowrate)">
+      <input id="flowrate_slider" class="slider is-fullwidth is-info is-small is-circle" step="1" min="75" max="125" value="100" type="range" v-bind:value="flowrate" v-on:mousemove="setFlowrate()" v-on:mouseup="toolCommand('flowrate', null, null, null, flowrate)">
       <output style="position: relative; top: 8px;" v-bind:for="'flowrate_slider'">Flowrate: {{ flowrate }}%</output>
     </div>
   </div>
