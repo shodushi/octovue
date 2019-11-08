@@ -144,11 +144,12 @@
       </section>
     </div>
 
+    <article id="messagebox" class="message is-danger">
+      <div id="messagebox_body" class="message-body"></div>
+    </article>
+    
     <div id="main" v-if="$localStorage.get('octo_ip') != null && next">
       <div :class="{'is-active': pageLoader}" class="pageloader"><span class="title">connecting to OctoPrint instance<br /><span class="title" v-if="octoprintConnectionTries >= octoprintConnectionMaxTries">{{pageLoaderAddText}}</span></span></div>
-      <article id="messagebox" class="message is-danger">
-        <div id="messagebox_body" class="message-body"></div>
-      </article>
       <div id="dropzoneProgress">
         <div class="imgContainer"><img src="img/upload.gif"></div>
         <div class="textContainer"><h3>uploading...</h3></div>
@@ -520,13 +521,19 @@ export default {
     },
     checkConnection: function() {
       axios({ method: "GET", "url": this.octo_ip+"/api/connection", headers: {'X-Api-Key': this.apikey} }).then(result => {
+        console.log(result);
+        if(result.status != 200) {
+          this.displayMsg('octoprint_conn_error');
+        } else {
           this.$store.state.connectionSettings = result.data;
           this.$store.state.printerProfiles = result.data.options.printerProfiles;
           this.$store.state.avail_printerports = result.data.options.ports;
           this.$store.state.avail_baudrates = result.data.options.baudrates;
-        }, error => {
-            console.log(error);
-        });
+        }
+      }).catch(error => {
+        this.displayMsg('octoprint_conn_error');
+        console.log(error.response)
+      });
     },
     getOctoprintConnection: function() {
       this.transport("GET", "octo_ip", "/api/connection", null).then(result => {
