@@ -143,7 +143,6 @@ export const globalSettings = {
           }
         }
         if(msg.current.logs != null) {
-          var templogs = [];
           for(var i=0;i<msg.current.logs.length;i++) {
             if(msg.current.logs[i].includes("M117")) {
               const regex = /[0-9]*\/[0-9]*/g;
@@ -165,11 +164,11 @@ export const globalSettings = {
               }
             }
 
-            if(this.$store.state.logs.length > 500) {
-              templogs = this.$store.state.logs.splice(-500, 500)
+            if(this.$store.state.logs.length > 501) {
+              this.$store.state.logs = this.$store.state.logs.splice(-500, 500)
             }
-            templogs.push(msg.current.logs[i]);
-            this.$store.state.logs = templogs;
+            this.$store.state.logs.push(msg.current.logs[i]);
+            //this.$store.state.logs = templogs;
           }
         }
         if(msg.current.state != null) {
@@ -200,8 +199,8 @@ export const globalSettings = {
         }
       }
       if(msg.history != null) {
-        if(msg.history.logs != null) {
-          if(msg.history.logs.length != 0) {
+        if(msg.history.logs != null && this.$store.state.logs != null) {
+          if(msg.history.logs.length != 0 && this.$store.state.logs != null) {
             this.$store.state.logs = msg.history.logs
           }
         }
@@ -1029,7 +1028,6 @@ export const globalSettings = {
       obj.offsets = offsets;
       obj.amount = parseInt(amount);
       obj.factor = parseInt(factor);
-      console.log("obj: ",obj);
       this.transport("POST", "octo_ip", "/api/printer/tool", obj).then(result => {
         if(typeof(result) == "object") {
 

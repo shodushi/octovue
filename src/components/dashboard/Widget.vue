@@ -63,7 +63,7 @@
         </table>
       </div>
     </div>
-    <div class="field has-addons vertical">
+    <div class="field has-addons vertical dragSelector">
       <p class="control">
         <button class="button is-small is-primary" v-bind:class="{ 'is-active' : steps == 0.1, 'is-outlined' : steps != 0.1}" v-on:click="steps = 0.1">
           <span>0.1</span>
@@ -100,7 +100,7 @@
   </div>
 
   <div class="toolcommands" :id="id" v-else-if="type == 'toolcommands'">
-    <div class="wrapper">
+    <div class="wrapper dragSelector">
       <div class="field" style="text-align: left;">
         <div class="select is-small is-fullwidth">
           <select v-model="selectedtool" @change="toolCommand('select', selectedtool, null, null, null)">
@@ -109,18 +109,18 @@
           </select>
         </div>
       </div>
-      <div class="field" style="text-align: left;">
-        <div class="control">
+      <div class="field dragSelector" style="text-align: left;">
+        <div class="control dragSelector">
           <input class="input is-small" type="text" v-model="toolcommand_value" placeholder="5" style="width: 70%; float: left; text-align: right"><label class="input is-small is-light" style="width: 20%; float: left;">mm</label>
           <div style="clear: both;"></div>
         </div>
       </div>
 
-      <div class="field" style="text-align: left;">
-        <div class="buttons">
+      <div class="field dragSelector" style="text-align: left;">
+        <div class="buttons dragSelector">
           <button class="button is-small is-primary is-fullwidth" v-on:click="toolCommand('extrude', null, null, toolcommand_value, null)"><span>Extrude</span></button>
         </div>
-        <div class="buttons">
+        <div class="buttons dragSelector">
           <button class="button is-small is-primary is-fullwidth" v-on:click="toolCommand('extrude', null, null, '-'+toolcommand_value, null)"><span>Retract</span></button>
         </div>
       </div>
@@ -130,6 +130,15 @@
       <output style="position: relative; top: 8px;" v-bind:for="'flowrate_slider'">Flowrate: {{ flowrate }}%</output>
     </div>
   </div>
+
+  <div class="terminalwidget dragSelector" :id="id" v-else-if="type == 'terminalwidget'">
+    <div class="field">
+            <div class="control">
+              <textarea id="terminal_console" class="textarea dragSelector" placeholder="" v-model="terminalLogs"></textarea>
+            </div>
+          </div>
+  </div>
+  
   
 </template>
 
@@ -259,7 +268,12 @@ export default {
         }
       }
     }
-  }
+  },
+  watch: {
+    terminalLogs: function () {
+      $('#terminal_console').scrollTop($('#terminal_console')[0].scrollHeight);
+    }
+  },
 }
 </script>
 
@@ -368,5 +382,15 @@ export default {
 }
 .wrapper {
   width: 80%;
+}
+.terminalwidget {
+  border: 1px solid red;
+  height: 100%;
+}
+#terminal_console {
+  width: 100vw !important;
+  height: 50vh !important;
+  background-color: rgba(0,0,0,0.8);
+  color: #fff;
 }
 </style>

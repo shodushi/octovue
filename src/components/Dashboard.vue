@@ -39,6 +39,7 @@
                 <option value="feedrate">Feedrate controls</option>
                 <option value="printercommands">Printercommands</option>
                 <option value="toolcommands">Toolcommands</option>
+                <option value="terminalwidget">Terminal</option>
               </select>
             </div>
           </div>
