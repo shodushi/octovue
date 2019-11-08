@@ -2,8 +2,9 @@
 
 An alternative UI for octoprint based on vue.js and bulma css framework
 
-## Latest changes
-added a user configurable dashboard with drag&drop + rezize functionality
+## Latest enhancements
+ - added a user configurable dashboard with drag&drop + rezize functionality
+ - light & dark mode
 
 ## Functionality
  - of course upload and print gcodes :-)
