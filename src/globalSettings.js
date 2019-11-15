@@ -627,7 +627,7 @@ export const globalSettings = {
       var obj = {};
       obj.command = "select";
       obj.print = print;
-      this.transport("POST", "octo_ip", "/api/files/"+this.$store.state.selectedfile.origin+"/"+this.$store.state.selectedfile.display, obj).then(result => {
+      this.transport("POST", "octo_ip", "/api/files/"+this.$store.state.file_origin+"/"+this.$store.state.selectedfolder+"/"+this.$store.state.selectedfile.display, obj).then(result => {
         if(typeof(result) == "object") {
           if(print) {
             $('#btn_cancel').attr("disabled", false);
