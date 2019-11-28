@@ -13,7 +13,7 @@ export const store = new Vuex.Store({
         terminalmodal: false,
         printerState: {"type": "PrinterStateChanged", "payload":{"state_string":"Offline","state_id":"OFFLINE"}},
         temps: {"bed":{"actual":"0","target":"0"}, "chamber":{"actual":"0","target":"0"}, "tool0":{"actual":"0","target":"0"}, "time": "0"},
-        logs: {},
+        logs: [],
         cam: "",
         powerState: "off",
         lightState: "off",

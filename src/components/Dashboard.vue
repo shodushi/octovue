@@ -39,13 +39,14 @@
                 <option value="feedrate">Feedrate controls</option>
                 <option value="printercommands">Printercommands</option>
                 <option value="toolcommands">Toolcommands</option>
+                <option value="tempcontrol">Temperature controls</option>
                 <option value="terminalwidget">Terminal</option>
               </select>
             </div>
           </div>
         </div>
 
-        <div class="field" style="text-align: left;" v-if="w_type != '' && w_type != 'printhead' && w_type != 'feedrate' && w_type != 'printercommands' && w_type != 'toolcommands' && w_type != 'terminalwidget'">
+        <div class="field" style="text-align: left;" v-if="w_type != '' && w_type != 'printhead' && w_type != 'feedrate' && w_type != 'printercommands' && w_type != 'toolcommands' && w_type != 'terminalwidget' && w_type != 'tempcontrol'">
           <label class="label">Value</label>
           <div class="control">
             <div class="select">
@@ -193,12 +194,12 @@ export default {
 <style scoped>
 #btn_addWidget {
   position: absolute;
-  top: 10%; right: 1%;
+  top: 7%; right: 1%;
   z-index: 999;
 }
 #btn_clearWidgets {
   position: absolute;
-  top: 10%; right: 8%;
+  top: 7%; right: 8%;
   z-index: 999;
 }
 

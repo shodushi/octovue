@@ -480,7 +480,6 @@ export default {
       }
     },
     printerConnection: function() {
-      console.log(this.$localStorage.get('baudrate'));
       if(this.$localStorage.get('baudrate') == null || this.$localStorage.get('printerport') == null || this.$localStorage.get('printerProfile') == null || this.$localStorage.get('baudrate') == "choose" || this.$localStorage.get('printerport') == "choose" || this.$localStorage.get('printerProfile') == "choose") {
         this.displayMsg('octoprint_printersetup_error');
       } else {

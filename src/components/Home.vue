@@ -66,7 +66,7 @@
 
                 <div v-if="file_origin == 'local' || file_origin == 'sdcard'">
 
-                <div v-if="selectedfolder != ''" v-on:click="folderup()" style="text-align: left">&#x2190; back</div>
+                <div v-if="selectedfolder != ''" v-on:click="folderup()" style="text-align: left"><span style="cursor: pointer;">&#x2190; back</span></div>
                 <table class="table is-fullwidth is-striped is-hoverable" id="filestable">
                     <tbody id="filesbody">
                     <tr v-on:click="selectFolder(folder.path)" v-for="folder in folders"><td><span class="icon">&#128193;</span></td><td>{{ folder.display }}</td><td></td></tr>
@@ -333,5 +333,8 @@ tr.is-selected {
   text-align: center;
   width: 20px;
   height: 20px;
+}
+#filestable tr {
+    cursor: pointer;
 }
 </style>
