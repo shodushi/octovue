@@ -1,7 +1,7 @@
 <template>
   <div v-if="type == 'pie-chart'">
-    <chart class="piechart"  :ref="reference" :type="'pie'" :data="widgetData" :options="widgetOptions"></chart>
-    <div class="missing" v-if="widgetData == null">{{source}} not found</div>
+    <chart class="piechart dragSelector"  :ref="reference" :type="'pie'" :data="widgetData" :options="widgetOptions"></chart>
+    <div class="missing dragSelector" v-if="widgetData == null">{{source}} not found</div>
   </div>
   
   <chart v-else-if="type == 'line-chart'" class="linechart" :ref="reference" :type="'line'" :data="widgetData" :options="widgetOptions"></chart>
@@ -14,15 +14,15 @@
       <div class="gauge_value dragSelector">{{this.value}}</div>
       <div class="gauge_label dragSelector"><img :src="imgsrc">{{this.source}}</div>
     </div>
-    <div class="missing" v-if="widgetData == null">{{source}} not found</div>
+    <div class="missing dragSelector" v-if="widgetData == null">{{source}} not found</div>
   </div>
 
-  <div class="widgetlabel" :id="id" v-else-if="type == 'label'">
+  <div class="widgetlabel dragSelector" :id="id" v-else-if="type == 'label'">
     {{ widgetData }}<div class="source">{{this.source}}</div>
-    <div class="missing" v-if="widgetData == null">{{source}} not found</div>
+    <div class="missing dragSelector" v-if="widgetData == null">{{source}} not found</div>
   </div>
 
-  <div :id="id" v-else-if="type == 'tempcontrol'" class="dragSelector">
+  <div :id="id" v-else-if="type == 'tempcontrol'" class="tempcontrol dragSelector">
     <div v-if="graphs.length <= 2" class="dragSelector">
       <div v-for="graph in graphs" v-if="graph.name != 'bed' && graph.name != 'chamber'" style="text-align: left;" class="dragSelector" v-bind:style="{'color': graph.datasets[0].backgroundColor[0]}">
         <div style="width: 25%; float: left; text-align: center;">
@@ -156,11 +156,11 @@
     </div>
   </div>
 
-  <div class="feedrate" :id="id" v-else-if="type == 'feedrate'">
-    <div class="wrapper">
-      <h3>Feedrate</h3>
+  <div class="feedrate dragSelector" :id="id" v-else-if="type == 'feedrate'">
+    <div class="wrapper dragSelector">
+      <h3 class="dragSelector">Feedrate</h3>
       <input id="feedrate_slider" class="slider is-fullwidth is-info is-small is-circle" step="1" min="50" max="150" value="100" type="range" v-bind:value="feedrate" v-on:mousemove="setFeedrate()" v-on:mouseup="printHead('feedrate', null, null, null, null, feedrate)">
-      <output style="position: relative; top: 8px;" v-bind:for="'feedrate_slider'">{{ feedrate }}%</output>
+      <output style="position: relative; top: 8px;" v-bind:for="'feedrate_slider'" class="dragSelector">{{ feedrate }}%</output>
     </div>
   </div>
 
@@ -464,5 +464,8 @@ export default {
   background-color: rgba(0,0,0,0.8);
   color: #fff;
   resize: none;
+}
+.tempcontrol {
+  padding: 5% 5% 5% 20%;
 }
 </style>

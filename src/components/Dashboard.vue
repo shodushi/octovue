@@ -194,12 +194,12 @@ export default {
 <style scoped>
 #btn_addWidget {
   position: absolute;
-  top: 7%; right: 1%;
+  top: 60px; right: 1%;
   z-index: 999;
 }
 #btn_clearWidgets {
   position: absolute;
-  top: 7%; right: 8%;
+  top: 60px; right: 8%;
   z-index: 999;
 }
 
