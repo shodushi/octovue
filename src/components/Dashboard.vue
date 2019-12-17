@@ -41,6 +41,7 @@
                 <option value="toolcommands">Toolcommands</option>
                 <option value="tempcontrol">Temperature controls</option>
                 <option value="terminalwidget">Terminal</option>
+                <option value="jobstatus">Jobstatus</option>
               </select>
             </div>
           </div>

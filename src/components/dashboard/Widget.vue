@@ -75,7 +75,26 @@
 
 
 
-
+  <div class="jobstatus dragSelector" :id="id" v-else-if="type == 'jobstatus'">
+  	<h3>{{job.printfile}}</h3>
+  	<div style="text-align: right;" class="">{{formatDecimal(job.progress.completion)}}%</div>
+    <progress class="progress is-primary" v-bind:value="job.progress.completion" max="100"></progress>
+    <div class="columns dragSelector">
+    <div class="column is-one-third pp_boxes dragSelector">
+      <img src="img/layer-time-average-icon2.png" style="height: 46px"><br />
+      {{ formatTimeRemaining(job.progress.printTimeLeft) }}
+    </div>
+    <div class="column is-one-third pp_boxes dragSelector">
+      <img src="img/layers-icon2.png" style="height: 46px"><br />
+      {{currentLayer}} / {{totalLayer}}
+    </div>
+    <div class="column is-one-third pp_boxes dragSelector">
+      <img src="img/layer_height.png" style="height: 46px"><br />
+      {{formatDecimal(currentHeight)}} / {{formatDecimal(totalHeight)}} mm
+    </div>
+  </div>
+    <div class="missing dragSelector" v-if="widgetData == null">{{source}} not found</div>
+  </div>
 
 
 
@@ -278,9 +297,14 @@ export default {
       if(this.type == "image-container") {
         return this.cam;
       }
+      if(this.type == "jobstatus") {
+      	var data = {};
+      	data.printfile = this.job.printfile
+        return this.job.printfile;
+      }
       
       if(this.type == "gauge" || this.type == "tempcontrol") {
-        console.log(this.graphs);
+        //console.log(this.graphs);
         for(var i = 0; i< this.graphs.length; i++) {
           if(this.graphs[i].name == this.source.split(".")[0]) {
             if(this.mounted) {
@@ -343,7 +367,9 @@ export default {
   },
   watch: {
     terminalLogs: function () {
-      $('#terminal_console').scrollTop($('#terminal_console')[0].scrollHeight);
+    	if($('#terminal_console')[0] != undefined) {
+      		$('#terminal_console').scrollTop($('#terminal_console')[0].scrollHeight);
+      	}
     }
   },
 }
@@ -467,5 +493,8 @@ export default {
 }
 .tempcontrol {
   padding: 5% 5% 5% 20%;
+}
+.jobstatus {
+	padding: 5% 5% 5% 5%;
 }
 </style>
