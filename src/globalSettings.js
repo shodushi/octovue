@@ -466,12 +466,13 @@ export const globalSettings = {
     },
     selectFile: function(event, file) {
       this.$store.state.selectedfile = file;
-      var imgid = file.display.replace(".", "");
+      //var imgid = file.display.replace(".", "");
       $("#filestable tr").removeClass("is-selected");
       $(".file_buttons span").css("display", "none");
-      $(event.srcElement.parentElement).addClass("is-selected");      
-      $("#fb_"+imgid+" span").css("display", "block");
-      $("#fb_"+imgid+" span").removeAttr("disabled");
+      $(event.srcElement.parentElement).addClass("is-selected");
+      alert(file.imgid);   
+      $("#fb_"+file.imgid+" span").css("display", "block");
+      $("#fb_"+file.imgid+" span").removeAttr("disabled");
       $("#fileoperations span").removeAttr("disabled");
       $('#btn_cancel').attr("disabled", true);
     },
@@ -521,7 +522,7 @@ export const globalSettings = {
         var img;
         var download;
         var i;
-        if(pathobj.children.length > 0) {
+        if(pathobj.children.length > 0) { //Subfolder
           for(i = 0; i<pathobj.children.length;i++) {
             if(pathobj.children[i].type == "folder") {
               this.$store.state.folders.push(pathobj.children[i]);
@@ -536,7 +537,7 @@ export const globalSettings = {
                   img = pathobj.children[i].refs.resource.replace(".gco", ".png");
                   download = pathobj.children[i].refs.resource;
                 }
-                imgid = pathobj.children[i].display.replace(".", "");
+                imgid = pathobj.children[i].display.replace(".", "").replace("~", "");
 
                 if(pathobj.children[i].date != null) {
                   tstamp = new Date(pathobj.children[i].date*1000);
@@ -581,7 +582,7 @@ export const globalSettings = {
                   img = this.$store.state.fileList[i].refs.resource.replace(".gco", ".png");
                   download = this.$store.state.fileList[i].refs.resource;
                 }
-                imgid = this.$store.state.fileList[i].display.replace(".", "");
+                imgid = this.$store.state.fileList[i].display.replace(".", "").replace("~", "");
                 if(this.fileList[i].date != null) {
                   tstamp = new Date(this.$store.state.fileList[i].date*1000);
                   day = "0"+tstamp.getDate();
