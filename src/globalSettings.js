@@ -731,7 +731,7 @@ export const globalSettings = {
       var url;
       var q;
       if(this.$store.state.q == "") {
-        q = this.$store.state.q.replace(" ", "%2B");
+        q = this.$store.state.q.replace(" ", "+");
         url = "http://cststudios.de/thingiverse/?action=init";
         axios({ method: "GET", url: url}).then(result => {
           this.$store.state.thingiverse_results = result.data;
@@ -741,7 +741,7 @@ export const globalSettings = {
             this.$store.state.searchLoader = false;
         });
       } else {
-        q = this.$store.state.q.replace(" ", "%2B");
+        q = this.$store.state.q.replace(" ", "+");
         url = "http://cststudios.de/thingiverse/?action=search&q="+q+"&page="+this.$store.state.thingpage;
         axios({ method: "GET", url: url}).then(result => {
           this.$store.state.thingiverse_results = result.data;
