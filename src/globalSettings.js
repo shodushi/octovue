@@ -470,7 +470,6 @@ export const globalSettings = {
       $("#filestable tr").removeClass("is-selected");
       $(".file_buttons span").css("display", "none");
       $(event.srcElement.parentElement).addClass("is-selected");
-      alert(file.imgid);   
       $("#fb_"+file.imgid+" span").css("display", "block");
       $("#fb_"+file.imgid+" span").removeAttr("disabled");
       $("#fileoperations span").removeAttr("disabled");
