@@ -466,7 +466,6 @@ export const globalSettings = {
     },
     selectFile: function(event, file) {
       this.$store.state.selectedfile = file;
-      //var imgid = file.display.replace(".", "");
       $("#filestable tr").removeClass("is-selected");
       $(".file_buttons span").css("display", "none");
       $(event.srcElement.parentElement).addClass("is-selected");
