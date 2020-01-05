@@ -24,8 +24,8 @@
                   <input class="input" type="text" v-model="apikey" placeholder="86DA1D669334418CB773A50A142A4E72">
                 </div>
               </div>
-
-              <div class="field is-grouped" style="margin-top: 7%;" v-if="octo_ip != '' && apikey != '' && connectionSettings.options.printerProfiles.length == 0">
+              <!--v-if="octo_ip != '' && apikey != '' && connectionSettings.options.printerProfiles.length == 0"!--> 
+              <div class="field is-grouped" style="margin-top: 7%;">
                 <div class="control">
                   <button class="button is-info" v-on:click="checkConnection()">check connection</button>
                 </div>
