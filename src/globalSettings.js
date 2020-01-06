@@ -467,8 +467,16 @@ export const globalSettings = {
     selectFile: function(event, file) {
       this.$store.state.selectedfile = file;
       $("#filestable tr").removeClass("is-selected");
+      $("#filestable td").removeClass("is-selected");
       $(".file_buttons span").css("display", "none");
-      $(event.srcElement.parentElement).addClass("is-selected");
+      if(event.srcElement.parentElement.tagName == "TR") {
+        $(event.srcElement.parentElement).addClass("is-selected");
+      } else if(event.srcElement.parentElement.tagName == "FIGURE") {
+        $(event.srcElement.parentElement.parentElement.parentElement).addClass("is-selected");
+      } else {
+        $(event.srcElement.parentElement.parentElement).addClass("is-selected");
+      }
+      console.log(event.srcElement.parentElement.tagName);
       $("#fb_"+file.imgid+" span").css("display", "block");
       $("#fb_"+file.imgid+" span").removeAttr("disabled");
       $("#fileoperations span").removeAttr("disabled");
@@ -491,6 +499,7 @@ export const globalSettings = {
       var self = this;
       this.$store.selectedfile = "";
       $("#filestable tr").removeClass("is-selected");
+      $("#filestable td").removeClass("is-selected");
       $(".file_buttons span").css("display", "none");
       this.$store.state.files = [];
       this.$store.state.folders = [];

@@ -288,7 +288,7 @@ export default {
 #filebrowser_head td {
   border: none;
 }
-tr.is-selected {
+tr.is-selected, td.is-selected {
   background-color: #c9ffed !important;
   color: black !important;
 }
