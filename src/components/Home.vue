@@ -84,7 +84,7 @@
                         <div style="width: 130px; float:left; margin-left: 20px;" v-if="file.gcodeAnalysis.filament.tool0 != null && file.gcodeAnalysis.filament.tool0.length != null">Filament:</div><div v-if="file.gcodeAnalysis.filament.tool0 != null && file.gcodeAnalysis.filament.tool0.length != null">{{ formatLenght(file.gcodeAnalysis.filament.tool0.length) }}</div>
                         <div style="width: 130px; float:left; margin-left: 20px;" v-if="file.prints != null">Prints ok/nok:</div><div v-if="file.prints != null">{{ file.prints.success }} / {{ file.prints.failure }}</div>
                         </td>
-                        <td>{{file.hr_date}} 
+                        <td>{{formatDate(file.date)}} 
                         <div class="file_buttons" :id="'fb_'+file.imgid">
                             <!-- <span id="btn_load" class="button is-warning is-small" disabled v-on:click="loadprintFile(false)">load</span> !-->
                             <span id="btn_print" class="button is-success is-small" disabled v-on:click="loadprintFile(true)">print</span> 

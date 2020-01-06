@@ -548,8 +548,8 @@ export const globalSettings = {
 
                 if(pathobj.children[i].date != null) {
                   tstamp = new Date(pathobj.children[i].date*1000);
-                  day = "0"+tstamp.getDate()+1;
-                  month = "0"+tstamp.getMonth()+1;
+                  day = "0"+(tstamp.getDate()+1);
+                  month = "0"+(tstamp.getMonth()+1);
                   date = day.slice(-2)+"."+month.slice(-2)+"."+tstamp.getFullYear();
                 } else {
                   date = "";
@@ -592,8 +592,8 @@ export const globalSettings = {
                 imgid = this.$store.state.fileList[i].display.replace(".", "").replace("~", "");
                 if(this.fileList[i].date != null) {
                   tstamp = new Date(this.$store.state.fileList[i].date*1000);
-                  day = "0"+tstamp.getDate();
-                  month = "0"+tstamp.getMonth();
+                  day = "0"+(tstamp.getDate());
+                  month = "0"+(tstamp.getMonth());
                   date = day.slice(-2)+"."+month.slice(-2)+"."+tstamp.getFullYear();
                 } else {
                   date = "";
