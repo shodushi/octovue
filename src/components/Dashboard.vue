@@ -1,20 +1,20 @@
 <template>
   <div id="dashboardPage" style="min-height: 800px;">
     <p class="control" id="btn_addWidget">
-      <a class="bd-tw-button button is-small is-default" v-on:click="showAddWidget = true">
+      <button class="button is-small" v-on:click="showAddWidget = true">
         <span class="icon">
           <i class="fas fa-plus"></i>
         </span>
         <span>widget</span>
-      </a>
+      </button>
     </p>
     <p class="control" id="btn_clearWidgets">
-      <a class="bd-tw-button button is-small is-default" v-on:click="clearWidgets">
+      <button class="button is-small" v-on:click="clearWidgets">
         <span class="icon">
           <i class="fas fa-trash"></i>
         </span>
         <span>{{debug}} clear widgets</span>
-      </a>
+      </button>
     </p>
 
     <article class="message" id="addWidget" v-if="showAddWidget">
@@ -47,7 +47,7 @@
           </div>
         </div>
 
-        <div class="field" style="text-align: left;" v-if="w_type != '' && w_type != 'printhead' && w_type != 'feedrate' && w_type != 'printercommands' && w_type != 'toolcommands' && w_type != 'terminalwidget' && w_type != 'tempcontrol'">
+        <div class="field" style="text-align: left;" v-if="w_type != '' && w_type != 'printhead' && w_type != 'feedrate' && w_type != 'printercommands' && w_type != 'toolcommands' && w_type != 'terminalwidget' && w_type != 'tempcontrol' && w_type != 'jobstatus'">
           <label class="label">Value</label>
           <div class="control">
             <div class="select">
@@ -116,6 +116,39 @@ export default {
   },
   methods: {
     addWidget: function() {
+      var x = 6;
+      var y = 0;
+      var w = 5;
+      var h = 5;
+      if(this.w_type == "jobstatus") {
+        w = 13;
+        h = 6;
+      }
+      if(this.w_type == "pie-chart") {
+        w = 7;
+        h = 8;
+      }
+      if(this.w_type == "line-chart") {
+        w = 15;
+        h = 8;
+      }
+      if(this.w_type == "printhead") {
+        w = 7;
+        h = 7;
+      }
+      if(this.w_type == "printercommands") {
+        h = 15;
+      }
+      if(this.w_type == "toolcommands") {
+        h = 9;
+      }
+      if(this.w_type == "tempcontrol") {
+        h = 8;
+      }
+      if(this.w_type == "terminalwidget") {
+        w = 17;
+        h = 7;
+      }
       var widget = {
         id: Math.floor(1000000 + Math.random() * 900000),
         title: this.w_title,
@@ -124,10 +157,10 @@ export default {
         hidden: false,
         pinned: false,
         position: {
-            x: 6,
-            y: 0,
-            w: 5,
-            h: 5
+            x: x,
+            y: y,
+            w: w,
+            h: h
         }
       };
       this.layout.push(widget);

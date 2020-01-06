@@ -8,8 +8,8 @@
           <aside class="menu">
             <ul class="menu-list">
               <li><a @click="subnav = 'octoprint'" style="line-height: 1.5rem;"><img src="/img/octoprint-icon.png" style="float: left; height: 1.5rem; width: 1.7rem; margin-right: 10px;">OctoPrint</a></li>
-              <li><a @click="subnav = 'printer'" style="line-height: 1.5rem;"><img src="/img/printer-icon.png" style="float: left; height: 1.5rem; width: 1.7rem; margin-right: 10px;">Printer</a></li>
-              <li><a @click="subnav = 'appearance'" style="line-height: 1.5rem;"><img src="/img/fullscreen-icon.png" style="float: left; height: 1.5rem; width: 1.7rem; margin-right: 10px;"> Appearance</a></li>
+              <li><a @click="subnav = 'printer'" style="line-height: 1.5rem;"><img src="/img/printer-icon2.png" style="float: left; height: 1.5rem; width: 1.7rem; margin-right: 10px;">Printer</a></li>
+              <li><a @click="subnav = 'appearance'" style="line-height: 1.5rem;"><img src="/img/fullscreen-icon2.png" style="float: left; height: 1.5rem; width: 1.7rem; margin-right: 10px;"> Appearance</a></li>
               <li><a @click="subnav = 'extdevices'" style="line-height: 1.5rem;"><img src="/img/ext-devs.png" style="float: left; height: 1.5rem; width: 1.7rem; margin-right: 10px;"> External devices</a></li>
             </ul>
           </aside>
@@ -43,7 +43,7 @@
           <section class="section" v-if="subnav == 'printer'">
             <div class="container">
               
-              <img src="/img/printer-icon.png" style="float: left; height: 2rem; margin-right: 10px;"><h2 class="title">Printer</h2>
+              <img src="/img/printer-icon2.png" style="float: left; height: 2rem; margin-right: 10px;"><h2 class="title">Printer</h2>
               <div class="field" style="text-align: left;">
                 <label class="label">Printerport</label>
                 <div class="control">
@@ -90,7 +90,7 @@
 
           <section class="section" v-if="subnav == 'appearance'">
             <div class="container">
-              <img src="/img/fullscreen-icon.png" style="float: left; height: 2rem; margin-right: 10px;"><h2 class="title">Appearance</h2>
+              <img src="/img/fullscreen-icon2.png" style="float: left; height: 2rem; margin-right: 10px;"><h2 class="title">Appearance</h2>
               <div class="field is-separate" style="text-align: left;">
                 <div class="control">
                 <input id="previewimages" type="checkbox" name="previewimages" class="switch is-rounded is-outlined" checked="checked" v-model="previewimages">

@@ -11,11 +11,11 @@
           <thead>
             <tr>
               <th>&nbsp;</th>
-              <th>Filename</th>
+              <th style="color: #C0C0C0;">Filename</th>
               <th><i class="fas fa-thumbs-up" style="color: #31cf65;"></i></th>
               <th><i class="fas fa-thumbs-down" style="color: #fc3c63;"></i></th>
-              <th>last printdate</th>
-              <th>last print</th>
+              <th style="color: #C0C0C0;">last printdate</th>
+              <th style="color: #C0C0C0;">last print</th>
             </tr>
           </thead>
           <tbody id="filesbody">
