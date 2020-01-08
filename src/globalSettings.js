@@ -215,7 +215,7 @@ export const globalSettings = {
       }
     },
     powerswitch: function() {
-      axios({ method: "GET", "url": this.$localStorage.get('cors_proxy')+"/"+this.$localStorage.get('tasmota_ip')+this.$localStorage.get('tasmota_toggle') }).then(result => {
+      axios({ method: "GET", "url": this.$localStorage.get('tasmota_ip')+this.$localStorage.get('tasmota_toggle') }).then(result => {
         this.$store.state.powerState = result.data.POWER.toLowerCase();
         //this.powerState = result.data.POWER.toLowerCase();
         if(this.powerState == "off") {
@@ -231,7 +231,7 @@ export const globalSettings = {
     },
     getPowerState: function() {
       if(this.$localStorage.get('powerhandling') == "yes") {
-        axios({ method: "GET", "url": this.$localStorage.get('cors_proxy')+"/"+this.$localStorage.get('tasmota_ip')+this.$localStorage.get('tasmota_status') }).then(result => {
+        axios({ method: "GET", "url": this.$localStorage.get('tasmota_ip')+this.$localStorage.get('tasmota_status') }).then(result => {
           if(result.data.Status.Power == 0) {
             this.$store.state.powerState = 'off';
             this.$store.state.isNotPower = true;
@@ -247,7 +247,8 @@ export const globalSettings = {
       }
     },
     lightswitch: function() {
-      axios({ method: "POST", "url": this.$localStorage.get('cors_proxy')+"/"+this.$localStorage.get('led_ip')+this.$localStorage.get('led_toggle') }).then(result => {
+      axios({ method: "POST", "url": this.$localStorage.get('led_ip')+this.$localStorage.get('led_toggle') }).then(result => {
+        console.log(result);
         this.getLightState();
       }, error => {
         console.error(error);
@@ -255,7 +256,7 @@ export const globalSettings = {
     },
     getLightState: function() {
       if(this.$localStorage.get('lighthandling') == "yes") {
-        axios({ method: "GET", "url": this.$localStorage.get('cors_proxy')+"/"+this.$localStorage.get('led_ip')+this.$localStorage.get('led_status') }).then(result => {
+        axios({ method: "GET", "url": this.$localStorage.get('led_ip')+this.$localStorage.get('led_status') }).then(result => {
           this.$store.state.lightState = result.data.state.toLowerCase();
           if(this.lightState == "off") {
             this.$store.state.isNotLight = true;
@@ -1003,6 +1004,16 @@ export const globalSettings = {
             this.$localStorage.set('led_toggle', config.led_toggle);
             this.$localStorage.set('led_status', config.led_status);
             this.$localStorage.set('cors_proxy', config.cors_proxy);
+            if(config.lightuseproxy) {
+              this.$localStorage.set('lightuseproxy', 'yes');
+            } else {
+              this.$localStorage.set('lightuseproxy', 'no');
+            }
+            if(config.poweruseproxy) {
+              this.$localStorage.set('poweruseproxy', 'yes');
+            } else {
+              this.$localStorage.set('poweruseproxy', 'no');
+            }
             if(config.theme != null) {
               this.$localStorage.set('theme', config.theme);
             } else {

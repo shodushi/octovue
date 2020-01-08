@@ -426,7 +426,7 @@ export default {
   },
   methods: {
     powerswitch: function() {
-      this.transport("GET", "cors_proxy", "/"+this.$localStorage.get('tasmota_ip')+"/cm?cmnd=Power%20TOGGLE", null).then(result => {
+      this.transport("GET", "tasmota_ip", "/cm?cmnd=Power%20TOGGLE", null).then(result => {
         if(typeof(result) == "object") {
           this.$store.state.powerState = result.data.POWER.toLowerCase();
           if(this.powerState == "off") {
@@ -441,7 +441,7 @@ export default {
     },
     getPowerState: function() {
       if(this.$localStorage.get('powerhandling') == "yes") {
-        this.transport("GET", "cors_proxy", "/"+this.$localStorage.get('tasmota_ip')+"/cm?cmnd=Status", null).then(result => {
+        this.transport("GET", "tasmota_ip", "/cm?cmnd=Status", null).then(result => {
           if(typeof(result) == "object") {
             if(result.data.Status.Power == 0) {
               this.$store.state.powerState = 'off';
@@ -457,7 +457,7 @@ export default {
       }
     },
     lightswitch: function() {
-      this.transport("POST", "cors_proxy", "/"+this.$localStorage.get('led_ip')+"/light/3d_drucker_led/toggle", null).then(result => {
+      this.transport("POST", "led_ip", "/light/3d_drucker_led/toggle", null).then(result => {
         if(typeof(result) == "object") {
           this.getLightState();
         }
@@ -465,7 +465,7 @@ export default {
     },
     getLightState: function() {
       if(this.$localStorage.get('lighthandling') == "yes") {
-        this.transport("GET", "cors_proxy", "/"+this.$localStorage.get('led_ip')+"/light/3d_drucker_led/state", null).then(result => {
+        this.transport("GET", "led_ip", "/light/3d_drucker_led/state", null).then(result => {
           if(typeof(result) == "object") {
             this.$store.state.lightState = result.data.state.toLowerCase();
             if(this.lightState == "off") {

@@ -126,6 +126,13 @@
                 </div>
               </div>
 
+              <div class="field" style="text-align: left;" v-if="cors_proxy != null">
+                <div class="control">
+                <input id="poweruseproxy" type="checkbox" name="poweruseproxy" class="switch is-rounded is-outlined" checked="" v-model="poweruseproxy" v-on:change="switch_poweruseproxy()">
+                <label class="label" for="poweruseproxy">use cors proxy</label>
+                </div>
+              </div>
+
               <div class="field" v-if="powerhandling" style="text-align: left;">
                 <label class="label has-margin">Powerswitch toggle parameter:</label>
                 <div class="control has-margin">
@@ -151,6 +158,13 @@
                 <label class="label has-margin">Light device IP:</label>
                 <div class="control has-margin">
                   <input class="input" type="text" v-model="led_ip" placeholder="192.168.120.81">
+                </div>
+              </div>
+
+              <div class="field" style="text-align: left;" v-if="cors_proxy != null">
+                <div class="control">
+                <input id="lightuseproxy" type="checkbox" name="lightuseproxy" class="switch is-rounded is-outlined" checked="" v-model="lightuseproxy" v-on:change="switch_lightuseproxy()">
+                <label class="label" for="lightuseproxy">use cors proxy</label>
                 </div>
               </div>
 
@@ -238,6 +252,8 @@ export default {
       subnav: "",
       theme: "",
       dashboardLayout: "",
+      lightuseproxy: "",
+      poweruseproxy: ""
     };
   },
   mounted: function() {
@@ -262,6 +278,12 @@ export default {
     this.lighthandling = false;
     if(this.$localStorage.get('lighthandling') == "yes") {
       this.lighthandling = true;
+    }
+    if(this.$localStorage.get('lightuseproxy') == "yes") {
+      this.lightuseproxy = true;
+    }
+    if(this.$localStorage.get('poweruseproxy') == "yes") {
+      this.poweruseproxy = true;
     }
     this.led_ip = this.$localStorage.get('led_ip');
     this.led_toggle = this.$localStorage.get('led_toggle');
@@ -293,6 +315,8 @@ export default {
         led_toggle: this.$localStorage.get('led_toggle'),
         led_status: this.$localStorage.get('led_status'),
         cors_proxy: this.$localStorage.get('cors_proxy'),
+        poweruseproxy: this.$localStorage.get('poweruseproxy'),
+        lightuseproxy: this.$localStorage.get('lightuseproxy'),
         theme: this.$localStorage.get('theme'),
         dashboardLayout: this.$localStorage.get('dashboardLayout')
       };
@@ -326,6 +350,16 @@ export default {
         this.$localStorage.set('lighthandling', 'yes');
       } else {
         this.$localStorage.set('lighthandling', 'no');
+      }
+      if(this.lightuseproxy) {
+        this.$localStorage.set('lightuseproxy', 'yes');
+      } else {
+        this.$localStorage.set('lightuseproxy', 'no');
+      }
+      if(this.poweruseproxy) {
+        this.$localStorage.set('poweruseproxy', 'yes');
+      } else {
+        this.$localStorage.set('poweruseproxy', 'no');
       }
       this.$localStorage.set('led_ip', this.led_ip);
       this.$localStorage.set('led_toggle', this.led_toggle);
@@ -363,6 +397,12 @@ export default {
           if(json.lighthandling == "yes") {
             self.lighthandling = true;
           }
+          if(json.lightuseproxy == "yes") {
+            self.lightuseproxy = true;
+          }
+          if(json.poweruseproxy == "yes") {
+            self.poweruseproxy = true;
+          }
           self.led_ip = json.led_ip;
           self.led_toggle = json.led_toggle;
           self.led_status = json.led_status;
@@ -374,6 +414,20 @@ export default {
     },
     octoPrintCommand: function(action) {
       this.transport("POST", "octo_ip", "/api/system/commands/core/"+action, null).then(result => {});
+    },
+    switch_lightuseproxy: function() {
+      if(this.lightuseproxy) {
+        this.led_ip = this.cors_proxy+"/"+this.led_ip;
+      } else {
+        this.led_ip = this.led_ip.replace(this.cors_proxy+"/", '');
+      }
+    },
+    switch_poweruseproxy: function() {
+      if(this.poweruseproxy) {
+        this.tasmota_ip = this.cors_proxy+"/"+this.tasmota_ip;
+      } else {
+        this.tasmota_ip = this.tasmota_ip.replace(this.cors_proxy+"/", '');
+      }
     }
   },
   watch: {
