@@ -539,6 +539,8 @@ export default {
     },
     getOctoprintConnection: function() {
       this.transport("GET", "octo_ip", "/api/connection", null).then(result => {
+        console.log("OCT CONN");
+        console.log(result);
         if(typeof(result) == "object") {
           this.$store.state.connectionSettings = result.data;
           this.$store.state.pageLoader = false;

@@ -173,7 +173,7 @@ export const globalSettings = {
         }
         if(msg.current.state != null) {
           this.$store.state.printerState.payload.state_string = msg.current.state.text;
-          if(this.$store.state.printerState.payload.state_string != "Operational" && this.$store.state.printerState.payload.state_string != "Printing" && this.$store.state.printerState.payload.state_string != "Cancelling" && this.$store.state.printerState.payload.state_string != "Paused") {
+          if(this.$store.state.printerState.payload.state_string != "Operational" && this.$store.state.printerState.payload.state_string != "Printing" && this.$store.state.printerState.payload.state_string != "Cancelling" && this.$store.state.printerState.payload.state_string != "Paused" && this.$store.state.printerState.payload.state_string != "Printing from SD") {
             this.$store.state.isNotConnection = true;
             this.$store.state.isConnection = false;
             this.$store.state.isConnecting = false;
