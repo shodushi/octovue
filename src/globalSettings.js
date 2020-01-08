@@ -248,7 +248,6 @@ export const globalSettings = {
     },
     lightswitch: function() {
       axios({ method: "POST", "url": this.$localStorage.get('led_ip')+this.$localStorage.get('led_toggle') }).then(result => {
-        console.log(result);
         this.getLightState();
       }, error => {
         console.error(error);
@@ -477,7 +476,6 @@ export const globalSettings = {
       } else {
         $(event.srcElement.parentElement.parentElement).addClass("is-selected");
       }
-      console.log(event.srcElement.parentElement.tagName);
       $("#fb_"+file.imgid+" span").css("display", "block");
       $("#fb_"+file.imgid+" span").removeAttr("disabled");
       $("#fileoperations span").removeAttr("disabled");
@@ -1036,13 +1034,14 @@ export const globalSettings = {
       obj.z = parseInt(z);
       obj.axes = axes;
       obj.factor = parseInt(factor);
-      console.log("obj: ",obj);
       this.transport("POST", "octo_ip", "/api/printer/printhead", obj).then(result => {
+        /*
         if(typeof(result) == "object") {
 
         } else {
           console.log(result);
         }
+        */
       });
     },
     toolCommand(command, tool, offsets, amount, factor) {
@@ -1053,11 +1052,13 @@ export const globalSettings = {
       obj.amount = parseInt(amount);
       obj.factor = parseInt(factor);
       this.transport("POST", "octo_ip", "/api/printer/tool", obj).then(result => {
+        /*
         if(typeof(result) == "object") {
 
         } else {
           console.log(result);
         }
+        */
       });
     }
   },
