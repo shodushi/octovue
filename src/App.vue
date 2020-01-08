@@ -533,7 +533,7 @@ export default {
         }
       }).catch(error => {
         this.displayMsg('octoprint_conn_error');
-        console.log(error.response)
+        //console.log(error.response)
       });
 
     },
