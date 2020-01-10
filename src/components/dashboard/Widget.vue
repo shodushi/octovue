@@ -187,6 +187,10 @@
     <div class="buttons" v-for="value in $gcodes[$localStorage.get('printer_firmware')]"><button class="button is-small is-fullwidth" v-on:click="pcmds(value.gcmd)"><i class="fas" v-bind:class="value.icon"></i>&nbsp;<span>{{ value.label }}</span></button></div>
   </div>
 
+  <div class="gcodebutton" :id="id" v-else-if="type == 'gcodebutton'">
+    <div class="buttons"><button class="button is-small is-fullwidth" v-on:click="pcmds(source)">{{title}}</button></div>
+  </div>
+
   <div class="toolcommands" :id="id" v-else-if="type == 'toolcommands'">
     <div class="wrapper dragSelector">
       <div class="field" style="text-align: left;">
@@ -232,7 +236,7 @@
 
 <script>
 export default {
-  props: ['type', 'reference', 'source', 'id'],
+  props: ['type', 'reference', 'source', 'id', 'title'],
   data() {
     return {
       mounted: false,
@@ -256,6 +260,9 @@ export default {
     }
   },
   methods: {
+    test: function(source) {
+      alert(source);
+    },
     setFeedrate: function(){
       var fr = $("#feedrate_slider").val();
       this.feedrate = fr;
@@ -496,5 +503,9 @@ export default {
 }
 .jobstatus {
 	padding: 5% 5% 5% 5%;
+}
+.gcodebutton {
+  padding: 10px;
+  overflow: auto;
 }
 </style>

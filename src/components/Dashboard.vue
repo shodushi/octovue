@@ -42,6 +42,7 @@
                 <option value="tempcontrol">Temperature controls</option>
                 <option value="terminalwidget">Terminal</option>
                 <option value="jobstatus">Jobstatus</option>
+                <option value="gcodebutton">GCode button</option>
               </select>
             </div>
           </div>
@@ -51,7 +52,7 @@
           <label class="label">Value</label>
           <div class="control">
             <div class="select">
-              <select v-model="w_source">
+              <select v-model="w_source" v-if="w_type != 'gcodebutton'">
                 <option value="">Choose an option</option>
                 <option v-bind:value="tool.tool" v-for="tool in tools" v-if="w_type == 'gauge' || w_type == 'label'">{{tool.name}}</option>
                 <option value="cam-url" v-if="w_type == 'image-container'">Camera feed</option>
@@ -59,6 +60,8 @@
                 <option value="pie_stats_printing" v-if="w_type == 'pie-chart'">Print statistics</option>
               </select>
             </div>
+            <input v-if="w_type == 'gcodebutton'" v-model="w_title" class="input" type="text" placeholder="button text">
+            <input v-if="w_type == 'gcodebutton'" v-model="w_source" class="input" type="text" placeholder="gcode command">
           </div>
         </div>
 
@@ -74,7 +77,7 @@
         <div class="card dash-box" v-on:mouseover="boxhover('grid-box'+box.id, 'visible')" v-on:mouseleave="boxhover('grid-box'+box.id, 'hidden')">
           <div class="boxoptions" v-on:click="deleteWidget(box.id)"><i class="far fa-times-circle" style="color: #C0C0C0"></i></div>
           <div class="dash-box-body dragSelector" :id="'bbody'+box.id">
-            <widget class="widget dragSelector" :reference="box.type+'_'+box.source" :id="'widget'+box.id" :type="box.type" :source="box.source"></widget>
+            <widget class="widget dragSelector" :reference="box.type+'_'+box.source" :id="'widget'+box.id" :type="box.type" :source="box.source" :title="box.title"></widget>
           </div>
         </div>
       </dnd-grid-box>
@@ -148,6 +151,9 @@ export default {
       if(this.w_type == "terminalwidget") {
         w = 17;
         h = 7;
+      }
+      if(this.w_type == "gcodebutton") {
+        h = 2;
       }
       var widget = {
         id: Math.floor(1000000 + Math.random() * 900000),

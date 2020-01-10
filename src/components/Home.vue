@@ -2,7 +2,6 @@
     <section class="section" id="mainPage" v-if="page == 'main' || !page">
 
         <div class="">
-
             <div class="columns">
 
             <div class="column is-one-fifths" v-if="printerState.payload.state_string == 'Printing' || printerState.payload.state_string == 'Paused' || printerState.payload.state_string == 'Pausing' || printerState.payload.state_string == 'Resuming'">
@@ -48,6 +47,30 @@
             </div>
             
             <div id="files" class="column" v-bind:class="{ 'is-four-fifths': printerState.payload.state_string != 'Printing' && printerState.payload.state_string != 'Paused' && printerState.payload.state_string != 'Pausing' && printerState.payload.state_string != 'Resuming', 'is-three-fifths' : printerState.payload.state_string == 'Printing' || printerState.payload.state_string == 'Paused' || printerState.payload.state_string == 'Pausing' || printerState.payload.state_string == 'Resuming' }" v-if="file_origin == 'local' || file_origin == 'sdcard' || file_origin == 'thingiverse'">
+
+
+                <div class="modal" v-bind:class="{ 'is-active' : modalfilemove }">
+                    <div class="modal-background"></div>
+                    <div class="modal-card">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title">move {{ selectedfile.path }}</p>
+                        <button class="delete" aria-label="close" v-on:click="toggleModalFileMove"></button>
+                    </header>
+                    <section class="modal-card-body">
+                        <div class="content" id="modalfilemove_content">
+                            <div id="controls">
+                                <ul>
+                                    <li v-for="folder in $store.state.folders">{{folder.name}}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+                    <footer class="modal-card-foot">
+                        <button class="button is-right" v-on:click="toggleInfo">move</button>
+                    </footer>
+                    </div>
+                </div>
+                
                 <table id="filebrowser_head" class="table is-fullwidth">
                 <thead>
                     <tr colspan="3">
@@ -88,6 +111,7 @@
                         <div class="file_buttons" :id="'fb_'+file.imgid">
                             <!-- <span id="btn_load" class="button is-warning is-small" disabled v-on:click="loadprintFile(false)">load</span> !-->
                             <span id="btn_print" class="button is-success is-small" disabled v-on:click="loadprintFile(true)">print</span> 
+                            <!--<span id="btn_delete" class="button is-primary is-small" disabled v-on:click="toggleModalFileMove()">move</span> !-->
                             <span id="btn_delete" class="button is-danger is-small" disabled v-on:click="deleteFile()">delete</span>
                         </div>
                         </td>
@@ -336,5 +360,8 @@ tr.is-selected, td.is-selected {
 }
 #filestable tr {
     cursor: pointer;
+}
+#modalfilemove_content {
+    color: #000;
 }
 </style>

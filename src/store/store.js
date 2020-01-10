@@ -9,6 +9,7 @@ export const store = new Vuex.Store({
     state: {
         temp: [20, 80],
         infomodal: false,
+        modalfilemove: false,
         settingsmodal: false,
         terminalmodal: false,
         printerState: {"type": "PrinterStateChanged", "payload":{"state_string":"Offline","state_id":"OFFLINE"}},

@@ -662,6 +662,9 @@ export const globalSettings = {
         }
       });
     },
+    moveFile: function() {
+      console.log(this.selectedfile);
+    },
     cancelJob: function() {
       var obj = {};
       obj.command = "cancel";
@@ -968,6 +971,10 @@ export const globalSettings = {
     toggleInfo: function() {
       this.$store.state.infomodal = !this.$store.state.infomodal;
     },
+    toggleModalFileMove: function() {
+      this.$store.state.modalfilemove = !this.$store.state.modalfilemove;
+      console.log(this.$store.state.folders);
+    },
     configFromFile: function() {
       if(this.$localStorage.get('octo_ip') == null || this.$localStorage.get('apikey') == null) {
         var locationHref = window.location.href.replace("/#", "");
@@ -1067,6 +1074,7 @@ export const globalSettings = {
       'temp',
       'page',
       'infomodal',
+      'modalfilemove',
       'terminalmodal',
       'settingsmodal',
       'printerState',
