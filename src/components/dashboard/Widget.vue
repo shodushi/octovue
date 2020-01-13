@@ -266,7 +266,7 @@
         </table>
       </div>
       <div v-if="file_origin == 'thingiverse'">
-        <div class="columns is-vcentered" style="margin-bottom: 30px;">
+        <div class="columns is-vcentered" style="margin-bottom: 30px; margin-top: 1px;">
           <div class="field has-addons" style="margin: 0 auto;">
             <div class="control">
                 <input class="input" type="text" placeholder="search thingiverse" v-model="q" v-on:keyup.enter="thingiverse_search()">
