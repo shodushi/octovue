@@ -1,21 +1,33 @@
 <template>
   <div id="dashboardPage" style="min-height: 800px;">
-    <p class="control" id="btn_addWidget">
-      <button class="button is-small" v-on:click="showAddWidget = true">
-        <span class="icon">
-          <i class="fas fa-plus"></i>
-        </span>
-        <span>widget</span>
-      </button>
-    </p>
-    <p class="control" id="btn_clearWidgets">
-      <button class="button is-small" v-on:click="clearWidgets">
-        <span class="icon">
-          <i class="fas fa-trash"></i>
-        </span>
-        <span>{{debug}} clear widgets</span>
-      </button>
-    </p>
+    <div id="dashboard_buttons">
+      <p class="control">
+        <button class="button is-small" v-on:click="clearWidgets">
+          <span class="icon">
+            <i class="fas fa-trash"></i>
+          </span>
+          <span>{{debug}} clear widgets</span>
+        </button>
+        <button class="button is-small" v-on:click="lockDashboard"v-if="dashboard_locked">
+          <span class="icon">
+            <i class="fas fa-lock"></i>
+          </span>
+          <span>{{db_locked}}</span>
+        </button>
+        <button class="button is-small" v-on:click="lockDashboard" v-if="!dashboard_locked">
+          <span class="icon">
+            <i class="fas fa-lock-open"></i>
+          </span>
+          <span>{{db_locked}}</span>
+        </button>
+        <button class="button is-small" v-on:click="showAddWidget = true">
+          <span class="icon">
+            <i class="fas fa-plus"></i>
+          </span>
+          <span>widget</span>
+        </button>
+      </p>
+    </div>
 
     <article class="message" id="addWidget" v-if="showAddWidget">
       <div class="message-header">
@@ -114,7 +126,9 @@ export default {
       w_type: "",
       w_source: "",
       widgetData: [],
-      debug: ""
+      debug: "",
+      dashboard_locked: false,
+      db_locked: ""
     }
   },
   methods: {
@@ -182,21 +196,47 @@ export default {
     clearWidgets: function() {
       this.layout = [];
     },
+    lockDashboard: function() {
+      this.dashboard_locked = !this.dashboard_locked;
+
+      for(var i = 0; i < this.layout.length;i++) {
+        this.layout[i].pinned = this.dashboard_locked;
+      }
+      if(this.dashboard_locked) {
+        this.db_locked = "dashboard locked";
+      } else {
+        this.db_locked = "dashboard unlocked";
+      }
+      this.$localStorage.set('dashboardLayout', JSON.stringify(this.layout));
+      this.$localStorage.set('dashboard_locked', this.dashboard_locked);
+    },
     boxhover: function(id, value) {
-      $('#'+id+' > div > .boxoptions').css({
-        visibility: value
-      });
+      if(!this.dashboard_locked) {
+        $('#'+id+' > div > .boxoptions').css({
+          visibility: value
+        });
+      }
     }
   },
   created: function() {
     
   },
   mounted: function() {
+    console.log(this.dashboard_locked);
     this.layout = JSON.parse(this.$localStorage.get('dashboardLayout'));
+    this.dashboard_locked = JSON.parse(this.$localStorage.get('dashboard_locked'));
+    if(this.dashboard_locked) {
+      this.db_locked = "dashboard locked";
+    } else {
+      this.db_locked = "dashboard unlocked";
+    }
+    console.log(this.dashboard_locked);
   },
   watch: {
     layout: function (before, after) {
+      console.log("changed");
       this.$localStorage.set('dashboardLayout', JSON.stringify(this.layout));
+      
     }
   },
   computed: {
@@ -232,12 +272,25 @@ export default {
 </script>
 
 <style scoped>
+#dashboard_buttons {
+  position: absolute;
+  top: 60px; right: 1%;
+  z-index: 999;
+}
+#dashboard_buttons > .control > button {
+  margin-right: 0.5em;
+}
+#btn_clearWidgets {
+  position: absolute;
+  top: 60px; right: 12%;
+  z-index: 999;
+}
 #btn_addWidget {
   position: absolute;
   top: 60px; right: 1%;
   z-index: 999;
 }
-#btn_clearWidgets {
+#btn_lockWidgets {
   position: absolute;
   top: 60px; right: 8%;
   z-index: 999;
@@ -254,6 +307,7 @@ export default {
   right: 1%;
   z-index: 999;
 }
+
 #addWidget .message-body {
   text-align: left;
 }
