@@ -55,12 +55,13 @@
                 <option value="terminalwidget">Terminal</option>
                 <option value="jobstatus">Jobstatus</option>
                 <option value="gcodebutton">GCode button</option>
+                <option value="filebrowser">Filebrowser</option>
               </select>
             </div>
           </div>
         </div>
 
-        <div class="field" style="text-align: left;" v-if="w_type != '' && w_type != 'printhead' && w_type != 'feedrate' && w_type != 'printercommands' && w_type != 'toolcommands' && w_type != 'terminalwidget' && w_type != 'tempcontrol' && w_type != 'jobstatus'">
+        <div class="field" style="text-align: left;" v-if="w_type != '' && w_type != 'printhead' && w_type != 'feedrate' && w_type != 'filebrowser' && w_type != 'printercommands' && w_type != 'toolcommands' && w_type != 'terminalwidget' && w_type != 'tempcontrol' && w_type != 'jobstatus'">
           <label class="label">Value</label>
           <div class="control">
             <div class="select">
@@ -169,6 +170,10 @@ export default {
       if(this.w_type == "gcodebutton") {
         h = 2;
       }
+      if(this.w_type == "filebrowser") {
+        w = 18;
+        h = 22;
+      }
       var widget = {
         id: Math.floor(1000000 + Math.random() * 900000),
         title: this.w_title,
@@ -222,7 +227,6 @@ export default {
     
   },
   mounted: function() {
-    console.log(this.dashboard_locked);
     this.layout = JSON.parse(this.$localStorage.get('dashboardLayout'));
     this.dashboard_locked = JSON.parse(this.$localStorage.get('dashboard_locked'));
     if(this.dashboard_locked) {
@@ -230,13 +234,10 @@ export default {
     } else {
       this.db_locked = "dashboard unlocked";
     }
-    console.log(this.dashboard_locked);
   },
   watch: {
     layout: function (before, after) {
-      console.log("changed");
       this.$localStorage.set('dashboardLayout', JSON.stringify(this.layout));
-      
     }
   },
   computed: {

@@ -73,8 +73,6 @@
     
   </div>
 
-
-
   <div class="jobstatus dragSelector" :id="id" v-else-if="type == 'jobstatus'">
   	<h3>{{job.printfile}}</h3>
   	<div style="text-align: right;" class="">{{formatDecimal(job.progress.completion)}}%</div>
@@ -95,20 +93,6 @@
   </div>
     <div class="missing dragSelector" v-if="widgetData == null">{{source}} not found</div>
   </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   <div class="printhead ctrlbuttons dragSelector" v-else-if="type == 'printhead'">
     <div class="center">
@@ -231,6 +215,118 @@
     </div>
   </div>
   
+  <div class="filebrowser dragSelector" :id="id" v-else-if="type == 'filebrowser'">
+    <table id="filebrowser_head" class="table is-fullwidth dragSelector">
+      <thead class="dragSelector">
+        <tr colspan="3" class="dragSelector">
+          <td class="dragSelector">
+              <div class="tabs is-centered is-boxed dragselector">
+              <ul>
+                <li id="tab_local" v-bind:class="{ 'is-active' : file_origin == 'local' }"><a v-on:click="changeFileSource('local')"> <i class="fas fa-hdd"></i>&nbsp;local</a></li>
+                <li id="tab_sdcard" v-bind:class="{ 'is-active' : file_origin == 'sdcard' }"><a v-on:click="changeFileSource('sdcard')"><i class="fas fa-sd-card"></i>&nbsp;sdcard</a></li>
+                <li id="tab_thingiverse" v-bind:class="{ 'is-active' : file_origin == 'thingiverse' }"><a v-on:click="changeFileSource('thingiverse');thingiverse_search()"><span class="thingiverse">T</span>&nbsp;thingiverse</a></li>
+              </ul>
+            </div>
+          </td>
+        </tr>
+      </thead>
+    </table>
+
+    <div id="filewrapper">
+      <div v-if="file_origin == 'local' || file_origin == 'sdcard'">
+
+        <div v-if="selectedfolder != ''" v-on:click="folderup()" style="text-align: left"><span style="cursor: pointer;">&#x2190; back</span></div>
+        <table class="table is-striped is-hoverable dragSelector" id="filestable">
+          <tbody id="filesbody">
+            <tr v-on:click="selectFolder(folder.path)" v-for="folder in folders"><td><span class="icon">&#128193;</span></td><td>{{ folder.display }}</td><td></td></tr>
+            <tr v-on:click="selectFile($event, file)" v-for="file in files">
+              <td>
+                <figure v-if="$localStorage.get('previewimages') == 'yes'" class="image is-128x128"><img :src="file.img" :id="file.thumbid" class="thumb" @error="imgFallback" v-on:mousemove="zoomIn($event, file.thumbid, 'overlay_'+file.imgid)" v-on:mouseleave="zoomOut(''+file.imgid)"></figure>
+                <div class="overlay_wrapper">
+                  <div :id="'overlay_'+file.imgid" class="zoomoverlay" v-bind:style="{'background-image': 'url(' + file.img + ')' }"></div>
+                </div>
+              </td>
+              <td>
+                {{ file.display }}<br />
+                <div style="width: 130px; float:left; margin-left: 20px;" v-if="file.gcodeAnalysis.dimensions.width != null">Dimensions:</div><div v-if="file.gcodeAnalysis.dimensions.width != null">x: {{ formatLenght(file.gcodeAnalysis.dimensions.width) }} y: {{ formatLenght(file.gcodeAnalysis.dimensions.depth) }} z: {{ formatLenght(file.gcodeAnalysis.dimensions.height) }}</div>
+                <div style="width: 130px; float:left; margin-left: 20px;" v-if="file.gcodeAnalysis.estimatedPrintTime != null">PrintTime:</div><div v-if="file.gcodeAnalysis.estimatedPrintTime != null">{{ formatTime(file.gcodeAnalysis.estimatedPrintTime) }}</div>
+                <div style="width: 130px; float:left; margin-left: 20px;" v-if="file.gcodeAnalysis.filament.tool0 != null && file.gcodeAnalysis.filament.tool0.length != null">Filament:</div><div v-if="file.gcodeAnalysis.filament.tool0 != null && file.gcodeAnalysis.filament.tool0.length != null">{{ formatLenght(file.gcodeAnalysis.filament.tool0.length) }}</div>
+                <div style="width: 130px; float:left; margin-left: 20px;" v-if="file.prints != null">Prints ok/nok:</div><div v-if="file.prints != null">{{ file.prints.success }} / {{ file.prints.failure }}</div>
+              </td>
+              <td>{{formatDate(file.date)}} 
+                <div class="file_buttons" :id="'fb_'+file.imgid">
+                  <!-- <span id="btn_load" class="button is-warning is-small" disabled v-on:click="loadprintFile(false)">load</span> !-->
+                  <span id="btn_print" class="button is-success is-small" disabled v-on:click="loadprintFile(true)">print</span> 
+                  <!-- <span id="btn_delete" class="button is-primary is-small" disabled v-on:click="toggleModalFileMove()">move</span> !-->
+                  <span id="btn_delete" class="button is-danger is-small" disabled v-on:click="deleteFile()">delete</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div v-if="file_origin == 'thingiverse'">
+        <div class="columns is-vcentered" style="margin-bottom: 30px;">
+          <div class="field has-addons" style="margin: 0 auto;">
+            <div class="control">
+                <input class="input" type="text" placeholder="search thingiverse" v-model="q" v-on:keyup.enter="thingiverse_search()">
+            </div>
+            <div class="control" v-on:click="thingiverse_search()">
+                <a class="button is-info">
+                Search
+                </a>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="thingiverse_results.length < 1 && searchLoader">
+            <img src="img/upload.gif"><br />loading...
+        </div>
+        <div v-if="thingiverse_results.length < 1 && !searchLoader">
+            nothing found
+        </div>
+        <div v-if="thingiverse_results.length > 0">
+          <table class="table is-fullwidth">
+            <tr v-if="thingiverse_results.length <= 12">
+              <td colspan="3" style="text-align: center">
+                <span v-if="thingpage > 1" id="btn_page" class="button is-small" v-on:click="prevPage();thingiverse_search()">prev page</span>
+                <span v-if="thingiverse_results.length == 12" id="btn_page" class="button is-small" style="margin-left: 20px;" v-on:click="nextPage();thingiverse_search()">next page</span>
+              </td>
+            </tr>
+          </table>
+          <table class="table is-fullwidth is-striped is-hoverable" id="filestable">
+            <tbody id="filesbody" v-if="thingiverse_results.length">
+              <tr v-for="file in thingiverse_results">
+                <td>
+                  <figure class="image is-128x128" v-on:click="windowOpen(file.public_url)" style="cursor: pointer;"><img :src="file.thumbnail" :id="'thumb_'+file.id" class="thumb" @error="imgFallback"></figure>
+                </td>
+                <td>
+                  {{ file.name }}<br />
+                  Creator: <a v-bind:href="file.creator.public_url" target="_blank">{{ file.creator.name }} <span v-if="file.creator.first_name || file.creator.last_name">({{ file.creator.first_name }}<span v-if="file.creator.first_name && file.creator.last_name">&nbsp;</span>{{ file.creator.last_name }})</span></a>
+                </td>
+                <td>
+                  <div class="file_buttons_thingiverse" :id="'fb_'+file.id">
+                  <span id="btn_thing_show" class="button is-success is-small" v-on:click="windowOpen(file.public_url)">show</span> 
+                  <span id="btn:thing_download" class="button is-success is-small" v-on:click="downloadThingFile(file.id, file.name)">save</span> 
+                  </div>                        
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <table class="table is-fullwidth">
+            <tr v-if="thingiverse_results.length <= 12">
+              <td colspan="3" style="text-align: center">
+               <span v-if="thingpage > 1" id="btn_page" class="button is-small" v-on:click="prevPage();thingiverse_search()">prev page</span>
+                <span v-if="thingiverse_results.length == 12" id="btn_page" class="button is-small" style="margin-left: 20px;" v-on:click="nextPage();thingiverse_search()">next page</span>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
   
 </template>
 
@@ -515,5 +611,68 @@ export default {
 .gcodebutton {
   padding: 10px;
   overflow: auto;
+}
+
+.filebrowser {
+  position: relative;
+  padding: 10px;
+  height: 100%;
+  width: 100%;
+}
+#filewrapper {
+  height: 88%;
+  overflow: scroll;
+}
+#filestable {
+  width: 100%;
+}
+tr.is-selected, td.is-selected {
+  background-color: #c9ffed !important;
+  color: black !important;
+}
+.thumb {
+  background-repeat: no-repeat;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+}
+.overlay_wrapper {
+  position: relative;
+}
+.zoomoverlay {
+  border: 1px solid #d8d8d8;
+  width: 340px;
+  height: 272px;
+  display: none;
+  background-repeat: no-repeat;
+  position: absolute;
+  top: -128px;
+  left: 242px;
+  background-color: white;
+  background-size: 800px 600px;
+}
+.file_buttons {
+  z-index: 800;
+  margin: 10px 0px 0px 0px;
+}
+.file_buttons span {
+  display: none;
+  margin: 5px 5px 0px 5px;
+}
+.file_buttons_thingiverse span {
+  margin: 5px 5px 0px 5px;
+}
+.thingiverse {
+  font-weight: bold;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+  border: 1px solid #000;
+  text-align: center;
+  width: 20px;
+  height: 20px;
+}
+#filestable tr {
+    cursor: pointer;
 }
 </style>

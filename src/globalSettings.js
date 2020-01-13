@@ -195,7 +195,6 @@ export const globalSettings = {
           }
         }
         
-        
         if(msg.current.state != null) {
           if(msg.current.state.text != null && msg.current.state.text != "") {
             this.$store.state.printerState.payload.state_string = msg.current.state.text;

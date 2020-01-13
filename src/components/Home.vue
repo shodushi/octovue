@@ -120,62 +120,62 @@
                 </div>
 
                 <div v-if="file_origin == 'thingiverse'">
-                <div class="columns is-vcentered" style="margin-bottom: 30px;">
-                    <div class="field has-addons" style="margin: 0 auto;">
-                    <div class="control">
-                        <input class="input" type="text" placeholder="search thingiverse" v-model="q" v-on:keyup.enter="thingiverse_search()">
+                    <div class="columns is-vcentered" style="margin-bottom: 30px;">
+                        <div class="field has-addons" style="margin: 0 auto;">
+                        <div class="control">
+                            <input class="input" type="text" placeholder="search thingiverse" v-model="q" v-on:keyup.enter="thingiverse_search()">
+                        </div>
+                        <div class="control" v-on:click="thingiverse_search()">
+                            <a class="button is-info">
+                            Search
+                            </a>
+                        </div>
+                        </div>
                     </div>
-                    <div class="control" v-on:click="thingiverse_search()">
-                        <a class="button is-info">
-                        Search
-                        </a>
-                    </div>
-                    </div>
-                </div>
 
-                <div v-if="thingiverse_results.length < 1 && searchLoader">
-                    <img src="img/upload.gif"><br />loading...
-                </div>
-                <div v-if="thingiverse_results.length < 1 && !searchLoader">
-                    nothing found
-                </div>
-                <div v-if="thingiverse_results.length > 0">
-                    <table class="table is-fullwidth">
-                    <tr v-if="thingiverse_results.length <= 12">
-                        <td colspan="3" style="text-align: center">
-                        <span v-if="thingpage > 1" id="btn_page" class="button is-small" v-on:click="prevPage();thingiverse_search()">prev page</span>
-                        <span v-if="thingiverse_results.length == 12" id="btn_page" class="button is-small" style="margin-left: 20px;" v-on:click="nextPage();thingiverse_search()">next page</span>
-                        </td>
-                    </tr>
-                    </table>
-                    <table class="table is-fullwidth is-striped is-hoverable" id="filestable">
-                    <tbody id="filesbody" v-if="thingiverse_results.length">
-                        <tr v-for="file in thingiverse_results">
-                        <td>
-                            <figure class="image is-128x128" v-on:click="windowOpen(file.public_url)" style="cursor: pointer;"><img :src="file.thumbnail" :id="'thumb_'+file.id" class="thumb" @error="imgFallback"></figure>
-                        </td>
-                        <td>
-                            {{ file.name }}<br />
-                            Creator: <a v-bind:href="file.creator.public_url" target="_blank">{{ file.creator.name }} <span v-if="file.creator.first_name || file.creator.last_name">({{ file.creator.first_name }}<span v-if="file.creator.first_name && file.creator.last_name">&nbsp;</span>{{ file.creator.last_name }})</span></a>
-                        </td>
-                        <td>
-                            <div class="file_buttons_thingiverse" :id="'fb_'+file.id">
-                            <span id="btn_thing_show" class="button is-success is-small" v-on:click="windowOpen(file.public_url)">show</span> 
-                            <span id="btn:thing_download" class="button is-success is-small" v-on:click="downloadThingFile(file.id, file.name)">save</span> 
-                            </div>                        
-                        </td>
+                    <div v-if="thingiverse_results.length < 1 && searchLoader">
+                        <img src="img/upload.gif"><br />loading...
+                    </div>
+                    <div v-if="thingiverse_results.length < 1 && !searchLoader">
+                        nothing found
+                    </div>
+                    <div v-if="thingiverse_results.length > 0">
+                        <table class="table is-fullwidth">
+                        <tr v-if="thingiverse_results.length <= 12">
+                            <td colspan="3" style="text-align: center">
+                            <span v-if="thingpage > 1" id="btn_page" class="button is-small" v-on:click="prevPage();thingiverse_search()">prev page</span>
+                            <span v-if="thingiverse_results.length == 12" id="btn_page" class="button is-small" style="margin-left: 20px;" v-on:click="nextPage();thingiverse_search()">next page</span>
+                            </td>
                         </tr>
-                    </tbody>
-                    </table>
-                    <table class="table is-fullwidth">
-                    <tr v-if="thingiverse_results.length <= 12">
-                        <td colspan="3" style="text-align: center">
-                        <span v-if="thingpage > 1" id="btn_page" class="button is-small" v-on:click="prevPage();thingiverse_search()">prev page</span>
-                        <span v-if="thingiverse_results.length == 12" id="btn_page" class="button is-small" style="margin-left: 20px;" v-on:click="nextPage();thingiverse_search()">next page</span>
-                        </td>
-                    </tr>
-                    </table>
-                </div>
+                        </table>
+                        <table class="table is-fullwidth is-striped is-hoverable" id="filestable">
+                        <tbody id="filesbody" v-if="thingiverse_results.length">
+                            <tr v-for="file in thingiverse_results">
+                            <td>
+                                <figure class="image is-128x128" v-on:click="windowOpen(file.public_url)" style="cursor: pointer;"><img :src="file.thumbnail" :id="'thumb_'+file.id" class="thumb" @error="imgFallback"></figure>
+                            </td>
+                            <td>
+                                {{ file.name }}<br />
+                                Creator: <a v-bind:href="file.creator.public_url" target="_blank">{{ file.creator.name }} <span v-if="file.creator.first_name || file.creator.last_name">({{ file.creator.first_name }}<span v-if="file.creator.first_name && file.creator.last_name">&nbsp;</span>{{ file.creator.last_name }})</span></a>
+                            </td>
+                            <td>
+                                <div class="file_buttons_thingiverse" :id="'fb_'+file.id">
+                                <span id="btn_thing_show" class="button is-success is-small" v-on:click="windowOpen(file.public_url)">show</span> 
+                                <span id="btn:thing_download" class="button is-success is-small" v-on:click="downloadThingFile(file.id, file.name)">save</span> 
+                                </div>                        
+                            </td>
+                            </tr>
+                        </tbody>
+                        </table>
+                        <table class="table is-fullwidth">
+                        <tr v-if="thingiverse_results.length <= 12">
+                            <td colspan="3" style="text-align: center">
+                            <span v-if="thingpage > 1" id="btn_page" class="button is-small" v-on:click="prevPage();thingiverse_search()">prev page</span>
+                            <span v-if="thingiverse_results.length == 12" id="btn_page" class="button is-small" style="margin-left: 20px;" v-on:click="nextPage();thingiverse_search()">next page</span>
+                            </td>
+                        </tr>
+                        </table>
+                    </div>
 
                 </div>
 
