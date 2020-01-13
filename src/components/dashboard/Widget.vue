@@ -221,7 +221,7 @@
         <tr colspan="3" class="dragSelector">
           <td class="dragSelector">
               <div class="tabs is-centered is-boxed dragselector">
-              <ul>
+              <ul class="dragSelector">
                 <li id="tab_local" v-bind:class="{ 'is-active' : file_origin == 'local' }"><a v-on:click="changeFileSource('local')"> <i class="fas fa-hdd"></i>&nbsp;local</a></li>
                 <li id="tab_sdcard" v-bind:class="{ 'is-active' : file_origin == 'sdcard' }"><a v-on:click="changeFileSource('sdcard')"><i class="fas fa-sd-card"></i>&nbsp;sdcard</a></li>
                 <li id="tab_thingiverse" v-bind:class="{ 'is-active' : file_origin == 'thingiverse' }"><a v-on:click="changeFileSource('thingiverse');thingiverse_search()"><span class="thingiverse">T</span>&nbsp;thingiverse</a></li>
@@ -232,12 +232,12 @@
       </thead>
     </table>
 
-    <div id="filewrapper">
-      <div v-if="file_origin == 'local' || file_origin == 'sdcard'">
+    <div id="filewrapper" class="dragSelector">
+      <div v-if="file_origin == 'local' || file_origin == 'sdcard'" class="dragSelector">
 
         <div v-if="selectedfolder != ''" v-on:click="folderup()" style="text-align: left"><span style="cursor: pointer;">&#x2190; back</span></div>
         <table class="table is-striped is-hoverable dragSelector" id="filestable">
-          <tbody id="filesbody">
+          <tbody id="filesbody" class="dragSelector">
             <tr v-on:click="selectFolder(folder.path)" v-for="folder in folders"><td><span class="icon">&#128193;</span></td><td>{{ folder.display }}</td><td></td></tr>
             <tr v-on:click="selectFile($event, file)" v-for="file in files">
               <td>
