@@ -58,15 +58,14 @@
                     </header>
                     <section class="modal-card-body">
                         <div class="content" id="modalfilemove_content">
-                            <div id="controls">
-                                <ul>
-                                    <li v-for="folder in $store.state.folders">{{folder.name}}</li>
-                                </ul>
-                            </div>
+                            <div v-if="selectedmovefolder != ''" v-on:click="movefolderup()" style="text-align: left"><span style="cursor: pointer;">&#x2190; back</span></div>
+                            <table class=" is-striped is-hoverable">
+                                <tr v-on:click="selectMoveFolder(folder.path)" v-for="folder in $store.state.movefolders"><td width="20px"><span class="icon">&#128193;</span></td><td>{{folder.name}}</td></tr>
+                            </table>
                         </div>
                     </section>
                     <footer class="modal-card-foot">
-                        <button class="button is-right" v-on:click="toggleInfo">move</button>
+                        <button class="button is-right" v-on:click="moveFile()">move here</button>
                     </footer>
                     </div>
                 </div>
@@ -111,7 +110,7 @@
                         <div class="file_buttons" :id="'fb_'+file.imgid">
                             <!-- <span id="btn_load" class="button is-warning is-small" disabled v-on:click="loadprintFile(false)">load</span> !-->
                             <span id="btn_print" class="button is-success is-small" disabled v-on:click="loadprintFile(true)">print</span> 
-                            <!--<span id="btn_delete" class="button is-primary is-small" disabled v-on:click="toggleModalFileMove()">move</span> !-->
+                            <!-- <span id="btn_delete" class="button is-primary is-small" disabled v-on:click="toggleModalFileMove()">move</span> !-->
                             <span id="btn_delete" class="button is-danger is-small" disabled v-on:click="deleteFile()">delete</span>
                         </div>
                         </td>
@@ -201,8 +200,8 @@
                     <transition name="slide">
                     <div id="transitionWrapper">
                         <div class="content" id="cardprinterstatus" v-if="printerState.payload.state_string != 'Offline'">
-                        <p>Tool-0 Temp: <span id="tool0tempactual">{{ temps.tool0.actual }}</span>&deg; C / <span id="tool0temptarget">{{ temps.tool0.target }}</span>&deg; C</p>
-                        <p>Bed Temp: <span id="bedtempactual">{{ temps.bed.actual }}</span>&deg; C / <span id="bedtemptarget">{{ temps.bed.target }}</span>&deg; C</p>
+                        <p>Tool-0 Temp: <span id="tool0tempactual" v-if="temps.tool0">{{ temps.tool0.actual }}</span>&deg; C / <span id="tool0temptarget" v-if="temps.tool0">{{ temps.tool0.target }}</span>&deg; C</p>
+                        <p>Bed Temp: <span id="bedtempactual" v-if="temps.bed">{{ temps.bed.actual }}</span>&deg; C / <span id="bedtemptarget" v-if="temps.bed">{{ temps.bed.target }}</span>&deg; C</p>
                         </div>
                     
                         <div class="content" id="cardtools" style="border-top: 1px solid #C0C0C0; height: 270px;" v-if="printerState.payload.state_string != 'Offline'">

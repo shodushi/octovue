@@ -87,35 +87,58 @@ export const globalSettings = {
       //console.log(msg);
       if(msg.event != null) {
           if(msg.event.type != null) {
-              if(msg.event.type == "PrinterStateChanged") {
-                  this.$store.state.printerState = msg.event;
-                  if(this.$store.state.printerState.payload.state_string != "Operational" && this.$store.state.printerState.payload.state_string != "Printing" && this.$store.state.printerState.payload.state_string != "Paused") {
-                    this.$store.state.isNotConnection = true;
-                    this.$store.state.isConnection = false;
-                    this.$store.state.isConnecting = false;
-                    this.$store.state.connectionState = "off";
-                  } else if(this.printerState.payload.state_string == "Connecting") {
-                    this.$store.state.isNotConnection = false;
-                    this.$store.state.isConnection = true;
-                    this.$store.state.isConnecting = true;
-                    this.$store.state.connectionState = "...";
-                  } else {
-                    this.$store.state.isNotConnection = false;
-                    this.$store.state.isConnection = true;
-                    this.$store.state.isConnecting = false;
-                    this.$store.state.connectionState = "on";
-                  }
+            console.log(msg);
+            if(msg.event.type == "Connected" || msg.event.type == "Connecting") {
+              var payload = {}
+              payload.state_string = msg.event.type;
+              this.$store.state.printerState.payload = payload;
+            }
+            if(msg.event.type == "PrinterStateChanged") {
+              if(msg.event.payload.state_string != null && msg.event.payload.state_string != "") {
+                this.$store.state.printerState = msg.event;
+                this.$store.state.printerState.payload.state_string = msg.event.payload.state_string;
               }
-              if(msg.event.type == "DisplayLayerProgress_layerChanged" || msg.event.type == "DisplayLayerProgress_heightChanged") {
-                this.$store.state.totalLayer = msg.payload.totalLayer;
-                this.$store.state.currentLayer = msg.payload.currentLayer;
-                this.$store.state.totalHeight = msg.payload.totalHeightWithExtrusion;
-                this.$store.state.currentHeight = msg.payload.currentHeight;
-                //this.currentHeight = msg.currentZ;
+              if(msg.event.type == "Connecting" || msg.event.payload.state_id == "OPEN_SERIAL" ||
+              msg.event.payload.state_id == "DETECT_SERIAL" || 
+              msg.event.payload.state_id == "DETECT_BAUDRATE" || 
+              msg.event.payload.state_id == "CONNECTING") {
+                  this.$store.state.isNotConnection = false;
+                  this.$store.state.isConnection = false;
+                  this.$store.state.isConnecting = true;
+                  this.$store.state.connectionState = "...";
+                  this.$store.state.printerState.payload.state_string = "Connecting";
+              } else if(msg.event.payload.state_id == "OPERATIONAL" ||
+                msg.event.payload.state_id == "PRINTING" || 
+                msg.event.payload.state_id == "PAUSED" || 
+                msg.event.payload.state_id == "TRANSFERING_FILE") {
+                  this.$store.state.isNotConnection = false;
+                  this.$store.state.isConnection = true;
+                  this.$store.state.isConnecting = false;
+                  this.$store.state.connectionState = "on";
+              } else if(msg.event.payload.state_id == "CLOSED" ||
+                msg.event.payload.state_id == "ERROR" || 
+                msg.event.payload.state_id == "CLOSED_WITH_ERROR" || 
+                msg.event.payload.state_id == "OFFLINE" || 
+                msg.event.payload.state_id == "NONE") {
+                  this.$store.state.isNotConnection = true;
+                  this.$store.state.isConnection = false;
+                  this.$store.state.isConnecting = false;
+                  this.$store.state.connectionState = "off";
               }
-              if(msg.event.type == "UpdatedFiles") {
-                  this.loadFiles();
-              }
+            }
+            if(msg.event.type == "DisplayLayerProgress_layerChanged" || msg.event.type == "DisplayLayerProgress_heightChanged") {
+              this.$store.state.totalLayer = msg.payload.totalLayer;
+              this.$store.state.currentLayer = msg.payload.currentLayer;
+              this.$store.state.totalHeight = msg.payload.totalHeightWithExtrusion;
+              this.$store.state.currentHeight = msg.payload.currentHeight;
+              //this.currentHeight = msg.currentZ;
+            }
+            if(msg.event.type == "UpdatedFiles") {
+                this.loadFiles();
+                setTimeout(function(){
+                  this.listFiles()
+                }, 2000);
+            }
           }
       }
       if(msg.plugin != null) {
@@ -171,8 +194,28 @@ export const globalSettings = {
             //this.$store.state.logs = templogs;
           }
         }
+        
+        
         if(msg.current.state != null) {
-          this.$store.state.printerState.payload.state_string = msg.current.state.text;
+          if(msg.current.state.text != null && msg.current.state.text != "") {
+            this.$store.state.printerState.payload.state_string = msg.current.state.text;
+          }
+          
+          //console.log("msg.current.state")
+          //console.log(msg);
+          if(msg.current.state.flags.ready || msg.current.state.flags.operational || msg.current.state.flags.cancelling || msg.current.state.flags.paused ||  msg.current.state.flags.printing || msg.current.state.flags.resuming || msg.current.state.flags.finishing) {
+            this.$store.state.isNotConnection = false;
+            this.$store.state.isConnection = true;
+            this.$store.state.isConnecting = false;
+            this.$store.state.connectionState = "on";
+          } else if(msg.current.state.flags.error || msg.current.state.flags.closedOrError) {
+            this.$store.state.isNotConnection = true;
+            this.$store.state.isConnection = false;
+            this.$store.state.isConnecting = false;
+            this.$store.state.connectionState = "off";
+          }
+          
+          /*
           if(this.$store.state.printerState.payload.state_string != "Operational" && this.$store.state.printerState.payload.state_string != "Printing" && this.$store.state.printerState.payload.state_string != "Cancelling" && this.$store.state.printerState.payload.state_string != "Paused" && this.$store.state.printerState.payload.state_string != "Printing from SD") {
             this.$store.state.isNotConnection = true;
             this.$store.state.isConnection = false;
@@ -189,7 +232,9 @@ export const globalSettings = {
             this.$store.state.isConnecting = false;
             this.$store.state.connectionState = "on";
           }
+          */
         }
+        
         if(msg.current.state.text == "Printing" && msg.current.busyFiles.length > 0) {
           this.$store.state.job.printfile = msg.current.busyFiles[0].path;
           this.$store.state.job.progress = msg.current.progress;
@@ -256,14 +301,19 @@ export const globalSettings = {
     getLightState: function() {
       if(this.$localStorage.get('lighthandling') == "yes") {
         axios({ method: "GET", "url": this.$localStorage.get('led_ip')+this.$localStorage.get('led_status') }).then(result => {
-          this.$store.state.lightState = result.data.state.toLowerCase();
-          if(this.lightState == "off") {
-            this.$store.state.isNotLight = true;
-            this.$store.state.isLight = false;
-          } else {
-            this.$store.state.isNotLight = false;
-            this.$store.state.isLight = true;
+          if(result.data != null) {
+            if(result.data.state != null) {
+              this.$store.state.lightState = result.data.state.toLowerCase();
+              if(this.lightState == "off") {
+                this.$store.state.isNotLight = true;
+                this.$store.state.isLight = false;
+              } else {
+                this.$store.state.isNotLight = false;
+                this.$store.state.isLight = true;
+              }
+            }
           }
+          
         }, error => {
             console.error(error);
         });
@@ -283,10 +333,10 @@ export const globalSettings = {
         obj.command = "disconnect";
       }
       axios({ method: "POST", url: this.$localStorage.get('octo_ip')+"/api/connection", headers: {'X-Api-Key': this.$localStorage.get('apikey'), 'Content-Type': 'application/json;charset=UTF-8'}, data: JSON.stringify(obj) }).then(result => {
-        this.$store.state.isNotConnection = false;
-        this.$store.state.isConnection = true;
+        /*this.$store.state.isNotConnection = false;
+        this.$store.state.isConnection = false;
         this.$store.state.isConnecting = true;
-        this.$store.state.connectionState = "...";
+        this.$store.state.connectionState = "...";*/
       }, error => {
           console.error(error);
       });
@@ -460,9 +510,17 @@ export const globalSettings = {
       this.$store.state.selectedfolder = path;
       this.listFiles();
     },
+    selectMoveFolder: function(path) {
+      this.$store.state.selectedmovefolder = path;
+      this.listMoveFolders();
+    },
     folderup: function() {
       this.$store.state.selectedfolder = this.$store.state.selectedfolder.substring(0, this.$store.state.selectedfolder.lastIndexOf('/'));
       this.listFiles();
+    },
+    movefolderup: function() {
+      this.$store.state.selectedmovefolder = this.$store.state.selectedmovefolder.substring(0, this.$store.state.selectedmovefolder.lastIndexOf('/'));
+      this.listMoveFolders();
     },
     selectFile: function(event, file) {
       this.$store.state.selectedfile = file;
@@ -487,6 +545,7 @@ export const globalSettings = {
           this.$store.state.fileList = [];
           this.$store.state.fileList = result.data.files;
           this.listFiles();
+          this.listMoveFolders();
           this.getStats();
         }
       });
@@ -617,6 +676,53 @@ export const globalSettings = {
           }
         }
       }
+      //this.$store.state.movefolders = this.$store.state.folders;
+    },
+
+
+
+    //------------------------------------------------------------------------------------
+
+    listMoveFolders: function() {
+      var self = this;
+      
+      this.$store.state.movefolders = [];
+
+      var path = this.selectedmovefolder.split("/");
+      var pathobj;
+      if(this.$store.state.selectedmovefolder.length > 0 && path[0] != "") { // Subfolder
+        for(var i = 0; i<this.$store.state.fileList.length;i++) {
+          if(this.$store.state.fileList[i].path == path[0]) {
+            pathobj = this.$store.state.fileList[i];
+          }
+        }
+        if(path.length > 1) {
+          for(var n=1;n<path.length;n++) {
+            for(var m=0;m<pathobj.children.length;m++) {
+              if(pathobj.children[m].path == this.$store.state.selectedmovefolder) {
+                pathobj = pathobj.children[m];
+              }
+            }
+          }
+        }
+
+        var i;
+        if(pathobj.children.length > 0) { //Subfolder
+          for(i = 0; i<pathobj.children.length;i++) {
+            if(pathobj.children[i].type == "folder") {
+              this.$store.state.movefolders.push(pathobj.children[i]);
+            }
+          }
+        }
+      } else { // Main folder
+        for (i = 0; i < this.$store.state.fileList.length; i++) {
+          if(this.$store.state.fileList[i].origin == this.file_origin) {
+            if(this.$store.state.fileList[i].type == "folder") {
+              this.$store.state.movefolders.push(this.fileList[i]);
+            }
+          }
+        }
+      }
     },
     zoomIn: function(event, imgId, zoomId) {
       var zoomElement = document.getElementById(zoomId);
@@ -663,7 +769,25 @@ export const globalSettings = {
       });
     },
     moveFile: function() {
-      console.log(this.selectedfile);
+      var source = "";
+      if(this.$store.state.selectedfolder == "") {
+        source = "/api/files/local/"+this.$store.state.selectedfile.display;
+      } else {
+        source = "/api/files/local/"+this.$store.state.selectedfolder+"/"+this.$store.state.selectedfile.display;
+      }
+      var destination = "";
+      if(this.$store.state.selectedmovefolder == "") {
+        destination = "/api/files/local/"+this.$store.state.selectedfile.display;
+      } else {
+        destination = "/api/files/local/"+this.$store.state.selectedmovefolder+"/"+this.$store.state.selectedfile.display;
+      }
+      var obj = {};
+      obj.origin = "local";
+      obj.command = "move";
+      obj.destination = destination;
+      this.transport("POST", "octo_ip", source, JSON.stringify(obj)).then(result => {
+        console.log(result);
+      });
     },
     cancelJob: function() {
       var obj = {};
@@ -973,6 +1097,11 @@ export const globalSettings = {
     },
     toggleModalFileMove: function() {
       this.$store.state.modalfilemove = !this.$store.state.modalfilemove;
+      if(this.$store.state.modalfilemove) {
+        this.listMoveFolders();
+      } else {
+        this.$store.state.selectedmovefolder = "";
+      }
       console.log(this.$store.state.folders);
     },
     configFromFile: function() {
@@ -1098,6 +1227,7 @@ export const globalSettings = {
       'isConnecting',
       'fileList',
       'selectedfolder',
+      'selectedmovefolder',
       'selectedfile',
       'files',
       'folders',

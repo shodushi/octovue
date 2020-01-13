@@ -467,13 +467,17 @@ export default {
       if(this.$localStorage.get('lighthandling') == "yes") {
         this.transport("GET", "led_ip", "/light/3d_drucker_led/state", null).then(result => {
           if(typeof(result) == "object") {
-            this.$store.state.lightState = result.data.state.toLowerCase();
-            if(this.lightState == "off") {
-              this.$store.state.isNotLight = true;
-              this.$store.state.isLight = false;
-            } else {
-              this.$store.state.isNotLight = false;
-              this.$store.state.isLight = true;
+            if(result.data != null) {
+              if(result.data.state != null) {
+                this.$store.state.lightState = result.data.state.toLowerCase();
+                if(this.lightState == "off") {
+                  this.$store.state.isNotLight = true;
+                  this.$store.state.isLight = false;
+                } else {
+                  this.$store.state.isNotLight = false;
+                  this.$store.state.isLight = true;
+                }
+              }
             }
           }
         });
