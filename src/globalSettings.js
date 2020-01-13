@@ -87,7 +87,6 @@ export const globalSettings = {
       //console.log(msg);
       if(msg.event != null) {
           if(msg.event.type != null) {
-            console.log(msg);
             if(msg.event.type == "Connected" || msg.event.type == "Connecting") {
               var payload = {}
               payload.state_string = msg.event.type;
@@ -96,7 +95,7 @@ export const globalSettings = {
             if(msg.event.type == "PrinterStateChanged") {
               if(msg.event.payload.state_string != null && msg.event.payload.state_string != "") {
                 this.$store.state.printerState = msg.event;
-                this.$store.state.printerState.payload.state_string = msg.event.payload.state_string;
+                //this.$store.state.printerState.payload.state_string = msg.event.payload.state_string;
               }
               if(msg.event.type == "Connecting" || msg.event.payload.state_id == "OPEN_SERIAL" ||
               msg.event.payload.state_id == "DETECT_SERIAL" || 
@@ -134,9 +133,10 @@ export const globalSettings = {
               //this.currentHeight = msg.currentZ;
             }
             if(msg.event.type == "UpdatedFiles") {
+                var self = this;
                 this.loadFiles();
                 setTimeout(function(){
-                  this.listFiles()
+                  self.listFiles()
                 }, 2000);
             }
           }
@@ -200,9 +200,6 @@ export const globalSettings = {
           if(msg.current.state.text != null && msg.current.state.text != "") {
             this.$store.state.printerState.payload.state_string = msg.current.state.text;
           }
-          
-          //console.log("msg.current.state")
-          //console.log(msg);
           if(msg.current.state.flags.ready || msg.current.state.flags.operational || msg.current.state.flags.cancelling || msg.current.state.flags.paused ||  msg.current.state.flags.printing || msg.current.state.flags.resuming || msg.current.state.flags.finishing) {
             this.$store.state.isNotConnection = false;
             this.$store.state.isConnection = true;
@@ -214,25 +211,6 @@ export const globalSettings = {
             this.$store.state.isConnecting = false;
             this.$store.state.connectionState = "off";
           }
-          
-          /*
-          if(this.$store.state.printerState.payload.state_string != "Operational" && this.$store.state.printerState.payload.state_string != "Printing" && this.$store.state.printerState.payload.state_string != "Cancelling" && this.$store.state.printerState.payload.state_string != "Paused" && this.$store.state.printerState.payload.state_string != "Printing from SD") {
-            this.$store.state.isNotConnection = true;
-            this.$store.state.isConnection = false;
-            this.$store.state.isConnecting = false;
-            this.$store.state.connectionState = "off";
-          } else if(this.$store.state.printerState.payload.state_string == "Connecting") {
-            this.$store.state.isNotConnection = false;
-            this.$store.state.isConnection = true;
-            this.$store.state.isConnecting = true;
-            this.$store.state.connectionState = "...";
-          } else {
-            this.$store.state.isNotConnection = false;
-            this.$store.state.isConnection = true;
-            this.$store.state.isConnecting = false;
-            this.$store.state.connectionState = "on";
-          }
-          */
         }
         
         if(msg.current.state.text == "Printing" && msg.current.busyFiles.length > 0) {
