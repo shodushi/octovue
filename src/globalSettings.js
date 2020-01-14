@@ -481,11 +481,11 @@ export const globalSettings = {
     },
     changeFileSource: function(src) {
       this.$store.state.file_origin = src;
-      this.loadFiles();
+      this.loadFiles('');
     },
     selectFolder: function(path) {
       this.$store.state.selectedfolder = path;
-      this.listFiles();
+      this.loadFiles(path);
     },
     selectMoveFolder: function(path) {
       this.$store.state.selectedmovefolder = path;
@@ -493,7 +493,7 @@ export const globalSettings = {
     },
     folderup: function() {
       this.$store.state.selectedfolder = this.$store.state.selectedfolder.substring(0, this.$store.state.selectedfolder.lastIndexOf('/'));
-      this.listFiles();
+      this.loadFiles(this.$store.state.selectedfolder);
     },
     movefolderup: function() {
       this.$store.state.selectedmovefolder = this.$store.state.selectedmovefolder.substring(0, this.$store.state.selectedmovefolder.lastIndexOf('/'));
@@ -516,15 +516,18 @@ export const globalSettings = {
       $("#fileoperations span").removeAttr("disabled");
       $('#btn_cancel').attr("disabled", true);
     },
-    loadFiles: function() {
-      this.transport("GET", "octo_ip", "/api/files?recursive=true", null).then(result => {
-        if(typeof(result) == "object") {
+    loadFiles: function(path) {
+      if(path == undefined || path == '') {
+        path='';
+      } else {
+        path = '/'+path;
+      }
+      this.transport("GET", "octo_ip", "/api/files/"+this.$store.state.file_origin+path, null).then(result => {
           this.$store.state.fileList = [];
-          this.$store.state.fileList = result.data.files;
+          this.$store.state.fileList = result.data;
           this.listFiles();
-          this.listMoveFolders();
+          //this.listMoveFolders();
           this.getStats();
-        }
       });
     },
     imgFallback(event) {
@@ -538,122 +541,68 @@ export const globalSettings = {
       $(".file_buttons span").css("display", "none");
       this.$store.state.files = [];
       this.$store.state.folders = [];
+      var date;
+      var tstamp;
+      var day;
+      var month;
+      var imgid;
+      var img;
+      var download;
+      var i;
+      var list;
+      if(this.$store.state.fileList.files != null) {
+        list = this.$store.state.fileList.files
+      } else {
+        list = this.$store.state.fileList;
+      }
+      
+      //undefined = has children || array = root dir array
+      if(list.length == undefined) {
+        list = list.children;
+      } 
+      for (i = 0; i < list.length; i++) {
+        if(list[i].origin == this.file_origin) {
+          if(list[i].type == "folder") {
+            this.$store.state.folders.push(list[i]);
+          } else if(list[i].type == "machinecode") {
+            if(list[i].refs.resource != null) {
+              if(self.file_origin == "local" && list[i].refs.resource.includes(".gcode")) {
+                img = list[i].refs.download.replace(".gcode", ".png");
+                download = list[i].refs.download;
+              }
 
-      var path = this.selectedfolder.split("/");
-      var pathobj;
-      if(this.$store.state.selectedfolder.length > 0 && path[0] != "") { // Subfolder
-        for(var i = 0; i<this.$store.state.fileList.length;i++) {
-          if(this.$store.state.fileList[i].path == path[0]) {
-            pathobj = this.$store.state.fileList[i];
-          }
-        }
-        if(path.length > 1) {
-          for(var n=1;n<path.length;n++) {
-            for(var m=0;m<pathobj.children.length;m++) {
-              if(pathobj.children[m].path == this.$store.state.selectedfolder) {
-                pathobj = pathobj.children[m];
+              if(self.file_origin == "sdcard" && list[i].refs.resource.includes(".gco")) {
+                img = list[i].refs.resource.replace(".gco", ".png");
+                download = list[i].refs.resource;
+              }
+              imgid = list[i].display.replace(".", "").replace("~", "");
+              if(list[i].date != null) {
+                tstamp = new Date(list[i].date*1000);
+                day = "0"+(tstamp.getDate());
+                month = "0"+(tstamp.getMonth());
+                date = day.slice(-2)+"."+month.slice(-2)+"."+tstamp.getFullYear();
+              } else {
+                date = "";
+              }
+              list[i].download = download;
+              list[i].img = img;
+              list[i].imgid = imgid;
+              list[i].thumbid = "thumb_"+imgid;
+              list[i].hr_date = date;
+              if(list[i].gcodeAnalysis == null) {
+                list[i].gcodeAnalysis = {};
+                list[i].gcodeAnalysis.estimatedPrintTime = null;
+                list[i].gcodeAnalysis.filament = {"tool0": {"length": null, "volume": null}};
+                list[i].gcodeAnalysis.printingArea = {"maxX": null, "maxY": null, "maxZ": null, "minX": null, "minY": null, "minZ": null};
+              }
+              if(list[i].gcodeAnalysis.dimensions == null) {
+                list[i].gcodeAnalysis.dimensions = {"width": null, "depth": null, "height": null};
               }
             }
-          }
-        }
-        var date;
-        var tstamp;
-        var day;
-        var month;
-        var imgid;
-        var img;
-        var download;
-        var i;
-        if(pathobj.children.length > 0) { //Subfolder
-          for(i = 0; i<pathobj.children.length;i++) {
-            if(pathobj.children[i].type == "folder") {
-              this.$store.state.folders.push(pathobj.children[i]);
-            } else if(pathobj.children[i].type == "machinecode") {
-              if(pathobj.children[i].refs.resource != null) {
-                if(self.file_origin == "local" && pathobj.children[i].refs.resource.includes(".gcode")) {
-                  img = pathobj.children[i].refs.download.replace(".gcode", ".png");
-                  download = pathobj.children[i].refs.download;
-                }
-
-                if(self.file_origin == "sdcard" && pathobj.children[i].refs.resource.includes(".gco")) {
-                  img = pathobj.children[i].refs.resource.replace(".gco", ".png");
-                  download = pathobj.children[i].refs.resource;
-                }
-                imgid = pathobj.children[i].display.replace(".", "").replace("~", "");
-
-                if(pathobj.children[i].date != null) {
-                  tstamp = new Date(pathobj.children[i].date*1000);
-                  day = "0"+(tstamp.getDate()+1);
-                  month = "0"+(tstamp.getMonth()+1);
-                  date = day.slice(-2)+"."+month.slice(-2)+"."+tstamp.getFullYear();
-                } else {
-                  date = "";
-                }
-                pathobj.children[i].download = download;
-                pathobj.children[i].img = img;
-                pathobj.children[i].imgid = imgid;
-                pathobj.children[i].thumbid = "thumb_"+imgid;
-                pathobj.children[i].hr_date = date;
-                if(pathobj.children[i].gcodeAnalysis == null) {
-                  pathobj.children[i].gcodeAnalysis = {};
-                  pathobj.children[i].gcodeAnalysis.estimatedPrintTime = null;
-                  pathobj.children[i].gcodeAnalysis.filament = {"tool0": {"length": null, "volume": null}};
-                  pathobj.children[i].gcodeAnalysis.printingArea = {"maxX": null, "maxY": null, "maxZ": null, "minX": null, "minY": null, "minZ": null};
-                }
-                if(pathobj.children[i].gcodeAnalysis.dimensions == null) {
-                  pathobj.children[i].gcodeAnalysis.dimensions = {"width": null, "depth": null, "height": null};
-                }
-              }
-              this.$store.state.files.push(pathobj.children[i]);
-            }
-          }
-        }
-      } else { // Main folder
-        for (i = 0; i < this.$store.state.fileList.length; i++) {
-          if(this.$store.state.fileList[i].origin == this.file_origin) {
-            if(this.$store.state.fileList[i].type == "folder") {
-              self.folders.push(this.fileList[i]);
-            } else if(this.$store.state.fileList[i].type == "machinecode") {
-              if(this.$store.state.fileList[i].refs.resource != null) {
-                if(self.file_origin == "local" && this.$store.state.fileList[i].refs.resource.includes(".gcode")) {
-                  img = this.$store.state.fileList[i].refs.download.replace(".gcode", ".png");
-                  download = this.$store.state.fileList[i].refs.download;
-                }
-
-                if(self.file_origin == "sdcard" && this.fileList[i].refs.resource.includes(".gco")) {
-                  img = this.$store.state.fileList[i].refs.resource.replace(".gco", ".png");
-                  download = this.$store.state.fileList[i].refs.resource;
-                }
-                imgid = this.$store.state.fileList[i].display.replace(".", "").replace("~", "");
-                if(this.fileList[i].date != null) {
-                  tstamp = new Date(this.$store.state.fileList[i].date*1000);
-                  day = "0"+(tstamp.getDate());
-                  month = "0"+(tstamp.getMonth());
-                  date = day.slice(-2)+"."+month.slice(-2)+"."+tstamp.getFullYear();
-                } else {
-                  date = "";
-                }
-                this.$store.state.fileList[i].download = download;
-                this.$store.state.fileList[i].img = img;
-                this.$store.state.fileList[i].imgid = imgid;
-                this.$store.state.fileList[i].thumbid = "thumb_"+imgid;
-                this.$store.state.fileList[i].hr_date = date;
-                if(this.$store.state.fileList[i].gcodeAnalysis == null) {
-                  this.$store.state.fileList[i].gcodeAnalysis = {};
-                  this.$store.state.fileList[i].gcodeAnalysis.estimatedPrintTime = null;
-                  this.$store.state.fileList[i].gcodeAnalysis.filament = {"tool0": {"length": null, "volume": null}};
-                  this.$store.state.fileList[i].gcodeAnalysis.printingArea = {"maxX": null, "maxY": null, "maxZ": null, "minX": null, "minY": null, "minZ": null};
-                }
-                if(this.$store.state.fileList[i].gcodeAnalysis.dimensions == null) {
-                  this.$store.state.fileList[i].gcodeAnalysis.dimensions = {"width": null, "depth": null, "height": null};
-                }
-              }
-              this.$store.state.files.push(this.fileList[i]);
-            }
+            this.$store.state.files.push(list[i]);
           }
         }
       }
-      //this.$store.state.movefolders = this.$store.state.folders;
     },
 
 

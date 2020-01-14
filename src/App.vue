@@ -350,7 +350,7 @@ export default {
     setTimeout(this.loadOctoprintSettings, 1)
     setTimeout(this.getPowerState, 1)
     setTimeout(this.getLightState, 1)
-    setTimeout(this.loadFiles, 1)
+    setTimeout(this.loadFiles(), 1)
     setTimeout(this.getOctoprintConnection, 1)
     setTimeout(this.getOctoPrintProfiles, 1);
     setTimeout(this.sockConnection, 2);
