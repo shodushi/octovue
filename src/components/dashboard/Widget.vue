@@ -171,6 +171,13 @@
     <div class="buttons" v-for="value in $gcodes[$localStorage.get('printer_firmware')]"><button class="button is-small is-fullwidth" v-on:click="pcmds(value.gcmd)"><i class="fas" v-bind:class="value.icon"></i>&nbsp;<span>{{ value.label }}</span></button></div>
   </div>
 
+  <div class="jobcontrol dragSelector" :id="id" v-else-if="type == 'jobcontrol'">
+    <h2 class="dragSelector">{{this.printerState.payload.state_string}}</h2>
+    <span id="btn_pause" class="button is-fullwidth"  v-bind:disabled="this.printerState.payload.state_string != 'Printing'" v-if="printerState.payload.state_string != 'Paused'" v-on:click="pauseJob()">pause</span>
+    <span id="btn_resume" class="button is-fullwidth" v-bind:disabled="printerState.payload.state_string != 'Paused'" v-if="printerState.payload.state_string == 'Paused'" v-on:click="resumeJob()">resume</span>
+    <span id="btn_cancel" class="button is-fullwidth is-danger" v-bind:disabled="this.printerState.payload.state_string != 'Printing' && this.printerState.payload.state_string != 'Paused'" v-on:click="cancelJob()">cancel</span>
+  </div>
+
   <div class="gcodebutton" :id="id" v-else-if="type == 'gcodebutton'">
     <div class="buttons"><button class="button is-small is-fullwidth" v-on:click="pcmds(source)">{{title}}</button></div>
   </div>
@@ -608,9 +615,12 @@ export default {
 .jobstatus {
 	padding: 5% 5% 5% 5%;
 }
-.gcodebutton {
+.gcodebutton, .jobcontrol {
   padding: 10px;
   overflow: auto;
+}
+.jobcontrol > span {
+  margin: 5px 0px 5px 0px;
 }
 
 .filebrowser {
@@ -673,6 +683,6 @@ tr.is-selected, td.is-selected {
   height: 20px;
 }
 #filestable tr {
-    cursor: pointer;
+  cursor: pointer;
 }
 </style>

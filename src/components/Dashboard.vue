@@ -54,6 +54,7 @@
                 <option value="tempcontrol">Temperature controls</option>
                 <option value="terminalwidget">Terminal</option>
                 <option value="jobstatus">Jobstatus</option>
+                <option value="jobcontrol">Jobcontrol</option>
                 <option value="gcodebutton">GCode button</option>
                 <option value="filebrowser">Filebrowser</option>
               </select>
@@ -61,7 +62,7 @@
           </div>
         </div>
 
-        <div class="field" style="text-align: left;" v-if="w_type != '' && w_type != 'printhead' && w_type != 'feedrate' && w_type != 'filebrowser' && w_type != 'printercommands' && w_type != 'toolcommands' && w_type != 'terminalwidget' && w_type != 'tempcontrol' && w_type != 'jobstatus'">
+        <div class="field" style="text-align: left;" v-if="w_type != '' && w_type != 'printhead' && w_type != 'jobcontrol' && w_type != 'feedrate' && w_type != 'filebrowser' && w_type != 'printercommands' && w_type != 'toolcommands' && w_type != 'terminalwidget' && w_type != 'tempcontrol' && w_type != 'jobstatus'">
           <label class="label">Value</label>
           <div class="control">
             <div class="select">
