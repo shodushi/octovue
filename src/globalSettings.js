@@ -662,7 +662,7 @@ export const globalSettings = {
       var zoomElement = document.getElementById("overlay_"+id);
       zoomElement.style.display = "none";
     },
-    loadprintFile: function(print) {
+    loadprintFile: function(print, jump) {
       var obj = {};
       obj.command = "select";
       obj.print = print;
@@ -674,7 +674,9 @@ export const globalSettings = {
         if(typeof(result) == "object") {
           if(print) {
             $('#btn_cancel').attr("disabled", false);
-            this.$router.push('printpage')
+            if(jump) {
+              this.$router.push('printpage')
+            }
           }
         }
       });

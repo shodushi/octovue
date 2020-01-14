@@ -109,7 +109,7 @@
                         <td>{{formatDate(file.date)}} 
                         <div class="file_buttons" :id="'fb_'+file.imgid">
                             <!-- <span id="btn_load" class="button is-warning is-small" disabled v-on:click="loadprintFile(false)">load</span> !-->
-                            <span id="btn_print" class="button is-success is-small" disabled v-on:click="loadprintFile(true)">print</span> 
+                            <span id="btn_print" class="button is-success is-small" disabled v-on:click="loadprintFile(true, true)">print</span> 
                             <!-- <span id="btn_delete" class="button is-primary is-small" disabled v-on:click="toggleModalFileMove()">move</span> !-->
                             <span id="btn_delete" class="button is-danger is-small" disabled v-on:click="deleteFile()">delete</span>
                         </div>
