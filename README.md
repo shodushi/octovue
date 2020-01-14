@@ -3,8 +3,12 @@
 An alternative UI for octoprint based on vue.js and bulma css framework
 
 ## Latest enhancements
- - added a user configurable dashboard with drag&drop + rezize functionality
- - light & dark mode
+ - optimized connection handling
+ - dashboard:
+   - widget for filebrowser
+   - widget for jobcontrol (resume/pause/cancel job)
+   - widget for custom gcode command buttons
+   - lock/unlock dashboard widgets
 
 ## Functionality
  - of course upload and print gcodes :-)
