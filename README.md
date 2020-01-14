@@ -13,6 +13,7 @@ An alternative UI for octoprint based on vue.js and bulma css framework
 ## Functionality
  - of course upload and print gcodes :-)
  - looking more modern than octoprint :-)
+ - customizable drag'n'drop widget dashboard
  - preview gcode files, if image available (place image named the same like gcode file into same directory. For example you have Vase.gcode, put preview image/photo named "Vase.png" in same directory)
  - Search thingiverse inside OctoVue for models and download them
  - nice printpage with graphs and gauges for temperatures (for now up to 7 hotends + heated bed and heated enclosure supported)
