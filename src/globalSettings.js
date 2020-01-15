@@ -527,7 +527,6 @@ export const globalSettings = {
           this.$store.state.fileList = result.data;
           this.listFiles();
           //this.listMoveFolders();
-          this.getStats();
       });
     },
     imgFallback(event) {
@@ -940,70 +939,77 @@ export const globalSettings = {
       }
     },
     getStats: function() {
-      var s = 0;
-      var f = 0;
-      var img;
-      var imgid;
-      for(var i = 0; i<this.$store.state.fileList.length;i++) {
-        var obj = this.$store.state.fileList[i];
-        if(obj.type == "machinecode") {
-          if(obj.prints != null) {
-            if(obj.prints.success != null) {
-              if(obj.prints.success > 0 || obj.prints.failure > 0) {
-                f = f + obj.prints.success;
-                s = s + obj.prints.failure;
-              }
-            }
+      var allfiles = [];
+      this.transport("GET", "octo_ip", "/api/files?recursive=true", null).then(result => {
+        if(typeof(result) == "object") {
+          allfiles = result.data.files;
 
-            if(obj.origin == "local") {
-              img = obj.refs.download.replace(".gcode", ".png");
-            }
-            imgid = obj.display.replace(".", "");
-            obj.img = img;
-            obj.imgid = imgid;
-            obj.thumbid = "thumb_"+imgid;
-            if(obj.prints.last != null) {
-              if(obj.prints.last.date != null) {
-                this.$store.state.printhistory.push({"date": obj.prints.last.date.toString().split(".")[0], "file": obj});
-              }
-            }
-          }
-        }
-        if(obj.type == "folder") {
-          for(var n = 0; n<obj.children.length;n++) {
-            if(obj.children[n].type == "machinecode") {
-              if(obj.children[n].prints != null) {
-                if(obj.children[n].prints.success != null) {
-                  if(obj.children[n].prints.success > 0 || obj.children[n].prints.failure > 0) {
-                    f = f + obj.children[n].prints.success;
-                    s = s + obj.children[n].prints.failure;
+          var s = 0;
+          var f = 0;
+          var img;
+          var imgid;
+          for(var i = 0; i<allfiles.length;i++) {
+            var obj = allfiles[i];
+            if(obj.type == "machinecode") {
+              if(obj.prints != null) {
+                if(obj.prints.success != null) {
+                  if(obj.prints.success > 0 || obj.prints.failure > 0) {
+                    f = f + obj.prints.success;
+                    s = s + obj.prints.failure;
                   }
                 }
 
-                if(obj.children[n].origin == "local") {
-                  img = obj.children[n].refs.download.replace(".gcode", ".png");
+                if(obj.origin == "local") {
+                  img = obj.refs.download.replace(".gcode", ".png");
                 }
-                imgid = obj.children[n].display.replace(".", "");
-                obj.children[n].img = img;
-                obj.children[n].imgid = imgid;
-                obj.children[n].thumbid = "thumb_"+imgid;
-                if(obj.children[n].prints.last != null) {
-                  if(obj.children[n].prints.last.date != null) {
-                    this.$store.state.printhistory.push({"date": obj.children[n].prints.last.date.toString().split(".")[0], "file": obj.children[n]});
+                imgid = obj.display.replace(".", "");
+                obj.img = img;
+                obj.imgid = imgid;
+                obj.thumbid = "thumb_"+imgid;
+                if(obj.prints.last != null) {
+                  if(obj.prints.last.date != null) {
+                    this.$store.state.printhistory.push({"date": obj.prints.last.date.toString().split(".")[0], "file": obj});
                   }
                 }
               }
             }
+            if(obj.type == "folder") {
+              for(var n = 0; n<obj.children.length;n++) {
+                if(obj.children[n].type == "machinecode") {
+                  if(obj.children[n].prints != null) {
+                    if(obj.children[n].prints.success != null) {
+                      if(obj.children[n].prints.success > 0 || obj.children[n].prints.failure > 0) {
+                        f = f + obj.children[n].prints.success;
+                        s = s + obj.children[n].prints.failure;
+                      }
+                    }
+
+                    if(obj.children[n].origin == "local") {
+                      img = obj.children[n].refs.download.replace(".gcode", ".png");
+                    }
+                    imgid = obj.children[n].display.replace(".", "");
+                    obj.children[n].img = img;
+                    obj.children[n].imgid = imgid;
+                    obj.children[n].thumbid = "thumb_"+imgid;
+                    if(obj.children[n].prints.last != null) {
+                      if(obj.children[n].prints.last.date != null) {
+                        this.$store.state.printhistory.push({"date": obj.children[n].prints.last.date.toString().split(".")[0], "file": obj.children[n]});
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          this.$store.state.printhistory.sort(this.compare);
+          this.$store.state.stats.success = s;
+          this.$store.state.stats.failure = f;
+          this.$store.state.pie_stats_printing.datasets[0].data = [s, f];
+          if(this.$refs.pie_stats_printing) {
+            this.$refs.pie_stats_printing.chart.update();
           }
         }
-      }
-      this.$store.state.printhistory.sort(this.compare);
-      this.$store.state.stats.success = s;
-      this.$store.state.stats.failure = f;
-      this.$store.state.pie_stats_printing.datasets[0].data = [s, f];
-      if(this.$refs.pie_stats_printing) {
-        this.$refs.pie_stats_printing.chart.update();
-      }
+      });
     },
     compare: function( a, b ) {
       if ( a.date < b.date ){
