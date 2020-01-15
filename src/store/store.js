@@ -109,6 +109,34 @@ export const store = new Vuex.Store({
         pie_stats_printing_options: {
             segmentShowStroke: false,
             responsive: true
+        },
+        bar_stats_printing: {
+            datasets: [
+                {
+                    data: [],
+                    label: ['monthly prints'],
+                    backgroundColor: [
+                        '#209cee',
+                        '#209cee',
+                        '#209cee',
+                        '#209cee',
+                        '#209cee',
+                        '#209cee',
+                        '#209cee',
+                        '#209cee',
+                        '#209cee',
+                        '#209cee',
+                        '#209cee',
+                        '#209cee'
+                    ]
+                }
+            ],
+            labels: []
+        },
+        bar_stats_printing_options: {
+            segmentShowStroke: false,
+            responsive: true,
+            maintainAspectRatio: false
         }
     },
     mutations: {}

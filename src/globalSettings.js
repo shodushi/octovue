@@ -1008,6 +1008,37 @@ export const globalSettings = {
           if(this.$refs.pie_stats_printing) {
             this.$refs.pie_stats_printing.chart.update();
           }
+
+          //bar chart for monthly prints
+          var d = new Date();
+          d.setDate(1);
+          var labels = [];
+          var temp = [];
+          for (i=0; i<=11; i++) {
+            labels.push(("0" + (d.getMonth() + 1)).slice(-2) +" "+ d.getFullYear())
+            temp[("0" + (d.getMonth() + 1)).slice(-2) +" "+ d.getFullYear()] = 0;
+            d.setMonth(d.getMonth() - 1);
+          }
+          labels.reverse();
+
+          for(var i = 0; i < this.$store.state.printhistory.length; i++) {
+            var obj = this.$store.state.printhistory[i];
+            var month = new Date(obj.date*1000).toLocaleDateString("de-DE", {month: '2-digit'});
+            var year = new Date(obj.date*1000).toLocaleDateString("de-DE", {year: 'numeric'});
+            var date = month+" "+year;
+            
+            if(labels.includes(date)) {
+              temp[''+date] = temp[''+date]+obj.file.prints.success+obj.file.prints.failure; 
+            }
+          }
+          for(var i = 0; i < labels.length; i++) {
+            this.$store.state.bar_stats_printing.datasets[0].data.push(temp[labels[i]]);
+          }
+          this.$store.state.bar_stats_printing.labels = labels;
+          if(this.$refs.bar_stats_printing) {
+            this.$refs.bar_stats_printing.chart.update();
+          }
+
         }
       });
     },
@@ -1189,6 +1220,8 @@ export const globalSettings = {
       'line_temps_options',
       'pie_stats_printing',
       'pie_stats_printing_options',
+      'bar_stats_printing',
+      'bar_stats_printing_options',
       'octoprintCommands'
     ]),
     terminalLogs: {
