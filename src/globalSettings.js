@@ -219,6 +219,26 @@ export const globalSettings = {
           this.$store.state.job.estimatedPrintTime = msg.current.job.estimatedPrintTime;
           this.$store.state.job.currentZ = msg.current.currentZ;
         }
+        if(msg.current.progress != null) {
+          if(msg.current.progress.completion != null) {
+            this.$store.state.job.progress.completion = msg.current.progress.completion;
+          }
+          if(msg.current.progress.printTimeLeft != null) {
+            this.$store.state.job.progress.printTimeLeft = msg.current.progress.printTimeLeft;
+          }
+          if(msg.current.progress.printTime != null) {
+            this.$store.state.job.estimatedPrintTime = msg.current.job.estimatedPrintTime;
+          }
+          if(msg.current.progress.filepos != null) {
+            this.$store.state.job.progress.filepos = msg.current.progress.filepos;
+          }
+
+        }
+        if(msg.current.job != null) {
+          if(msg.current.job.file != null) {
+            this.$store.state.job.printfile = msg.current.job.file.name;
+          }
+        }
       }
       if(msg.history != null) {
         if(msg.history.logs != null && this.$store.state.logs != null) {
