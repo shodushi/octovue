@@ -84,8 +84,9 @@ export const globalSettings = {
       client.activate();
     },
     messageParser: function(msg) {
-      //console.log(msg);
+      console.log(msg);
       if(msg.event != null) {
+        
           if(msg.event.type != null) {
             if(msg.event.type == "Connected" || msg.event.type == "Connecting") {
               var payload = {}
@@ -95,7 +96,6 @@ export const globalSettings = {
             if(msg.event.type == "PrinterStateChanged") {
               if(msg.event.payload.state_string != null && msg.event.payload.state_string != "") {
                 this.$store.state.printerState = msg.event;
-                //this.$store.state.printerState.payload.state_string = msg.event.payload.state_string;
               }
               if(msg.event.type == "Connecting" || msg.event.payload.state_id == "OPEN_SERIAL" ||
               msg.event.payload.state_id == "DETECT_SERIAL" || 
@@ -198,6 +198,7 @@ export const globalSettings = {
         if(msg.current.state != null) {
           if(msg.current.state.text != null && msg.current.state.text != "") {
             this.$store.state.printerState.payload.state_string = msg.current.state.text;
+            //////this.$store.state.printerState.payload.state_id = msg.current.state.text;
           }
           if(msg.current.state.flags.ready || msg.current.state.flags.operational || msg.current.state.flags.cancelling || msg.current.state.flags.paused ||  msg.current.state.flags.printing || msg.current.state.flags.resuming || msg.current.state.flags.finishing) {
             this.$store.state.isNotConnection = false;
@@ -211,7 +212,9 @@ export const globalSettings = {
             this.$store.state.connectionState = "off";
           }
         }
-        
+        if(msg.current.state.flags != null) {
+          this.$store.state.printerState.payload.flags = msg.current.state.flags;
+        }
         if(msg.current.state.text == "Printing" && msg.current.busyFiles.length > 0) {
           this.$store.state.job.printfile = msg.current.busyFiles[0].path;
           this.$store.state.job.progress = msg.current.progress;

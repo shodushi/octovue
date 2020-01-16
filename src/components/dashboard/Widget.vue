@@ -173,9 +173,9 @@
 
   <div class="jobcontrol dragSelector" :id="id" v-else-if="type == 'jobcontrol'">
     <h2 class="dragSelector">{{this.printerState.payload.state_string}}</h2>
-    <span id="btn_pause" class="button is-fullwidth"  v-bind:disabled="this.printerState.payload.state_string != 'Printing'" v-if="printerState.payload.state_string != 'Paused'" v-on:click="pauseJob()">pause</span>
-    <span id="btn_resume" class="button is-fullwidth" v-bind:disabled="printerState.payload.state_string != 'Paused'" v-if="printerState.payload.state_string == 'Paused'" v-on:click="resumeJob()">resume</span>
-    <span id="btn_cancel" class="button is-fullwidth is-danger" v-bind:disabled="this.printerState.payload.state_string != 'Printing' && this.printerState.payload.state_string != 'Paused'" v-on:click="cancelJob()">cancel</span>
+    <span id="btn_pause" class="button is-fullwidth"  v-bind:disabled="!this.printerState.payload.flags.printing" v-if="!this.printerState.payload.flags.paused" v-on:click="pauseJob()">pause</span>
+    <span id="btn_resume" class="button is-fullwidth" v-bind:disabled="!this.printerState.payload.flags.paused" v-if="this.printerState.payload.flags.paused" v-on:click="resumeJob()">resume</span>
+    <span id="btn_cancel" class="button is-fullwidth is-danger" v-bind:disabled="!this.printerState.payload.flags.printing && !this.printerState.payload.flags.paused" v-on:click="cancelJob()">cancel</span>
   </div>
 
   <div class="gcodebutton" :id="id" v-else-if="type == 'gcodebutton'">
