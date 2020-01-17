@@ -78,20 +78,19 @@
   	<div style="text-align: right;" class="">{{formatDecimal(job.progress.completion)}}%</div>
     <progress class="progress is-primary" v-bind:value="job.progress.completion" max="100"></progress>
     <div class="columns dragSelector">
-    <div class="column is-one-third pp_boxes dragSelector">
-      <img src="img/layer-time-average-icon2.png" style="height: 46px"><br />
-      {{ formatTimeRemaining(job.progress.printTimeLeft) }}
+      <div class="column is-one-third pp_boxes dragSelector">
+        <img src="img/layer-time-average-icon2.png" style="height: 46px"><br />
+        {{ formatTimeRemaining(job.progress.printTimeLeft) }}
+      </div>
+      <div class="column is-one-third pp_boxes dragSelector">
+        <img src="img/layers-icon2.png" style="height: 46px"><br />
+        {{currentLayer}} / {{totalLayer}}
+      </div>
+      <div class="column is-one-third pp_boxes dragSelector">
+        <img src="img/layer_height.png" style="height: 46px"><br />
+        {{formatDecimal(currentHeight)}} / {{formatDecimal(totalHeight)}} mm
+      </div>
     </div>
-    <div class="column is-one-third pp_boxes dragSelector">
-      <img src="img/layers-icon2.png" style="height: 46px"><br />
-      {{currentLayer}} / {{totalLayer}}
-    </div>
-    <div class="column is-one-third pp_boxes dragSelector">
-      <img src="img/layer_height.png" style="height: 46px"><br />
-      {{formatDecimal(currentHeight)}} / {{formatDecimal(totalHeight)}} mm
-    </div>
-  </div>
-    <div class="missing dragSelector" v-if="widgetData == null">{{source}} not found</div>
   </div>
 
   <div class="printhead ctrlbuttons dragSelector" v-else-if="type == 'printhead'">
