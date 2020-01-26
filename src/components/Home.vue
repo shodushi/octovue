@@ -220,7 +220,7 @@
                                 <div v-for="graph in graphs" v-if="graph.name == 'bed'" style="text-align: left;">
                                     <div style="width: 25%; float: left; text-align: center;">
                                         {{graph.name}}<br />
-                                        <input :id="'slider'+graph.name" class="slider is-fullwidth is-info is-circle has-output" step="1" min="0" max="90" v-on:mouseup="setBedTemp()" v-bind:value="temps[graph.name].target" type="range" orient="vertical"><output style="position: relative; top: 8px; padding: 3px;" v-bind:for="'slider'+graph.name">{{ temps[graph.name].target }}</output>
+                                        <input :id="'slider'+graph.name" class="slider is-fullwidth is-info is-circle has-output" step="1" min="0" max="100" v-on:mouseup="setBedTemp()" v-bind:value="temps[graph.name].target" type="range" orient="vertical"><output style="position: relative; top: 8px; padding: 3px;" v-bind:for="'slider'+graph.name">{{ temps[graph.name].target }}</output>
                                     </div>
                                     <div style="width: 25%; float: left; text-align: center;">
                                         <p>&nbsp;</p>
@@ -248,7 +248,7 @@
                                 </div>
                                 <div style="width: 25%; float: left; text-align: center;">
                                     <p>Bed:</p>
-                                    <input id="sliderBed" class="slider is-fullwidth is-info is-small is-circle has-output" step="1" min="0" max="90" v-bind:value="temps.bed.target" type="range" orient="vertical" v-on:mouseup="setBedTemp()"><output id="sliderbedoutput" for="sliderBed">{{temps.bed.target}}</output> &deg;C
+                                    <input id="sliderBed" class="slider is-fullwidth is-info is-small is-circle has-output" step="1" min="0" max="100" v-bind:value="temps.bed.target" type="range" orient="vertical" v-on:mouseup="setBedTemp()"><output id="sliderbedoutput" for="sliderBed">{{temps.bed.target}}</output> &deg;C
                                 </div>
                                 <div style="width: 25%; float: left; text-align: center;">
                                     <p>&nbsp;</p>
@@ -264,7 +264,7 @@
                                 </div>
                                 <div v-for="graph in graphs" v-if="graph.name == 'bed'" style="text-align: left;">
                                     {{graph.name}}<br />
-                                    <input :id="'slider'+graph.name" class="slider is-fullwidth is-circle has-output" step="1" min="0" max="90" v-on:mouseup="setBedTemp()" v-bind:value="temps[graph.name].target" type="range"><output style="position: relative; top: 8px;" v-bind:for="'slider'+graph.name">{{ temps[graph.name].target }}</output>
+                                    <input :id="'slider'+graph.name" class="slider is-fullwidth is-circle has-output" step="1" min="0" max="100" v-on:mouseup="setBedTemp()" v-bind:value="temps[graph.name].target" type="range"><output style="position: relative; top: 8px;" v-bind:for="'slider'+graph.name">{{ temps[graph.name].target }}</output>
                                 </div>
                                 <div v-for="graph in graphs" v-if="graph.name == 'chamber'" style="text-align: left;">
                                     {{graph.name}}<br />
