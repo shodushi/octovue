@@ -84,7 +84,7 @@ export const globalSettings = {
       client.activate();
     },
     messageParser: function(msg) {
-      console.log(msg);
+      //console.log(msg);
       if(msg.event != null) {
         
           if(msg.event.type != null) {
@@ -545,10 +545,12 @@ export const globalSettings = {
       } else {
         path = '/'+path;
       }
-      this.transport("GET", "octo_ip", "/api/files/"+this.$store.state.file_origin+path, null).then(result => {
+      this.transport("GET", "octo_ip", "/api/files/"+path+this.$store.state.file_origin, null).then(result => {
           this.$store.state.fileList = [];
           this.$store.state.fileList = result.data;
           this.listFiles();
+          //console.log("/api/files/"+this.$store.state.file_origin+path);
+          console.log(result.data);
           //this.listMoveFolders();
       });
     },
