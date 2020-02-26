@@ -172,9 +172,9 @@
 
   <div class="jobcontrol dragSelector" :id="id" v-else-if="type == 'jobcontrol'">
     <h2 class="dragSelector">{{this.printerState.payload.state_string}}</h2>
-    <span id="btn_pause" class="button is-fullwidth"  v-bind:disabled="!this.printerState.payload.flags.printing" v-if="!this.printerState.payload.flags.paused" v-on:click="pauseJob()">pause</span>
-    <span id="btn_resume" class="button is-fullwidth" v-bind:disabled="!this.printerState.payload.flags.paused" v-if="this.printerState.payload.flags.paused" v-on:click="resumeJob()">resume</span>
-    <span id="btn_cancel" class="button is-fullwidth is-danger" v-bind:disabled="!this.printerState.payload.flags.printing && !this.printerState.payload.flags.paused" v-on:click="cancelJob()">cancel</span>
+    <span id="btn_pause" class="button is-fullwidth"  v-bind:disabled="stateButtons.btn_pause.disabled" v-if="stateButtons.btn_pause.visible" v-on:click="pauseJob()">pause</span>
+    <span id="btn_resume" class="button is-fullwidth" v-bind:disabled="stateButtons.btn_resume.disabled" v-if="stateButtons.btn_resume.visible" v-on:click="resumeJob()">resume</span>
+    <span id="btn_cancel" class="button is-fullwidth is-danger" v-bind:disabled="stateButtons.btn_cancel.disabled" v-if="stateButtons.btn_cancel.visible" v-on:click="cancelJob()">cancel</span>
     </div>
   </div>
 
@@ -401,6 +401,42 @@ export default {
     }
   },
   computed: {
+    stateButtons: function() {
+      var buttonstate = {"btn_pause": {"disabled": false, "visible": true}, "btn_cancel": {"disabled": false, "visible": true}, "btn_resume": {"disabled": false, "visible": true}}
+      if(this.$store.state.printerState.payload.state_id == "PRINTING") {
+        buttonstate.btn_pause.disabled = false;
+        buttonstate.btn_pause.visible = true;
+        buttonstate.btn_cancel.disabled = false;
+        buttonstate.btn_cancel.visible = true;
+        buttonstate.btn_resume.disabled = true;
+        buttonstate.btn_resume.visible = false;
+      }
+      if(this.$store.state.printerState.payload.state_id == "RESUMING") {
+        buttonstate.btn_pause.disabled = false;
+        buttonstate.btn_pause.visible = true;
+        buttonstate.btn_cancel.disabled = false;
+        buttonstate.btn_cancel.visible = true;
+        buttonstate.btn_resume.disabled = true;
+        buttonstate.btn_resume.visible = false;
+      }
+      if(this.$store.state.printerState.payload.state_id == "PAUSING" || this.$store.state.printerState.payload.state_id == "PAUSED") {
+        buttonstate.btn_pause.disabled = true;
+        buttonstate.btn_pause.visible = false;
+        buttonstate.btn_cancel.disabled = false;
+        buttonstate.btn_cancel.visible = true;
+        buttonstate.btn_resume.disabled = false;
+        buttonstate.btn_resume.visible = true;
+      }
+      if(this.$store.state.printerState.payload.state_id == "CANCELLING" || this.$store.state.printerState.payload.state_id == "OPERATIONAL" || this.$store.state.printerState.payload.state_id == "") {
+        buttonstate.btn_pause.disabled = true;
+        buttonstate.btn_pause.visible = false;
+        buttonstate.btn_cancel.disabled = true;
+        buttonstate.btn_cancel.visible = true;
+        buttonstate.btn_resume.disabled = true;
+        buttonstate.btn_resume.visible = true;
+      }
+      return buttonstate;
+    },
     widgetData: function () {
       if(this.type == "pie-chart") {
         return this.pie_stats_printing;
