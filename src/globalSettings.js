@@ -91,11 +91,15 @@ export const globalSettings = {
             if(msg.event.type == "Connected" || msg.event.type == "Connecting") {
               var payload = {}
               payload.state_string = msg.event.type;
-              this.$store.state.printerState.payload = payload;
+              if(msg.event.payload.flags != undefined) {
+                this.$store.state.printerState.payload = payload;
+              }
+              
             }
             if(msg.event.type == "PrinterStateChanged") {
-              if(msg.event.payload.state_string != null && msg.event.payload.state_string != "" && msg.event.payload.flags != null) {
-                this.$store.state.printerState = msg.event;
+              this.$store.state.printerState = msg.event;
+              if(msg.event.payload.state_string != null && msg.event.payload.state_string != "" && msg.event.payload.flags != undefined) {
+                this.$store.state.payload.flags = {"cancelling": false, "pausing": false, "operational": false, "paused": false, "printing": false, "resuming": false, "sdReady": false, "error": false, "ready": false, "finishing": false, "closedOrError": false}
               }
               console.log("PRINTERSTATE");
               console.log(this.$store.state.printerState);
@@ -125,6 +129,9 @@ export const globalSettings = {
                   this.$store.state.isConnection = false;
                   this.$store.state.isConnecting = false;
                   this.$store.state.connectionState = "off";
+              }
+              if(this.$store.state.payload.flags == undefined) {
+                this.$store.state.payload.flags = {"cancelling": false, "pausing": false, "operational": false, "paused": false, "printing": false, "resuming": false, "sdReady": false, "error": false, "ready": false, "finishing": false, "closedOrError": false}
               }
             }
             if(msg.event.type == "DisplayLayerProgress_layerChanged" || msg.event.type == "DisplayLayerProgress_heightChanged") {
