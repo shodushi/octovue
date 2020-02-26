@@ -427,7 +427,7 @@ export default {
         buttonstate.btn_resume.disabled = false;
         buttonstate.btn_resume.visible = true;
       }
-      if(this.$store.state.printerState.payload.state_id == "CANCELLING" || this.$store.state.printerState.payload.state_id == "OPERATIONAL" || this.$store.state.printerState.payload.state_id == "") {
+      if(this.$store.state.printerState.payload.state_id == "CANCELLING" || this.$store.state.printerState.payload.state_id == "OPERATIONAL" || this.$store.state.printerState.payload.state_id == "" || this.$store.state.printerState.payload.state_id == "OFFLINE") {
         buttonstate.btn_pause.disabled = true;
         buttonstate.btn_pause.visible = false;
         buttonstate.btn_cancel.disabled = true;
