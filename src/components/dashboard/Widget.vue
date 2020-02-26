@@ -175,6 +175,7 @@
     <span id="btn_pause" class="button is-fullwidth"  v-bind:disabled="!this.printerState.payload.flags.printing" v-if="!this.printerState.payload.flags.paused" v-on:click="pauseJob()">pause</span>
     <span id="btn_resume" class="button is-fullwidth" v-bind:disabled="!this.printerState.payload.flags.paused" v-if="this.printerState.payload.flags.paused" v-on:click="resumeJob()">resume</span>
     <span id="btn_cancel" class="button is-fullwidth is-danger" v-bind:disabled="!this.printerState.payload.flags.printing && !this.printerState.payload.flags.paused" v-on:click="cancelJob()">cancel</span>
+    </div>
   </div>
 
   <div class="gcodebutton" :id="id" v-else-if="type == 'gcodebutton'">

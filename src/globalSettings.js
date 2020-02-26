@@ -94,9 +94,11 @@ export const globalSettings = {
               this.$store.state.printerState.payload = payload;
             }
             if(msg.event.type == "PrinterStateChanged") {
-              if(msg.event.payload.state_string != null && msg.event.payload.state_string != "") {
+              if(msg.event.payload.state_string != null && msg.event.payload.state_string != "" && msg.event.payload.flags != null) {
                 this.$store.state.printerState = msg.event;
               }
+              console.log("PRINTERSTATE");
+              console.log(this.$store.state.printerState);
               if(msg.event.type == "Connecting" || msg.event.payload.state_id == "OPEN_SERIAL" ||
               msg.event.payload.state_id == "DETECT_SERIAL" || 
               msg.event.payload.state_id == "DETECT_BAUDRATE" || 
