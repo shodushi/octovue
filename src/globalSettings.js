@@ -531,7 +531,7 @@ export const globalSettings = {
         $(event.srcElement.parentElement.parentElement.parentElement).addClass("is-selected");
       } else {
         $(event.srcElement.parentElement.parentElement).addClass("is-selected");
-      }'/
+      }'*/
       $("#fb_"+file.imgid+" span").css("display", "block");
       $("#fb_"+file.imgid+" span").removeAttr("disabled");
       $("#fileoperations span").removeAttr("disabled");
