@@ -86,7 +86,7 @@ export const globalSettings = {
     messageParser: function(msg) {
       //console.log(msg);
       if(msg.event != null) {
-        console.log(this.$store.state.printerState.payload);
+        //console.log(this.$store.state.printerState.payload);
           if(msg.event.type != null) {
             if(msg.event.type == "Connected" || msg.event.type == "Connecting") {
               var payload = {}
@@ -174,7 +174,7 @@ export const globalSettings = {
               }
             }
 
-            if(msg.current.logs[i].includes("G1")) {
+            if(msg.current.logs[i].includes("G1") || msg.current.logs[i].includes("G0")) {
               if(msg.current.logs[i].includes("Z")) {
                 const regex = /Z[0-9]*\.[0-9]*/g;
                 var height = msg.current.logs[i].match(regex);
@@ -183,6 +183,46 @@ export const globalSettings = {
                   //this.totalH = height[0].split("/")[1];
                 }
               }
+            }
+
+            //if(msg.current.logs[i].includes("G0") || msg.current.logs[i].includes("G1") || msg.current.logs[i].includes("G90") || msg.current.logs[i].includes("G91") || msg.current.logs[i].includes("G92")) {
+            if(msg.current.logs[i].includes("Send:")) {
+              var gcode = msg.current.logs[i].replace("Send: ", "");
+              var regex = /N[0-9](.*) G/g;
+              var match = gcode.match(regex);
+              if(match != null && match.length > 0) {
+                gcode = gcode.replace(match[0], "G");
+                
+                //gcode = gcode + " Z"+this.$store.state.currentHeight
+              }
+
+              var x = "";
+              var y = "";
+              var z = "";
+              regex = /X[0-9]*\.[0-9]*/g;
+              match = gcode.match(regex);
+              if(match != null && match.length > 0) {
+                x = match[0];
+              }
+              regex = /Y[0-9]*\.[0-9]*/g;
+              match = gcode.match(regex);
+              if(match != null && match.length > 0) {
+                y = match[0];
+              }
+              if(x != "" && y != "") {
+                var coord = {x: x.replace("X", ""), y: y.replace("Y",""), z: this.$store.state.currentHeight};
+                this.$store.state.livegcodestring=(coord);
+              }
+              
+              //this.$store.state.livegcodestring = this.$store.state.livegcodestring +gcode+"\n";
+              //const regex2 = /F[0-9]*/g;
+              /*var matchf = gcode.match(regex);
+              if(matchf != null && matchf.length > 0) {
+                gcode = gcode.replace(matchf[0], "");
+                gcode = gcode + " F"+this.$store.state.currentHeight
+              }*/
+
+              //console.log(gcode);
             }
 
             if(this.$store.state.logs.length > 501) {
@@ -525,13 +565,13 @@ export const globalSettings = {
       $("#filestable tr").removeClass("is-selected");
       $("#filestable td").removeClass("is-selected");
       $(".file_buttons span").css("display", "none");
-      /*if(event.srcElement.parentElement.tagName == "TR") {
+      if(event.srcElement.parentElement.tagName == "TR") {
         $(event.srcElement.parentElement).addClass("is-selected");
       } else if(event.srcElement.parentElement.tagName == "FIGURE") {
         $(event.srcElement.parentElement.parentElement.parentElement).addClass("is-selected");
       } else {
         $(event.srcElement.parentElement.parentElement).addClass("is-selected");
-      }'*/
+      }
       $("#fb_"+file.imgid+" span").css("display", "block");
       $("#fb_"+file.imgid+" span").removeAttr("disabled");
       $("#fileoperations span").removeAttr("disabled");
@@ -548,7 +588,7 @@ export const globalSettings = {
           this.$store.state.fileList = result.data;
           this.listFiles();
           //console.log("/api/files/"+this.$store.state.file_origin+path);
-          console.log(result.data);
+          //console.log(result.data);
           //this.listMoveFolders();
       });
     },
@@ -685,6 +725,9 @@ export const globalSettings = {
       zoomElement.style.display = "none";
     },
     loadprintFile: function(print, jump) {
+      this.$store.state.printingfile = this.$store.state.selectedfile;
+      this.$store.state.livegcode = [];
+      this.$store.state.livegcodestring = "";
       var obj = {};
       obj.command = "select";
       obj.print = print;
@@ -1245,7 +1288,11 @@ export const globalSettings = {
       'pie_stats_printing_options',
       'bar_stats_printing',
       'bar_stats_printing_options',
-      'octoprintCommands'
+      'octoprintCommands',
+      'livegcode',
+      'livegcodestring',
+      'printingfile',
+      'gcodeBuffer',
     ]),
     terminalLogs: {
       get() {

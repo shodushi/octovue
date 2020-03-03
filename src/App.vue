@@ -193,6 +193,7 @@
             <router-link class="navbar-item" to='/printpage'>Printpage</router-link>
             <router-link class="navbar-item" to='/stats'>Stats</router-link>
             <router-link class="navbar-item" to='/dashboard'>Dashboard</router-link>
+            <router-link class="navbar-item" to='/live'>Live</router-link>
             
           </div>
 

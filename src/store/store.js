@@ -12,6 +12,7 @@ export const store = new Vuex.Store({
         modalfilemove: false,
         settingsmodal: false,
         terminalmodal: false,
+        livegcodestring: "",
         printerState: {"type": "PrinterStateChanged", "payload":{"state_string":"Offline","state_id":"OFFLINE","flags": {"cancelling": false, "pausing": false, "operational": false, "paused": false, "printing": false, "resuming": false, "sdReady": false, "error": false, "ready": false, "finishing": false, "closedOrError": false}}},
         temps: {"bed":{"actual":"0","target":"0"}, "chamber":{"actual":"0","target":"0"}, "tool0":{"actual":"0","target":"0"}, "time": "0"},
         logs: [],
