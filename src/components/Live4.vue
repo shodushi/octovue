@@ -76,9 +76,17 @@ export default {
     this.init();
     var self = this;
     this.currentHeight = 0;
+    
     //this.$store.state.printingfile.download
     //"http://127.0.0.1:5000/downloads/files/local/3DBenchy.gcode"
-    loader.load(this.$store.state.printingfile.download, function (data) {
+
+    var fileurl = "";
+    if(this.$store.state.printingfile == null) {
+      fileurl = this.$store.state.printhistory[0].file.refs.download;
+    } else {
+      fileurl = this.$store.state.printingfile.download
+    }
+    loader.load(fileurl, function (data) {
         var layers = data[0];
         //var layerIndices = data[1];
         self.layers = layers;
@@ -86,6 +94,7 @@ export default {
         layers = null;
         data = null;
     });
+    
   },
   watch: {
     loaded: function(after, before) {
@@ -95,6 +104,7 @@ export default {
     },
     livegcodestring: function (after, before) {
       this.moveTool(after.x, after.y, after.z);
+      console.log(this.$store.state);
     },
     currentHeight: function(after, before) {
       if(before != after) {
