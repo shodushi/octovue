@@ -525,13 +525,13 @@ export const globalSettings = {
       $("#filestable tr").removeClass("is-selected");
       $("#filestable td").removeClass("is-selected");
       $(".file_buttons span").css("display", "none");
-      if(event.srcElement.parentElement.tagName == "TR") {
+      /*if(event.srcElement.parentElement.tagName == "TR") {
         $(event.srcElement.parentElement).addClass("is-selected");
       } else if(event.srcElement.parentElement.tagName == "FIGURE") {
         $(event.srcElement.parentElement.parentElement.parentElement).addClass("is-selected");
       } else {
         $(event.srcElement.parentElement.parentElement).addClass("is-selected");
-      }
+      }'/
       $("#fb_"+file.imgid+" span").css("display", "block");
       $("#fb_"+file.imgid+" span").removeAttr("disabled");
       $("#fileoperations span").removeAttr("disabled");
