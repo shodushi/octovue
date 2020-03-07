@@ -18,7 +18,7 @@
 
             <!-- Right side -->
             <div class="level-right">
-                
+                <button class="button is-tile solid-pink"><a href="/#/tft"><div class="gradient"><img src="/img/z-bolt/refresh.svg"><span>refresh</span></div></a></button>
             </div>
         </nav>
         
@@ -164,8 +164,8 @@ export default {
 .is-tile {
     text-align: center;
     cursor: pointer;
-    width: 150px;
-    height: 150px;
+    width: 130px;
+    height: 130px;
     display: inline-block;
     text-decoration: none;
     margin-right: 5px;
