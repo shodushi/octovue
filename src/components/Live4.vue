@@ -1,7 +1,7 @@
 <template>
   <section class="section" id="livePage">
     <button v-on:click="show()">show</button><button v-on:click="hide()">hide</button>
-    <div>Layers loaded: {{objects.length}} ||   current layer: {{currentlayer}} ({{currentlayerheight}}) ||   current height: {{ currentHeight }}</div>
+    <div>{{job.printfile}}Layers loaded: {{objects.length}} ||   current layer: {{currentlayer}} ({{currentlayerheight}}) ||   current height: {{ currentHeight }}</div>
     <div id="canvas" ref="canvas" /></div>
   </section>
 </template>
@@ -72,39 +72,32 @@ export default {
     }
   },
   mounted: function() {
-    var loader = new GCodeLoader()
     this.init();
-    var self = this;
     this.currentHeight = 0;
-    
-    //this.$store.state.printingfile.download
-    //"http://127.0.0.1:5000/downloads/files/local/3DBenchy.gcode"
-
-    var fileurl = "";
-    if(this.$store.state.printingfile == null) {
-      fileurl = this.$store.state.printhistory[0].file.refs.download;
-    } else {
-      fileurl = this.$store.state.printingfile.download
-    }
-    loader.load(fileurl, function (data) {
-        var layers = data[0];
-        //var layerIndices = data[1];
-        self.layers = layers;
-        self.loaded = 1;
-        layers = null;
-        data = null;
-    });
-    
   },
   watch: {
     loaded: function(after, before) {
-        if(before == 0 && after == 1) {
-          this.setModel(this.layers);
-        }
+      if(before == 0 && after == 1) {
+        this.setModel(this.layers);
+      }
     },
     livegcodestring: function (after, before) {
       this.moveTool(after.x, after.y, after.z);
-      console.log(this.$store.state);
+      if(this.loaded == 0) {
+        var self = this;
+        this.transport("GET", "octo_ip", "/api/files?recursive=true", null).then(result => {
+          var files = result.data.files;
+          for(var i = 0; i < files.length;i++) {
+            console.log(files[i].display);
+            console.log(self.job.printfile);
+            if(files[i].display == self.$store.state.job.printfile) {
+              this.$store.state.printingfile.download = files[i].refs.download;
+              self.loadGcode();
+            }
+          }
+          console.log(files);      
+        });
+      }
     },
     currentHeight: function(after, before) {
       if(before != after) {
@@ -113,6 +106,26 @@ export default {
     },
   },
   methods: {
+    loadGcode: function() {
+      var self = this;
+      var loader = new GCodeLoader();
+      var fileurl = "";
+      if(this.$store.state.printingfile.download == null) {
+        fileurl = this.$store.state.printhistory[this.$store.state.printhistory.length-1].file.refs.download;
+      } else {
+        fileurl = this.$store.state.printingfile.download
+      }
+      loader.load(fileurl, function (data) {
+          var layers = data[0];
+          //var layerIndices = data[1];
+          self.layers = layers;
+          self.loaded = 1;
+          layers = null;
+          data = null;
+          
+      });
+      this.loaded = 1;
+    },
     show: function() {
       this.printedObject.visible = true;
     },

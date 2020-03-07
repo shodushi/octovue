@@ -565,6 +565,7 @@ export const globalSettings = {
       $("#filestable tr").removeClass("is-selected");
       $("#filestable td").removeClass("is-selected");
       $(".file_buttons span").css("display", "none");
+      /*
       if(event.srcElement.parentElement.tagName == "TR") {
         $(event.srcElement.parentElement).addClass("is-selected");
       } else if(event.srcElement.parentElement.tagName == "FIGURE") {
@@ -572,6 +573,7 @@ export const globalSettings = {
       } else {
         $(event.srcElement.parentElement.parentElement).addClass("is-selected");
       }
+      */
       $("#fb_"+file.imgid+" span").css("display", "block");
       $("#fb_"+file.imgid+" span").removeAttr("disabled");
       $("#fileoperations span").removeAttr("disabled");
@@ -583,7 +585,7 @@ export const globalSettings = {
       } else {
         path = '/'+path;
       }
-      this.transport("GET", "octo_ip", "/api/files/"+path+this.$store.state.file_origin, null).then(result => {
+      this.transport("GET", "octo_ip", "/api/files/"+this.$store.state.file_origin+path, null).then(result => {
           this.$store.state.fileList = [];
           this.$store.state.fileList = result.data;
           this.listFiles();

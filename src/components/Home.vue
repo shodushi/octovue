@@ -48,7 +48,6 @@
             
             <div id="files" class="column" v-bind:class="{ 'is-four-fifths': printerState.payload.state_string != 'Printing' && printerState.payload.state_string != 'Paused' && printerState.payload.state_string != 'Pausing' && printerState.payload.state_string != 'Resuming', 'is-three-fifths' : printerState.payload.state_string == 'Printing' || printerState.payload.state_string == 'Paused' || printerState.payload.state_string == 'Pausing' || printerState.payload.state_string == 'Resuming' }" v-if="file_origin == 'local' || file_origin == 'sdcard' || file_origin == 'thingiverse'">
 
-
                 <div class="modal" v-bind:class="{ 'is-active' : modalfilemove }">
                     <div class="modal-background"></div>
                     <div class="modal-card">
@@ -372,4 +371,5 @@ tr.is-selected, td.is-selected {
 .analysis > * {
   font-size: 80%;
 }
+
 </style>
