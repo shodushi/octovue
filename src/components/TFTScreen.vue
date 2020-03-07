@@ -1,5 +1,5 @@
 <template>
-    <div class="container is-widescreen" style="background-color: #222122 !important">
+    <div class="container is-widescreen" style="background-color: #222122 !important; height: 100%;">
 
         <nav class="level" style="height: 20vh; padding-left: 1vw; padding-right: 1vw;">
             <!-- Left side -->
@@ -164,8 +164,8 @@ export default {
 .is-tile {
     text-align: center;
     cursor: pointer;
-    width: 130px;
-    height: 130px;
+    width: 110px;
+    height: 110px;
     display: inline-block;
     text-decoration: none;
     margin-right: 5px;
