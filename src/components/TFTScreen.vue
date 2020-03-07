@@ -1,7 +1,7 @@
 <template>
-    <div class="container is-widescreen" style="background-color: #222122 !important; height: 100%;">
+    <div class="container is-widescreen" style="background-color: #222122 !important;">
 
-        <nav class="level" style="height: 19vh; padding-left: 1vw; padding-right: 1vw;">
+        <nav class="level" style="height: 20vh; padding-left: 1vw; padding-right: 1vw;">
             <!-- Left side -->
             <div class="level-left">
                 <div class="level-item">
@@ -23,7 +23,7 @@
         </nav>
         
 
-        <div id="content" style="height: 60vh; padding-left: 1vw; padding-right: 1vw; background-color: #222122 !important">
+        <div id="content" style="height: 56vh; padding-left: 1vw; padding-right: 1vw; background-color: #222122 !important">
     
             <div class="subpage" v-if="subPage == 'printer'">
                 <h2>Printer</h2>
@@ -105,7 +105,7 @@
 
         </div>
 
-       <nav class="level" style="height: 19vh; padding-left: 1vw; padding-right: 1vw;">
+       <nav class="level" style="height: 20vh; padding-left: 1vw; padding-right: 1vw;">
             <!-- Left side -->
             <div class="level-left">
                 <div class="level-item">
