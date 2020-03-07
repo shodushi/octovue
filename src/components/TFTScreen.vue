@@ -5,12 +5,12 @@
             <!-- Left side -->
             <div class="level-left">
                 <div class="level-item">
-                    <button class="button is-tile solid-pink"><a href="/#/"><div class="gradient"><span>Octovue</span></div></a></button>
+                    <button class="button is-tile solid-pink"><a href="/#/"><div class="gradient"><img src="/img/z-bolt/home.svg"><span>Octovue</span></div></a></button>
                 </div>
                 <div class="level-item">
                     <div class="field has-addons">
-                        <button class="button is-tile solid-orange-2" v-on:click="showPage('files')"><div class="gradient"><span>Files</span></div></button>
-                        <button class="button is-tile solid-orange-2" v-on:click="showPage('printer')"><div class="gradient"><span>Printer</span></div></button>
+                        <button class="button is-tile solid-orange-2" v-on:click="showPage('files')"><div class="gradient"><img src="/img/z-bolt/files.svg"><span>Files</span></div></button>
+                        <button class="button is-tile solid-orange-2" v-on:click="showPage('printer')"><div class="gradient"><img src="/img/z-bolt/control.svg"><span>Printer</span></div></button>
 
                     </div>
                 </div>
@@ -25,6 +25,25 @@
 
         <div id="content" style="height: 60vh; padding-left: 1vw; padding-right: 1vw; background-color: #222122 !important">
     
+            <div class="subpage" v-if="subPage == 'printer'">
+                <h2>Printer</h2>
+                <button class="button is-tile solid-green-2" v-on:click="pcmds('G28 W')"><div class="gradient"><img src="/img/z-bolt/home.svg"><span class="tile_title">Home all axes</span></div></button>
+                <button class="button is-tile solid-green-2" v-on:click="pcmds('G80')"><div class="gradient"><img src="/img/z-bolt/bed-level.svg"><span class="tile_title">Mesh bed level</span></div></button>
+
+                <button class="button is-tile solid-green-2" v-on:click="pcmds('M84')"><div class="gradient"><img src="/img/z-bolt/motor-off.svg"><span class="tile_title">Motors off</span></div></button>
+
+                <button class="button is-tile solid-green-2" v-on:click="pcmds('M106')"><div class="gradient"><img src="/img/z-bolt/fan-on.svg"><span class="tile_title">Fan on</span></div></button>
+                <button class="button is-tile solid-green-2" v-on:click="pcmds('M107')"><div class="gradient"><img src="/img/z-bolt/fan-off.svg"><span class="tile_title">Fan off</span></div></button>
+
+                <button class="button is-tile solid-green-2" v-on:click="pcmds('M701')"><div class="gradient"><img src="/img/z-bolt/load_filament.png"><span class="tile_title">Load filament</span></div></button>
+                <button class="button is-tile solid-green-2" v-on:click="pcmds('M702')"><div class="gradient"><img src="/img/z-bolt/unload_filament.svg"><span class="tile_title">Unload filament</span></div></button>
+                <button class="button is-tile solid-green-2" v-on:click="pcmds('M600')"><div class="gradient"><img src="/img/z-bolt/toolchanger.svg"><span class="tile_title">Change filament</span></div></button>
+
+
+                <button class="button is-tile solid-green-2" v-on:click="pcmds('M0')"><div class="gradient"><img src="/img/z-bolt/stop.svg"><span class="tile_title">Emergency stop</span></div></button>    
+            </div>
+
+
             <div class="subpage" v-if="subPage == 'files'">
                 <table id="filebrowser_head" class="table is-fullwidth dragSelector">
                 <thead >
@@ -84,29 +103,6 @@
                 </div>
             </div>
 
-            <div class="subpage" v-if="subPage == 'printer'">
-                <h2>Printer</h2>
-                <button class="button is-tile solid-green-2" v-on:click="pcmds('G28')"><div class="gradient"><img src="/img/placeholder.png"><span class="tile_title">Home all axes</span></div></button>
-                <button class="button is-tile solid-green-2" v-on:click="pcmds('G29')"><div class="gradient"><img src="/img/placeholder.png"><span class="tile_title">Mesh bed level</span></div></button>
-
-                <button class="button is-tile solid-green-2" v-on:click="pcmds('M18')"><div class="gradient"><img src="/img/placeholder.png"><span class="tile_title">Motors off</span></div></button>
-
-                <button class="button is-tile solid-green-2" v-on:click="pcmds('M106')"><div class="gradient"><img src="/img/placeholder.png"><span class="tile_title">Fan on</span></div></button>
-                <button class="button is-tile solid-green-2" v-on:click="pcmds('M107')"><div class="gradient"><img src="/img/placeholder.png"><span class="tile_title">Fan off</span></div></button>
-
-                <button class="button is-tile solid-green-2" v-on:click="pcmds('M701')"><div class="gradient"><img src="/img/placeholder.png"><span class="tile_title">Load filament</span></div></button>
-                <button class="button is-tile solid-green-2" v-on:click="pcmds('M702')"><div class="gradient"><img src="/img/placeholder.png"><span class="tile_title">Unload filament</span></div></button>
-                <button class="button is-tile solid-green-2" v-on:click="pcmds('M600')"><div class="gradient"><img src="/img/placeholder.png"><span class="tile_title">Change filament</span></div></button>
-
-
-                <button class="button is-tile solid-green-2" v-on:click="pcmds('M0')"><div class="gradient"><img src="/img/placeholder.png"><span class="tile_title">Emergency stop</span></div></button>
-
-
-                
-            </div>
-    
-
-            
         </div>
 
        <nav class="level" style="height: 20vh; padding-left: 1vw; padding-right: 1vw;">
@@ -124,7 +120,7 @@
 
             <!-- Right side -->
             <div class="level-right">
-                <button class="button is-tile solid-green-2" v-on:click="showPage()"><div class="gradient"><img src="/img/placeholder.png"><span class="tile_title">back</span></div></button>
+                <button class="button is-tile solid-green-2" v-on:click="showPage()"><div class="gradient"><img src="/img/z-bolt/back.svg"><span class="tile_title">back</span></div></button>
             </div>
         </nav>
     </div>
@@ -168,8 +164,8 @@ export default {
 .is-tile {
     text-align: center;
     cursor: pointer;
-    width: 100px;
-    height: 100px;
+    width: 150px;
+    height: 150px;
     display: inline-block;
     text-decoration: none;
     margin-right: 5px;
@@ -195,13 +191,14 @@ export default {
     height: 100%;
     cursor: pointer;
     text-align: center;
+    padding-top: 25px;
 }
 .gradient > img {
     margin: 0 auto 0 auto;
     margin-bottom: 10px;
     padding-top: 10px;
-    height: 48px;
-    width: 48px;
+    height: 54px;
+    width: 54px;
     position: relative;
     display: block;
 }
