@@ -18,7 +18,7 @@
 
             <!-- Right side -->
             <div class="level-right">
-                <button class="button is-tile solid-pink"><a href="/#/tft"><div class="gradient"><img src="/img/z-bolt/refresh.svg"><span>refresh</span></div></a></button>
+                <button class="button is-tile solid-pink" v-on:click="refresh()"><div class="gradient"><img src="/img/z-bolt/refresh.svg"><span>refresh</span></div></a></button>
             </div>
         </nav>
         
@@ -145,6 +145,9 @@ export default {
             } else {
                 this.subPage = page;
             }
+        },
+        refresh: function() {
+            this.$router.go();
         }
     },
     computed: {
