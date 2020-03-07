@@ -1,7 +1,7 @@
 <template>
     <div class="container is-widescreen" style="background-color: #222122 !important; height: 100%;">
 
-        <nav class="level" style="height: 20vh; padding-left: 1vw; padding-right: 1vw;">
+        <nav class="level" style="height: 19vh; padding-left: 1vw; padding-right: 1vw;">
             <!-- Left side -->
             <div class="level-left">
                 <div class="level-item">
@@ -105,7 +105,7 @@
 
         </div>
 
-       <nav class="level" style="height: 20vh; padding-left: 1vw; padding-right: 1vw;">
+       <nav class="level" style="height: 19vh; padding-left: 1vw; padding-right: 1vw;">
             <!-- Left side -->
             <div class="level-left">
                 <div class="level-item">
