@@ -164,8 +164,8 @@ export default {
 .is-tile {
     text-align: center;
     cursor: pointer;
-    width: 110px;
-    height: 110px;
+    width: 100px;
+    height: 100px;
     display: inline-block;
     text-decoration: none;
     margin-right: 5px;
@@ -191,7 +191,6 @@ export default {
     height: 100%;
     cursor: pointer;
     text-align: center;
-    padding-top: 25px;
 }
 .gradient > img {
     margin: 0 auto 0 auto;
