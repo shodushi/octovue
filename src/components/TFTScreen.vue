@@ -54,7 +54,8 @@
                         <div v-for="graph in graphs" v-if="graph.name != 'bed' && graph.name != 'chamber'" style="text-align: left;">
                             <div style="width: 25%; float: left; text-align: center;">
                                 {{graph.name}}<br />
-                                <input :id="'slider'+graph.name" class="slider is-danger is-large is-circle" step="1" min="0" max="250" v-on:mouseup="setExtruderTemp(graph.name)" v-bind:value="temps[graph.name].target" type="range" orient="vertical"><output v-bind:for="'slider'+graph.name">{{ temps[graph.name].target }}</output>
+                                <input :id="'slider'+graph.name" class="slider is-danger is-large is-circle has-output" step="1" min="0" max="250" v-on:mouseup="setExtruderTemp(graph.name)" v-bind:value="temps[graph.name].target" type="range" orient="vertical"><output v-bind:for="'slider'+graph.name">{{ temps[graph.name].target }}</output>
+                                <span class="output_extra">{{ temps.tool0.actual }}</span>
                             </div>
                             <div style="width: 25%; float: left; text-align: center;">
                                 <p>&nbsp;</p>
@@ -64,7 +65,8 @@
                         <div v-for="graph in graphs" v-if="graph.name == 'bed'" style="text-align: left;">
                             <div style="width: 25%; float: left; text-align: center;">
                                 {{graph.name}}<br />
-                                <input :id="'slider'+graph.name" class="slider is-info is-large is-circle" step="1" min="0" max="100" v-on:mouseup="setBedTemp()" v-bind:value="temps[graph.name].target" type="range" orient="vertical"><output v-bind:for="'slider'+graph.name">{{ temps[graph.name].target }}</output>
+                                <input :id="'slider'+graph.name" class="slider is-info is-large is-circle has-output" step="1" min="0" max="100" v-on:mouseup="setBedTemp()" v-bind:value="temps[graph.name].target" type="range" orient="vertical"><output v-bind:for="'slider'+graph.name">{{ temps[graph.name].target }}</output>
+                                <span class="output_extra">{{ temps.bed.actual }}</span>
                             </div>
                             <div style="width: 25%; float: left; text-align: center;">
                                 <p>&nbsp;</p>
@@ -107,7 +109,7 @@
                             <tr v-on:click="selectFolder(folder.path)" v-for="folder in folders"><td><span class="icon">&#128193;</span></td><td>{{ folder.display }}</td><td></td></tr>
                             <tr v-on:click="selectFile($event, file)" v-for="file in files">
                             
-                            <td>
+                            <td v-if="file_origin == 'local'">
                                 <figure v-if="$localStorage.get('previewimages') == 'yes'" class="image is-128x128"><img :src="file.img" :id="file.thumbid" class="thumb" @error="imgFallback" v-on:mousemove="zoomIn($event, file.thumbid, 'overlay_'+file.imgid)" v-on:mouseleave="zoomOut(''+file.imgid)"></figure>
                                 <div class="overlay_wrapper">
                                 <div :id="'overlay_'+file.imgid" class="zoomoverlay" v-bind:style="{'background-image': 'url(' + file.img + ')' }"></div>
@@ -309,6 +311,20 @@ export default {
 #filewrapper {
     height: 50vh;
     overflow:scroll;
+    overflow-x: hidden;
+}
+::-webkit-scrollbar {
+    width: 30px;
+}
+ 
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(238, 227, 227, 0.3); 
+    border-radius: 10px;
+}
+ 
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(235, 226, 226, 0.5); 
 }
 .filesbutton {
     margin: 5px 5px 5px 5px;
@@ -338,12 +354,29 @@ export default {
     color: white;
 }
 output {
-    font-size: 2em;
+    font-size: 1.7em;
     font-weight: bold;
     width: 260px;
     position: relative;
     top: -60px;
+    left: -30px;
     padding: 3px;
+    
+}
+input[type=range].slider+output {
+    background-color: rgb(34, 33, 34) !important;
+    margin-right: 5px;
+}
+.output_extra {
+    border-left: 1px solid white;
+    font-size: 1.7em;
+    font-weight: bold;
+    width: 260px;
+    position: relative;
+    top: -60px;
+    left: -30px;
+    padding: 3px;
+    padding-left: 5px;
 }
 .left {
 
