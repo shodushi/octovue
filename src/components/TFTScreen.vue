@@ -9,6 +9,7 @@
                 </div>
                 <div class="level-item">
                     <div class="field has-addons">
+                        <button class="button is-tile solid-red-2" v-on:click="powerswitch()"><div class="gradient"><img src="/img/z-bolt/power.svg"><span>Power</span></div></button>
                         <button class="button is-tile solid-orange-2" v-on:click="showPage('files')"><div class="gradient"><img src="/img/z-bolt/files.svg"><span>Files</span></div></button>
                         <button class="button is-tile solid-orange-2" v-on:click="showPage('printer')"><div class="gradient"><img src="/img/z-bolt/control.svg"><span>Printer</span></div></button>
 
