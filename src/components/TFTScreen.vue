@@ -10,8 +10,10 @@
                 <div class="level-item">
                     <div class="field has-addons">
                         <button class="button is-tile solid-red-2" v-on:click="powerswitch()"><div class="gradient"><img src="/img/z-bolt/shutdown.svg"><span>Power</span></div></button>
+                        <button class="button is-tile solid-red-2" v-on:click="printerConnection()"><div class="gradient"><img src="/img/z-bolt/shutdown.svg"><span>Connect</span></div></button>
                         <button class="button is-tile solid-orange-2" v-on:click="showPage('files')"><div class="gradient"><img src="/img/z-bolt/files.svg"><span>Files</span></div></button>
                         <button class="button is-tile solid-orange-2" v-on:click="showPage('printer')"><div class="gradient"><img src="/img/z-bolt/control.svg"><span>Printer</span></div></button>
+                        <button class="button is-tile solid-orange-2" v-on:click="showPage('temperatures')"><div class="gradient"><img src="/img/z-bolt/heat-up.svg"><span>Temperatures</span></div></button>
 
                     </div>
                 </div>
@@ -40,32 +42,67 @@
                 <button class="button is-tile solid-green-2" v-on:click="pcmds('M702')"><div class="gradient"><img src="/img/z-bolt/unload_filament.svg"><span class="tile_title">Unload filament</span></div></button>
                 <button class="button is-tile solid-green-2" v-on:click="pcmds('M600')"><div class="gradient"><img src="/img/z-bolt/toolchanger.svg"><span class="tile_title">Change filament</span></div></button>
 
-
                 <button class="button is-tile solid-green-2" v-on:click="pcmds('M0')"><div class="gradient"><img src="/img/z-bolt/stop.svg"><span class="tile_title">Emergency stop</span></div></button>    
+
+            </div>
+
+            <div class="subpage" v-if="subPage == 'temperatures'">
+
+                <div class="" id="tempcontrols" v-if="printerState.payload.state_string != 'Offline'">
+
+                    <div v-if="graphs.length <= 2">
+                        <div v-for="graph in graphs" v-if="graph.name != 'bed' && graph.name != 'chamber'" style="text-align: left;">
+                            <div style="width: 25%; float: left; text-align: center;">
+                                {{graph.name}}<br />
+                                <input :id="'slider'+graph.name" class="slider is-danger is-large is-circle" step="1" min="0" max="250" v-on:mouseup="setExtruderTemp(graph.name)" v-bind:value="temps[graph.name].target" type="range" orient="vertical"><output v-bind:for="'slider'+graph.name">{{ temps[graph.name].target }}</output>
+                            </div>
+                            <div style="width: 25%; float: left; text-align: center;">
+                                <p>&nbsp;</p>
+                                <div class="temp_ist"><div :id="'temp_'+graph.name+'_actual'"></div></div>
+                            </div>
+                        </div>
+                        <div v-for="graph in graphs" v-if="graph.name == 'bed'" style="text-align: left;">
+                            <div style="width: 25%; float: left; text-align: center;">
+                                {{graph.name}}<br />
+                                <input :id="'slider'+graph.name" class="slider is-info is-large is-circle" step="1" min="0" max="100" v-on:mouseup="setBedTemp()" v-bind:value="temps[graph.name].target" type="range" orient="vertical"><output v-bind:for="'slider'+graph.name">{{ temps[graph.name].target }}</output>
+                            </div>
+                            <div style="width: 25%; float: left; text-align: center;">
+                                <p>&nbsp;</p>
+                                <div class="temp_ist"><div :id="'temp_'+graph.name+'_actual'"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-if="graphs.length > 2">
+                        <div v-for="graph in graphs" v-if="graph.name != 'bed' && graph.name != 'chamber'" style="text-align: left;">
+                            {{graph.name}}<br />
+                            <input :id="'slider'+graph.name" class="slider is-fullwidth is-large is-circle" step="1" min="0" max="250" v-on:mouseup="setExtruderTemp(graph.name)" v-bind:value="temps[graph.name].target" type="range"><output style="position: relative; top: -60px;" v-bind:for="'slider'+graph.name">{{ temps[graph.name].target }}</output>
+                        </div>
+                        <div v-for="graph in graphs" v-if="graph.name == 'bed'" style="text-align: left;">
+                            {{graph.name}}<br />
+                            <input :id="'slider'+graph.name" class="slider is-fullwidth is-circle has-output" step="1" min="0" max="100" v-on:mouseup="setBedTemp()" v-bind:value="temps[graph.name].target" type="range"><output style="position: relative; top: 8px;" v-bind:for="'slider'+graph.name">{{ temps[graph.name].target }}</output>
+                        </div>
+                    </div>      
+                </div>
+                
+                <div id="tempbuttons">
+                    <button class="button is-tile solid-green-2" v-on:click="pcmds('M104 S0')"><div class="gradient"><img src="/img/z-bolt/extruder.svg"><span class="tile_title">Extruder off</span></div></button>
+                    <button class="button is-tile solid-green-2" v-on:click="pcmds('M140 S0')"><div class="gradient"><img src="/img/z-bolt/bed.svg"><span class="tile_title">Bed off</span></div></button>
+                </div>
+
             </div>
 
 
             <div class="subpage" v-if="subPage == 'files'">
-                <table id="filebrowser_head" class="table is-fullwidth dragSelector">
-                <thead >
-                    <tr colspan="3" >
-                    <td >
-                        <div class="tabs is-centered is-boxed dragselector">
-                        <ul >
-                            <li id="tab_local" v-bind:class="{ 'is-active' : file_origin == 'local' }"><a v-on:click="changeFileSource('local')"> <i class="fas fa-hdd"></i>&nbsp;local</a></li>
-                            <li id="tab_sdcard" v-bind:class="{ 'is-active' : file_origin == 'sdcard' }"><a v-on:click="changeFileSource('sdcard')"><i class="fas fa-sd-card"></i>&nbsp;sdcard</a></li>
-                        </ul>
-                        </div>
-                    </td>
-                    </tr>
-                </thead>
-                </table>
-
+                <div id="filesource">
+                    <a class="filesbutton" v-bind:class="{ 'is-active' : file_origin == 'local' }"><a v-on:click="changeFileSource('local')"> <i class="fas fa-hdd"></i>&nbsp;local</a></a>
+                    <a class="filesbutton" v-bind:class="{ 'is-active' : file_origin == 'sdcard' }"><a v-on:click="changeFileSource('sdcard')"><i class="fas fa-sd-card"></i>&nbsp;sdcard</a></a>
+                </div>
                 <div id="filewrapper">
                     <div v-if="file_origin == 'local' || file_origin == 'sdcard'">
 
                         <div v-if="selectedfolder != ''" v-on:click="folderup()" style="text-align: left"><span style="cursor: pointer;">&#x2190; back</span></div>
-                        <table class="table is-striped is-hoverable dragSelector" id="filestable">
+                        <table class="" id="filestable">
                         <tbody id="filesbody" >
                             <tr v-on:click="selectFolder(folder.path)" v-for="folder in folders"><td><span class="icon">&#128193;</span></td><td>{{ folder.display }}</td><td></td></tr>
                             <tr v-on:click="selectFile($event, file)" v-for="file in files">
@@ -82,19 +119,13 @@
                                     <i class="fas" alt="last print" :class="{'fa-thumbs-up': file.prints.last.success}" v-if="file.prints.last.success" style="color: #31cf65;"></i>
                                     <i class="fas" alt="last print" :class="{'fa-thumbs-down': !file.prints.last.success}" v-if="!file.prints.last.success" style="color: #fc3c63;"></i>
                                 </span><br />
-                                <div class="analysis" style="width: 100%;">
-                                <div style="width: 23%; float:left; margin-left: 10px;" v-if="file.gcodeAnalysis.dimensions.width != null">Size:</div><div style="width: 100%;" v-if="file.gcodeAnalysis.dimensions.width != null">x: {{ formatLenght(file.gcodeAnalysis.dimensions.width) }} y: {{ formatLenght(file.gcodeAnalysis.dimensions.depth) }} z: {{ formatLenght(file.gcodeAnalysis.dimensions.height) }}</div>
-                                <div style="width: 23%; float:left; margin-left: 10px;" v-if="file.gcodeAnalysis.estimatedPrintTime != null">PrintTime:</div><div v-if="file.gcodeAnalysis.estimatedPrintTime != null">{{ formatTime(file.gcodeAnalysis.estimatedPrintTime) }}</div>
-                                <div style="width: 23%; float:left; margin-left: 10px;" v-if="file.gcodeAnalysis.filament.tool0 != null && file.gcodeAnalysis.filament.tool0.length != null">Filament:</div><div v-if="file.gcodeAnalysis.filament.tool0 != null && file.gcodeAnalysis.filament.tool0.length != null">{{ formatLenght(file.gcodeAnalysis.filament.tool0.length) }}</div>
-                                <div style="width: 23%; float:left; margin-left: 10px;" v-if="file.prints != null">Prints ok/nok:</div><div v-if="file.prints != null">{{ file.prints.success }} / {{ file.prints.failure }}</div>
-                                </div>
                             </td>
                             <td>{{formatDate(file.date)}} 
                                 <div class="file_buttons" :id="'fb_'+file.imgid">
                                 <!-- <span id="btn_load" class="button is-warning is-small" disabled v-on:click="loadprintFile(false)">load</span> !-->
-                                <span id="btn_print" class="button is-success is-small" disabled v-on:click="loadprintFile(true, false)">print</span> 
+                                <span id="btn_print" class="filesbutton button is-success is-small" disabled v-on:click="loadprintFile(true, false)">print</span> 
                                 <!-- <span id="btn_delete" class="button is-primary is-small" disabled v-on:click="toggleModalFileMove()">move</span> !-->
-                                <span id="btn_delete" class="button is-danger is-small" disabled v-on:click="deleteFile()">delete</span>
+                                <span id="btn_delete" class="filesbutton button is-danger is-small" disabled v-on:click="deleteFile()">delete</span>
                                 </div>
                             </td>
                             </tr>
@@ -266,5 +297,61 @@ export default {
 }
 .solid-black {
     background: #000;
+}
+#filestable {
+    width: 100%;
+    color: white;
+}
+#filestable tr {
+    border-top: 1px solid white;
+    line-height: 250%;
+}
+#filewrapper {
+    height: 50vh;
+    overflow:scroll;
+}
+.filesbutton {
+    margin: 5px 5px 5px 5px;
+}
+#filesource {
+    text-align: right;
+    margin-bottom: 9px;
+}
+#filesource > a {
+    border: 1px solid white;
+    padding: 10px;
+}
+#filesource > a > * {
+    color: white;
+}
+#tempcontrols {
+    width: 40vw;
+    height: 200px;
+    float: left;
+}
+#tempbuttons {
+    width: 10vw;
+    height: 200px;
+    float: left;
+}
+#tempcontrols > * {
+    color: white;
+}
+output {
+    font-size: 2em;
+    font-weight: bold;
+    width: 260px;
+    position: relative;
+    top: -60px;
+    padding: 3px;
+}
+.left {
+
+}
+.middle {
+
+}
+.right {
+
 }
 </style>
