@@ -149,7 +149,92 @@ export default {
         },
         refresh: function() {
             this.$router.go();
-        }
+        },
+        powerswitch: function() {
+            this.transport("GET", "tasmota_ip", "/cm?cmnd=Power%20TOGGLE", null).then(result => {
+                if(typeof(result) == "object") {
+                this.$store.state.powerState = result.data.POWER.toLowerCase();
+                if(this.powerState == "off") {
+                    this.$store.state.isNotPower = true;
+                    this.$store.state.isPower = false;
+                } else {
+                    this.$store.state.isNotPower = false;
+                    this.$store.state.isPower = true;
+                }
+                }
+            });
+            },
+            getPowerState: function() {
+            if(this.$localStorage.get('powerhandling') == "yes") {
+                this.transport("GET", "tasmota_ip", "/cm?cmnd=Status", null).then(result => {
+                if(typeof(result) == "object") {
+                    if(result.data.Status.Power == 0) {
+                    this.$store.state.powerState = 'off';
+                    this.$store.state.isNotPower = true;
+                    this.$store.state.isPower = false;
+                    } else {
+                    this.$store.state.powerState = 'on';
+                    this.$store.state.isNotPower = false;
+                    this.$store.state.isPower = true;
+                    }
+                }
+                });
+            }
+            },
+            lightswitch: function() {
+            this.transport("POST", "led_ip", "/light/3d_drucker_led/toggle", null).then(result => {
+                if(typeof(result) == "object") {
+                this.getLightState();
+                }
+            });
+            },
+            getLightState: function() {
+            if(this.$localStorage.get('lighthandling') == "yes") {
+                this.transport("GET", "led_ip", "/light/3d_drucker_led/state", null).then(result => {
+                if(typeof(result) == "object") {
+                    if(result.data != null) {
+                    if(result.data.state != null) {
+                        this.$store.state.lightState = result.data.state.toLowerCase();
+                        if(this.lightState == "off") {
+                        this.$store.state.isNotLight = true;
+                        this.$store.state.isLight = false;
+                        } else {
+                        this.$store.state.isNotLight = false;
+                        this.$store.state.isLight = true;
+                        }
+                    }
+                    }
+                }
+                });
+            }
+            },
+            printerConnection: function() {
+            if(this.$localStorage.get('baudrate') == null || this.$localStorage.get('printerport') == null || this.$localStorage.get('printerProfile') == null || this.$localStorage.get('baudrate') == "choose" || this.$localStorage.get('printerport') == "choose" || this.$localStorage.get('printerProfile') == "choose") {
+                this.displayMsg('octoprint_printersetup_error');
+            } else {
+                var self = this;
+                var obj = {};
+                if(this.$store.state.isNotConnection) {
+                obj.command = "connect";
+                obj.port = this.$localStorage.get('printerport');
+                obj.baudrate = parseInt(this.$localStorage.get('baudrate'));
+                obj.printerProfile = this.$localStorage.get('printerProfile');
+                obj.save = true;
+                obj.autoconnect = false;
+                } else {
+                obj.command = "disconnect";
+                }
+                this.transport("POST", "octo_ip", "/api/connection", JSON.stringify(obj)).then(result => {
+                if(typeof(result) == "object") {
+                    this.$store.state.isNotConnection = false;
+                    this.$store.state.isConnection = true;
+                    this.$store.state.isConnecting = true;
+                    this.$store.state.connectionState = "...";
+                }
+                });
+            }
+            
+        },
     },
     computed: {
 
