@@ -48,7 +48,7 @@
 
             <div class="subpage" v-if="subPage == 'temperatures'">
 
-                <div class="" id="tempcontrols" v-if="printerState.payload.state_string != 'Offline'">
+                <div class="" id="tempcontrols">
 
                     <div v-if="graphs.length <= 2">
                         <div v-for="graph in graphs" v-if="graph.name != 'bed' && graph.name != 'chamber'" style="text-align: left;">
