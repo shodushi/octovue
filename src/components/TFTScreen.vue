@@ -5,7 +5,7 @@
             <!-- Left side -->
             <div class="level-left">
                 <div class="level-item">
-                    <button class="button is-tile solid-pink"><a href="/#/"><div class="gradient"><img src="/img/z-bolt/home.svg"><span>Octovue</span></div></a></button>
+                    <button class="button is-tile solid-pink"><a href="/#/"><div class="gradient"><img src="/img/octovue_logo.png"><span>Octovue</span></div></a></button>
                 </div>
                 <div class="level-item">
                     <div class="field has-addons">
