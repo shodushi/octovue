@@ -48,7 +48,7 @@
 
             <div class="subpage" v-if="subPage == 'temperatures'">
 
-                <div class="" id="tempcontrols">
+                <div id="tempcontrols">
 
                     <div v-if="graphs.length <= 2">
                         <div v-for="graph in graphs" v-if="graph.name != 'bed' && graph.name != 'chamber'" style="text-align: left;">
@@ -201,8 +201,8 @@ export default {
 .is-tile {
     text-align: center;
     cursor: pointer;
-    width: 100px;
-    height: 100px;
+    width: 150px;
+    height: 150px;
     display: inline-block;
     text-decoration: none;
     margin-right: 5px;
@@ -236,13 +236,14 @@ export default {
     height: 54px;
     width: 54px;
     position: relative;
+    top: 15%;
     display: block;
 }
 .gradient > span {
     color: white;
     padding-bottom: 10px;
     display: block;
-    margin: 0;
+    margin: 20% 0 0 0;
     padding: 0;
     border: 0px;
     text-align: center;
@@ -342,7 +343,7 @@ export default {
 }
 #tempcontrols {
     width: 40vw;
-    height: 200px;
+    height: 400px;
     float: left;
 }
 #tempbuttons {
@@ -358,10 +359,13 @@ output {
     font-weight: bold;
     width: 260px;
     position: relative;
-    top: -60px;
+    top: -120px;
     left: -30px;
     padding: 3px;
     
+}
+input[type=range] {
+    height: 250px;
 }
 input[type=range].slider+output {
     background-color: rgb(34, 33, 34) !important;
@@ -373,7 +377,7 @@ input[type=range].slider+output {
     font-weight: bold;
     width: 260px;
     position: relative;
-    top: -60px;
+    top: -120px;
     left: -30px;
     padding: 3px;
     padding-left: 5px;
