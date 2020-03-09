@@ -3,29 +3,29 @@
 
         <table id="main" class="" style="width: 100vw; height: 100vh;">
             <tr>
-                <td class="top left"><button class="button is-tile solid-pink"><a href="/#/"><div class="gradient"><img src="/img/octovue_logo.png"><span>Octovue</span></div></a></button></td>
+                <td class="top left"><button class="button is-tile solid-t"><a href="/#/"><div class="gradient"><img src="/img/octovue_logo.png"><span>Octovue</span></div></a></button></td>
                 <td class="top center">
-                    <button class="button is-tile solid-red-2" v-on:click="powerswitch()"><div class="gradient"><img src="/img/z-bolt/shutdown.svg"><span>Power</span></div></button>
-                    <button class="button is-tile solid-red-2" v-on:click="printerConnection()"><div class="gradient"><img src="/img/z-bolt/shutdown.svg"><span>Connect</span></div></button>
-                    <button class="button is-tile solid-orange-2" v-on:click="showPage('printer')"><div class="gradient"><img src="/img/z-bolt/control.svg"><span>Printer</span></div></button>
-                    <button class="button is-tile solid-orange-2" v-on:click="showPage('files')"><div class="gradient"><img src="/img/z-bolt/files.svg"><span>Files</span></div></button>
-                    <button class="button is-tile solid-orange-2" v-on:click="showPage('temperatures')"><div class="gradient"><img src="/img/z-bolt/heat-up.svg"><span>Temperatures</span></div></button>
+                    <button class="button is-tile solid-t" v-on:click="powerswitch()"><div class="gradient"><img src="/img/z-bolt/shutdown.svg"><span>Power</span></div></button>
+                    <button class="button is-tile solid-t" v-on:click="printerConnection()"><div class="gradient"><img src="/img/z-bolt/shutdown.svg"><span>Connect</span></div></button>
+                    <button class="button is-tile solid-t" v-on:click="showPage('printer')"><div class="gradient"><img src="/img/z-bolt/control.svg"><span>Printer</span></div></button>
+                    <button class="button is-tile solid-t" v-on:click="showPage('files')"><div class="gradient"><img src="/img/z-bolt/files.svg"><span>Files</span></div></button>
+                    <button class="button is-tile solid-t" v-on:click="showPage('temperatures')"><div class="gradient"><img src="/img/z-bolt/heat-up.svg"><span>Temperatures</span></div></button>
                 </td>
-                <td class="top right"><button class="button is-tile solid-pink" v-on:click="refresh()"><div class="gradient"><img src="/img/z-bolt/refresh.svg"><span>refresh</span></div></a></button></td>
+                <td class="top right"><button class="button is-tile solid-t" v-on:click="refresh()"><div class="gradient"><img src="/img/z-bolt/refresh.svg"><span>refresh</span></div></a></button></td>
             </tr>
             <tr>
                 <td class="left"></td>
                 <td class="center" rowspan="2">
                     <div class="subpage" v-if="subPage == 'printer'">
-                        <button class="button is-tile solid-green-2" v-on:click="pcmds('G28 W')"><div class="gradient"><img src="/img/z-bolt/home.svg"><span class="tile_title">Home all axes</span></div></button>
-                        <button class="button is-tile solid-green-2" v-on:click="pcmds('G80')"><div class="gradient"><img src="/img/z-bolt/bed-level.svg"><span class="tile_title">Mesh bed level</span></div></button>
-                        <button class="button is-tile solid-green-2" v-on:click="pcmds('M84')"><div class="gradient"><img src="/img/z-bolt/motor-off.svg"><span class="tile_title">Motors off</span></div></button>
-                        <button class="button is-tile solid-green-2" v-on:click="pcmds('M106')"><div class="gradient"><img src="/img/z-bolt/fan-on.svg"><span class="tile_title">Fan on</span></div></button>
-                        <button class="button is-tile solid-green-2" v-on:click="pcmds('M107')"><div class="gradient"><img src="/img/z-bolt/fan-off.svg"><span class="tile_title">Fan off</span></div></button>
-                        <button class="button is-tile solid-green-2" v-on:click="pcmds('M701')"><div class="gradient"><img src="/img/z-bolt/load_filament.png"><span class="tile_title">Load filament</span></div></button>
-                        <button class="button is-tile solid-green-2" v-on:click="pcmds('M702')"><div class="gradient"><img src="/img/z-bolt/unload_filament.svg"><span class="tile_title">Unload filament</span></div></button>
-                        <button class="button is-tile solid-green-2" v-on:click="pcmds('M600')"><div class="gradient"><img src="/img/z-bolt/toolchanger.svg"><span class="tile_title">Change filament</span></div></button>
-                        <button class="button is-tile solid-green-2" v-on:click="pcmds('M0')"><div class="gradient"><img src="/img/z-bolt/stop.svg"><span class="tile_title">Emergency stop</span></div></button>    
+                        <button class="button is-tile solid-t" v-on:click="pcmds('G28 W')"><div class="gradient"><img src="/img/z-bolt/home.svg"><span class="tile_title">Home all axes</span></div></button>
+                        <button class="button is-tile solid-t" v-on:click="pcmds('G80')"><div class="gradient"><img src="/img/z-bolt/bed-level.svg"><span class="tile_title">Mesh bed level</span></div></button>
+                        <button class="button is-tile solid-t" v-on:click="pcmds('M84')"><div class="gradient"><img src="/img/z-bolt/motor-off.svg"><span class="tile_title">Motors off</span></div></button>
+                        <button class="button is-tile solid-t" v-on:click="pcmds('M106')"><div class="gradient"><img src="/img/z-bolt/fan-on.svg"><span class="tile_title">Fan on</span></div></button>
+                        <button class="button is-tile solid-t" v-on:click="pcmds('M107')"><div class="gradient"><img src="/img/z-bolt/fan-off.svg"><span class="tile_title">Fan off</span></div></button>
+                        <button class="button is-tile solid-t" v-on:click="pcmds('M701')"><div class="gradient"><img src="/img/z-bolt/load_filament.png"><span class="tile_title">Load filament</span></div></button>
+                        <button class="button is-tile solid-t" v-on:click="pcmds('M702')"><div class="gradient"><img src="/img/z-bolt/unload_filament.svg"><span class="tile_title">Unload filament</span></div></button>
+                        <button class="button is-tile solid-t" v-on:click="pcmds('M600')"><div class="gradient"><img src="/img/z-bolt/toolchanger.svg"><span class="tile_title">Change filament</span></div></button>
+                        <button class="button is-tile solid-t" v-on:click="pcmds('M0')"><div class="gradient"><img src="/img/z-bolt/stop.svg"><span class="tile_title">Emergency stop</span></div></button>    
                     </div>
 
                     <div class="subpage" v-if="subPage == 'temperatures'">
@@ -43,7 +43,7 @@
                                     </div>
                                 </td>
                                 <td style="width: 80%;">
-                                    <button class="button is-tile solid-green-2" v-for="graph in graphs" v-on:click="changeTool(graph.name)"><div class="gradient"><img src="/img/z-bolt/extruder.svg"><span class="tile_title">{{graph.name}}</span></div></button>
+                                    <button class="button is-tile solid-t" v-for="graph in graphs" v-on:click="changeTool(graph.name)"><div class="gradient"><img src="/img/z-bolt/extruder.svg"><span class="tile_title">{{graph.name}}</span></div></button>
                                 </td>
                             </tr>
                         </table>
@@ -103,8 +103,8 @@
                         <button class="button is-tile solid-background" v-on:click="showPage()" v-bind:class="{ 'solid-green-2' : this.$store.state.selectedfile != '' }"><div class="gradient"><img src="/img/z-bolt/back.svg"><span class="tile_title">print</span></div></button>
                     </div>
                     <div v-if="subPage == 'temperatures'">
-                        <button class="button is-tile solid-green-2" v-on:click="pcmds('M104 S0')"><div class="gradient"><img src="/img/z-bolt/extruder.svg"><span class="tile_title">Extruder off</span></div></button>
-                        <button class="button is-tile solid-green-2" v-on:click="pcmds('M140 S0')"><div class="gradient"><img src="/img/z-bolt/bed.svg"><span class="tile_title">Bed off</span></div></button>
+                        <button class="button is-tile solid-t" v-on:click="pcmds('M104 S0')"><div class="gradient"><img src="/img/z-bolt/extruder.svg"><span class="tile_title">Extruder off</span></div></button>
+                        <button class="button is-tile solid-t" v-on:click="pcmds('M140 S0')"><div class="gradient"><img src="/img/z-bolt/bed.svg"><span class="tile_title">Bed off</span></div></button>
                     </div>
                     
                 </td>
@@ -112,7 +112,7 @@
             <tr>
                 <td class="bottom left">fd</td>
                 <td class="bottom right">
-                    <button class="button is-tile solid-green-2" v-on:click="showPage()"><div class="gradient"><img src="/img/z-bolt/back.svg"><span class="tile_title">back</span></div></button>
+                    <button class="button is-tile solid-t" v-on:click="showPage()"><div class="gradient"><img src="/img/z-bolt/back.svg"><span class="tile_title">back</span></div></button>
                 </td>
             </tr>
         </table>
@@ -231,13 +231,18 @@ export default {
 }
 .gradient > span {
     color: white;
+    text-shadow: 1px 1px #000000;
     padding-bottom: 10px;
     display: block;
     margin: 20% 0 0 0;
     padding: 0;
     border: 0px;
     text-align: center;
-    font-size: 1.3vw;
+    font-size: 1.4vw;
+    font-weight: bold;
+}
+.solid-t {
+    background: #0744b4;
 }
 .solid-background {
     background: #222122;
