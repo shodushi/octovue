@@ -60,7 +60,7 @@
                             <div id="">
                                 <div v-if="file_origin == 'local' || file_origin == 'sdcard'">
 
-                                    <div v-if="selectedfolder != ''" v-on:click="folderup()" style="text-align: left"><span style="cursor: pointer;">&#x2190; back</span></div>
+                                    <div v-if="selectedfolder != ''" v-on:click="folderup()" style="text-align: left"><span id="backbutton">&#x2190; back</span></div>
                                     <table class="" id="filestable">
                                     <tbody id="filesbody" >
                                         <tr v-on:click="selectFolder(folder.path)" v-for="folder in folders"><td><span class="icon">&#128193;</span></td><td><span class="filename">{{ folder.display }}</span></td><td></td></tr>
@@ -389,5 +389,10 @@ input[type=range].slider+output {
 }
 .filedate {
     font-size: 1.4em;
+}
+#backbutton {
+    cursor: pointer;
+    color: white;
+    font-size: 1.3em;
 }
 </style>
