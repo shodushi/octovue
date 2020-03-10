@@ -26,7 +26,7 @@
                         <button class="button is-tile solid-t btn-1" v-on:click="pcmds('M84')"><div class="gradient"><img src="/img/z-bolt/motor-off.svg"><span class="tile_title">Motors off</span></div></button>
                         <button class="button is-tile solid-t btn-1" v-on:click="pcmds('M106')"><div class="gradient"><img src="/img/z-bolt/fan-on.svg"><span class="tile_title">Fan on</span></div></button>
                         <button class="button is-tile solid-t btn-1" v-on:click="pcmds('M107')"><div class="gradient"><img src="/img/z-bolt/fan-off.svg"><span class="tile_title">Fan off</span></div></button>
-                        <button class="button is-tile solid-t btn-1" v-on:click="pcmds('M701')"><div class="gradient"><img src="/img/z-bolt/load_filament.png?a"><span class="tile_title">Load filament</span></div></button>
+                        <button class="button is-tile solid-t btn-1" v-on:click="pcmds('M701')"><div class="gradient"><img src="/img/z-bolt/load_filament.svg"><span class="tile_title">Load filament</span></div></button>
                         <button class="button is-tile solid-t btn-1" v-on:click="pcmds('M702')"><div class="gradient"><img src="/img/z-bolt/unload_filament.svg"><span class="tile_title">Unload filament</span></div></button>
                         <button class="button is-tile solid-t btn-1" v-on:click="pcmds('M600')"><div class="gradient"><img src="/img/z-bolt/toolchanger.svg"><span class="tile_title">Change filament</span></div></button>
                         <button class="button is-tile solid-t btn-1" v-on:click="pcmds('M0')"><div class="gradient"><img src="/img/z-bolt/stop.svg"><span class="tile_title">Emergency stop</span></div></button>
