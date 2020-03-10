@@ -15,8 +15,9 @@
             </tr>
             <tr>
                 <td class="left">
-                    <button class="button is-tile solid-t btn-1" v-on:click="powerswitch()"><div class="gradient"><img src="/img/z-bolt/shutdown.svg"><span>Power</span></div><div id="powerstatus" :class="{'isok': isPower, 'isnok': isNotPower}"></div></button>
+                    <button v-if="$localStorage.get('powerhandling') == 'yes'" class="button is-tile solid-t btn-1" v-on:click="powerswitch()"><div class="gradient"><img src="/img/z-bolt/shutdown.svg"><span>Power</span></div><div id="powerstatus" :class="{'isok': isPower, 'isnok': isNotPower}"></div></button>
                     <button class="button is-tile solid-t btn-1" v-on:click="printerConnection()"><div class="gradient"><img src="/img/z-bolt/network.svg"><span>Connect</span></div><div id="connectionstatus" :class="{'isok': isConnection, 'isnok': isNotConnection, 'isconnecting': isConnecting}"></div></button>
+                    <button v-if="$localStorage.get('lighthandling') == 'yes'" class="button is-tile solid-t btn-1" v-on:click="lightswitch()"><div class="gradient"><img src="/img/z-bolt/light.svg" style="fill: white"><span>Light</span></div><div id="lightstatus" :class="{'isok': isLight, 'isnok': isNotLight}"></div></button>
                 </td>
                 <td class="center" rowspan="2">
                     <div class="subpage" v-if="subPage == 'printer'">
@@ -25,7 +26,7 @@
                         <button class="button is-tile solid-t btn-1" v-on:click="pcmds('M84')"><div class="gradient"><img src="/img/z-bolt/motor-off.svg"><span class="tile_title">Motors off</span></div></button>
                         <button class="button is-tile solid-t btn-1" v-on:click="pcmds('M106')"><div class="gradient"><img src="/img/z-bolt/fan-on.svg"><span class="tile_title">Fan on</span></div></button>
                         <button class="button is-tile solid-t btn-1" v-on:click="pcmds('M107')"><div class="gradient"><img src="/img/z-bolt/fan-off.svg"><span class="tile_title">Fan off</span></div></button>
-                        <button class="button is-tile solid-t btn-1" v-on:click="pcmds('M701')"><div class="gradient"><img src="/img/z-bolt/load_filament.png"><span class="tile_title">Load filament</span></div></button>
+                        <button class="button is-tile solid-t btn-1" v-on:click="pcmds('M701')"><div class="gradient"><img src="/img/z-bolt/load_filament.png?a"><span class="tile_title">Load filament</span></div></button>
                         <button class="button is-tile solid-t btn-1" v-on:click="pcmds('M702')"><div class="gradient"><img src="/img/z-bolt/unload_filament.svg"><span class="tile_title">Unload filament</span></div></button>
                         <button class="button is-tile solid-t btn-1" v-on:click="pcmds('M600')"><div class="gradient"><img src="/img/z-bolt/toolchanger.svg"><span class="tile_title">Change filament</span></div></button>
                         <button class="button is-tile solid-t btn-1" v-on:click="pcmds('M0')"><div class="gradient"><img src="/img/z-bolt/stop.svg"><span class="tile_title">Emergency stop</span></div></button>
@@ -544,7 +545,7 @@ input[type=range].slider+output {
   color: white;
   border: none;
 }
-#powerstatus, #connectionstatus {
+#powerstatus, #connectionstatus, #lightstatus {
     width: 15px;
     height: 15px;
     position: absolute;
