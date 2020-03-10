@@ -15,8 +15,8 @@
             </tr>
             <tr>
                 <td class="left">
-                    <button class="button is-tile solid-t btn-1" v-on:click="powerswitch()"><div class="gradient"><img src="/img/z-bolt/shutdown.svg"><span>Power</span></div></button>
-                    <button class="button is-tile solid-t btn-1" v-on:click="printerConnection()"><div class="gradient"><img src="/img/z-bolt/network.svg"><span>Connect</span></div></button>
+                    <button class="button is-tile solid-t btn-1" v-on:click="powerswitch()"><div class="gradient"><img src="/img/z-bolt/shutdown.svg"><span>Power</span></div><div id="powerstatus" :class="{'isok': isPower, 'isnok': isNotPower}"></div></button>
+                    <button class="button is-tile solid-t btn-1" v-on:click="printerConnection()"><div class="gradient"><img src="/img/z-bolt/network.svg"><span>Connect</span></div><div id="connectionstatus" :class="{'isok': isConnection, 'isnok': isNotConnection, 'isconnecting': isConnecting}"></div></button>
                 </td>
                 <td class="center" rowspan="2">
                     <div class="subpage" v-if="subPage == 'printer'">
@@ -157,9 +157,9 @@
                     </div>
 
                     <div class="subpage" v-if="subPage == 'job'">
-                        <button class="button is-tile solid-t btn-1" v-on:click="showPage()"><div class="gradient"><img src="/img/z-bolt/stop.svg"><span class="tile_title">stop print</span></div></button>
-                        <button class="button is-tile solid-t btn-1" v-on:click="showPage()"><div class="gradient"><img src="/img/z-bolt/pause.svg"><span class="tile_title">pause print</span></div></button>
-                        <button class="button is-tile solid-t btn-1" v-on:click="showPage()"><div class="gradient"><img src="/img/z-bolt/resume.svg"><span class="tile_title">resume print</span></div></button>
+                        <button class="button is-tile solid-t btn-1" v-on:click="cancelJob()"><div class="gradient"><img src="/img/z-bolt/stop.svg"><span class="tile_title">stop print</span></div></button>
+                        <button class="button is-tile solid-t btn-1" v-on:click="pauseJob()"><div class="gradient"><img src="/img/z-bolt/pause.svg"><span class="tile_title">pause print</span></div></button>
+                        <button class="button is-tile solid-t btn-1" v-on:click="resumeJob()"><div class="gradient"><img src="/img/z-bolt/resume.svg"><span class="tile_title">resume print</span></div></button>
                     </div>
 
 
@@ -212,7 +212,6 @@ export default {
         }
     },
     mounted: function() {
-        //$("#theme").attr("href", "css/themes/dark.css");
     },
     methods: {
         showPage: function(page) {
@@ -240,7 +239,7 @@ export default {
             } else {
                 this.setExtruderTemp(this.selectedTool);
             }
-        }
+        },
     },
     computed: {
 
@@ -544,5 +543,21 @@ input[type=range].slider+output {
   max-height: 50px;
   color: white;
   border: none;
+}
+#powerstatus, #connectionstatus {
+    width: 15px;
+    height: 15px;
+    position: absolute;
+    bottom: 7px;
+    right: 5px;
+}
+.isok {
+    background-color: green;
+}
+.isnok {
+    background-color: red;
+}
+.isconnecting {
+   background-color: yellow; 
 }
 </style>
