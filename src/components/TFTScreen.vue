@@ -5,31 +5,33 @@
             <tr>
                 <td class="top left"><button class="button is-tile solid-t"><a href="/#/"><div class="gradient"><img src="/img/octovue_logo.png"><span>Octovue</span></div></a></button></td>
                 <td class="top center">
-                    <button class="button is-tile solid-t" v-on:click="powerswitch()"><div class="gradient"><img src="/img/z-bolt/shutdown.svg"><span>Power</span></div></button>
-                    <button class="button is-tile solid-t" v-on:click="printerConnection()"><div class="gradient"><img src="/img/z-bolt/shutdown.svg"><span>Connect</span></div></button>
-                    <button class="button is-tile solid-t" v-on:click="showPage('printer')"><div class="gradient"><img src="/img/z-bolt/control.svg"><span>Printer</span></div></button>
-                    <button class="button is-tile solid-t" v-on:click="showPage('files')"><div class="gradient"><img src="/img/z-bolt/files.svg"><span>Files</span></div></button>
-                    <button class="button is-tile solid-t" v-on:click="showPage('temperatures')"><div class="gradient"><img src="/img/z-bolt/heat-up.svg"><span>Temperatures</span></div></button>
+                    <button class="button is-tile solid-t btn-1" v-on:click="showPage('printer')"><div class="gradient"><img src="/img/z-bolt/control.svg"><span>Printer</span></div></button>
+                    <button class="button is-tile solid-t btn-1" v-on:click="showPage('files')"><div class="gradient"><img src="/img/z-bolt/files.svg"><span>Files</span></div></button>
+                    <button class="button is-tile solid-t btn-1" v-on:click="showPage('temperatures')"><div class="gradient"><img src="/img/z-bolt/heat-up.svg"><span>Temperatures</span></div></button>
+                    <button class="button is-tile solid-t btn-1" v-on:click="showPage('movements')"><div class="gradient"><img src="/img/z-bolt/move.svg"><span>Movements</span></div></button>
+                    <button class="button is-tile solid-t btn-1" v-on:click="showPage('job')"><div class="gradient"><img src="/img/z-bolt/print.svg"><span>Job</span></div></button>
                 </td>
-                <td class="top right"><button class="button is-tile solid-t" v-on:click="refresh()"><div class="gradient"><img src="/img/z-bolt/refresh.svg"><span>refresh</span></div></a></button></td>
+                <td class="top right"><button class="button is-tile solid-t btn-1" v-on:click="refresh()"><div class="gradient"><img src="/img/z-bolt/refresh.svg"><span>refresh</span></div></a></button></td>
             </tr>
             <tr>
-                <td class="left"></td>
+                <td class="left">
+                    <button class="button is-tile solid-t btn-1" v-on:click="powerswitch()"><div class="gradient"><img src="/img/z-bolt/shutdown.svg"><span>Power</span></div></button>
+                    <button class="button is-tile solid-t btn-1" v-on:click="printerConnection()"><div class="gradient"><img src="/img/z-bolt/network.svg"><span>Connect</span></div></button>
+                </td>
                 <td class="center" rowspan="2">
                     <div class="subpage" v-if="subPage == 'printer'">
-                        <button class="button is-tile solid-t" v-on:click="pcmds('G28 W')"><div class="gradient"><img src="/img/z-bolt/home.svg"><span class="tile_title">Home all axes</span></div></button>
-                        <button class="button is-tile solid-t" v-on:click="pcmds('G80')"><div class="gradient"><img src="/img/z-bolt/bed-level.svg"><span class="tile_title">Mesh bed level</span></div></button>
-                        <button class="button is-tile solid-t" v-on:click="pcmds('M84')"><div class="gradient"><img src="/img/z-bolt/motor-off.svg"><span class="tile_title">Motors off</span></div></button>
-                        <button class="button is-tile solid-t" v-on:click="pcmds('M106')"><div class="gradient"><img src="/img/z-bolt/fan-on.svg"><span class="tile_title">Fan on</span></div></button>
-                        <button class="button is-tile solid-t" v-on:click="pcmds('M107')"><div class="gradient"><img src="/img/z-bolt/fan-off.svg"><span class="tile_title">Fan off</span></div></button>
-                        <button class="button is-tile solid-t" v-on:click="pcmds('M701')"><div class="gradient"><img src="/img/z-bolt/load_filament.png"><span class="tile_title">Load filament</span></div></button>
-                        <button class="button is-tile solid-t" v-on:click="pcmds('M702')"><div class="gradient"><img src="/img/z-bolt/unload_filament.svg"><span class="tile_title">Unload filament</span></div></button>
-                        <button class="button is-tile solid-t" v-on:click="pcmds('M600')"><div class="gradient"><img src="/img/z-bolt/toolchanger.svg"><span class="tile_title">Change filament</span></div></button>
-                        <button class="button is-tile solid-t" v-on:click="pcmds('M0')"><div class="gradient"><img src="/img/z-bolt/stop.svg"><span class="tile_title">Emergency stop</span></div></button>    
+                        <button class="button is-tile solid-t btn-1" v-on:click="pcmds('G28 W')"><div class="gradient"><img src="/img/z-bolt/home.svg"><span class="tile_title">Home all axes</span></div></button>
+                        <button class="button is-tile solid-t btn-1" v-on:click="pcmds('G80')"><div class="gradient"><img src="/img/z-bolt/bed-level.svg"><span class="tile_title">Mesh bed level</span></div></button>
+                        <button class="button is-tile solid-t btn-1" v-on:click="pcmds('M84')"><div class="gradient"><img src="/img/z-bolt/motor-off.svg"><span class="tile_title">Motors off</span></div></button>
+                        <button class="button is-tile solid-t btn-1" v-on:click="pcmds('M106')"><div class="gradient"><img src="/img/z-bolt/fan-on.svg"><span class="tile_title">Fan on</span></div></button>
+                        <button class="button is-tile solid-t btn-1" v-on:click="pcmds('M107')"><div class="gradient"><img src="/img/z-bolt/fan-off.svg"><span class="tile_title">Fan off</span></div></button>
+                        <button class="button is-tile solid-t btn-1" v-on:click="pcmds('M701')"><div class="gradient"><img src="/img/z-bolt/load_filament.png"><span class="tile_title">Load filament</span></div></button>
+                        <button class="button is-tile solid-t btn-1" v-on:click="pcmds('M702')"><div class="gradient"><img src="/img/z-bolt/unload_filament.svg"><span class="tile_title">Unload filament</span></div></button>
+                        <button class="button is-tile solid-t btn-1" v-on:click="pcmds('M600')"><div class="gradient"><img src="/img/z-bolt/toolchanger.svg"><span class="tile_title">Change filament</span></div></button>
+                        <button class="button is-tile solid-t btn-1" v-on:click="pcmds('M0')"><div class="gradient"><img src="/img/z-bolt/stop.svg"><span class="tile_title">Emergency stop</span></div></button>
                     </div>
 
                     <div class="subpage" v-if="subPage == 'temperatures'">
-                        
                         <table width="640" id="tempwrapper">
                             <tr>
                                 <td style="width: 20%; color: white;">
@@ -47,9 +49,7 @@
                                 </td>
                             </tr>
                         </table>
-                        
                     </div>
-
 
                     <div class="subpage" v-if="subPage == 'files'">
                         <div id="filewrapper">
@@ -86,33 +86,100 @@
                                 </div>
                             </div>
                         </div>
-                        
                     </div>
 
+                    <div class="subpage" v-if="subPage == 'movements'">
+                        <div class="printhead ctrlbuttons">
+                            <div class=""></div>
+                            <div class="phcenter">
+                            <div class="phhorizontal">
+                                <table>
+                                <tr>
+                                    <td colspan="3" style="text-align: center">X / Y</td>
+                                </tr>
+                                <tr>
+                                    <td ></td>
+                                    <td ><span class="button ctrlbutton solid-t2" v-on:click="printHead('jog', 0, steps, 0)"><i class="fas fa-arrow-up"></i></span></td>
+                                    <td ></td>
+                                </tr>
+                                <tr>
+                                    <td ><span class="button ctrlbutton solid-t2" v-on:click="printHead('jog', '-'+steps, 0, 0)"><i class="fas fa-arrow-left"></i></span></td>
+                                    <td ><span class="button ctrlbutton solid-t2" v-on:click="printHead('home', null, null, null, ['x', 'y'])"><i class="fas fa-home"></i></span></td>
+                                    <td ><span class="button ctrlbutton solid-t2" v-on:click="printHead('jog', steps, 0, 0)"><i class="fas fa-arrow-right"></i></span></td>
+                                </tr>
+                                <tr>
+                                    <td ></td>
+                                    <td ><span class="button ctrlbutton solid-t2" v-on:click="printHead('jog', 0, '-'+steps, 0)"><i class="fas fa-arrow-down"></i></span></td>
+                                    <td ></td>
+                                </tr>
+                                </table>
+                            </div>
+                            <div class="phhorizontal dragSelector">
+                                <table>
+                                <tr>
+                                    <td colspan="3" style="text-align: center">Z</td>
+                                </tr>
+                                <tr>
+                                    <td ><span class="button ctrlbutton solid-t2" v-on:click="printHead('jog', 0, 0, steps)"><i class="fas fa-arrow-up"></i></span></td>
+                                </tr>
+                                <tr>
+                                    <td ><span class="button ctrlbutton solid-t2" v-on:click="printHead('home', null, null, null, ['z'])"><i class="fas fa-home"></i></span></td>
+                                </tr>
+                                <tr>
+                                    <td ><span class="button ctrlbutton solid-t2" v-on:click="printHead('jog', 0, 0, '-'+steps)"><i class="fas fa-arrow-down"></i></span></td>
+                                </tr>
+                                </table>
+                            </div>
+                            </div>
+                            <div class="field has-addons vertical dragSelector">
+                            <p class="control">
+                                <button class="button is-medium solid-tc" v-bind:class="{ 'is-active' : steps == 0.1, 'is-outlined' : steps != 0.1}" v-on:click="steps = 0.1">
+                                <span>0.1</span>
+                                </button>
+                            </p>
+                            <p class="control">
+                                <button class="button is-medium solid-tc" v-bind:class="{ 'is-active' : steps == 1, 'is-outlined' : steps != 1}" v-on:click="steps = 1">
+                                <span>1</span>
+                                </button>
+                            </p>
+                            <p class="control">
+                                <button class="button is-medium solid-tc" v-bind:class="{ 'is-active' : steps == 10, 'is-outlined' : steps != 10}" v-on:click="steps = 10">
+                                <span>10</span>
+                                </button>
+                            </p>
+                            <p class="control">
+                                <button class="button is-medium solid-tc" v-bind:class="{ 'is-active' : steps == 100, 'is-outlined' : steps != 100}" v-on:click="steps = 100">
+                                <span>100</span>
+                                </button>
+                            </p>
+                            </div>
+                        </div>
+                    </div>
 
-
-
-
-
+                    <div class="subpage" v-if="subPage == 'job'">
+                        <button class="button is-tile solid-t btn-1" v-on:click="showPage()"><div class="gradient"><img src="/img/z-bolt/stop.svg"><span class="tile_title">stop print</span></div></button>
+                        <button class="button is-tile solid-t btn-1" v-on:click="showPage()"><div class="gradient"><img src="/img/z-bolt/pause.svg"><span class="tile_title">pause print</span></div></button>
+                        <button class="button is-tile solid-t btn-1" v-on:click="showPage()"><div class="gradient"><img src="/img/z-bolt/resume.svg"><span class="tile_title">resume print</span></div></button>
+                    </div>
 
 
 
                 </td>
                 <td class="right">
                     <div v-if="subPage == 'files'">
-                        <button class="button is-tile solid-background" v-on:click="showPage()" v-bind:class="{ 'solid-green-2' : this.$store.state.selectedfile != '' }"><div class="gradient"><img src="/img/z-bolt/back.svg"><span class="tile_title">print</span></div></button>
+                        <button class="button is-tile solid-background  btn-1" v-on:click="showPage()" v-bind:class="{ 'solid-green-2' : this.$store.state.selectedfile != '' }"><div class="gradient"><img src="/img/z-bolt/back.svg"><span class="tile_title">print</span></div></button>
                     </div>
                     <div v-if="subPage == 'temperatures'">
-                        <button class="button is-tile solid-t" v-on:click="pcmds('M104 S0')"><div class="gradient"><img src="/img/z-bolt/extruder.svg"><span class="tile_title">Extruder off</span></div></button>
-                        <button class="button is-tile solid-t" v-on:click="pcmds('M140 S0')"><div class="gradient"><img src="/img/z-bolt/bed.svg"><span class="tile_title">Bed off</span></div></button>
+                        <button class="button is-tile solid-t btn-1" v-on:click="pcmds('M104 S0')"><div class="gradient"><img src="/img/z-bolt/extruder.svg"><span class="tile_title">Extruder off</span></div></button>
+                        <button class="button is-tile solid-t btn-1" v-on:click="pcmds('M140 S0')"><div class="gradient"><img src="/img/z-bolt/bed.svg"><span class="tile_title">Bed off</span></div></button>
                     </div>
                     
                 </td>
             </tr>
             <tr>
-                <td class="bottom left">fd</td>
+                <td class="bottom left"></td>
                 <td class="bottom right">
-                    <button class="button is-tile solid-t" v-on:click="showPage()"><div class="gradient"><img src="/img/z-bolt/back.svg"><span class="tile_title">back</span></div></button>
+                    <button class="button is-tile solid-t btn-1" v-on:click="showPage()"><div class="gradient"><img src="/img/z-bolt/back.svg"><span class="tile_title">back</span></div></button>
                 </td>
             </tr>
         </table>
@@ -141,6 +208,7 @@ export default {
             subPage: "printer",
             selectedTool: "tool0",
             maxValue: 250,
+            steps: 10,
         }
     },
     mounted: function() {
@@ -200,7 +268,37 @@ export default {
     margin: 4px;
     padding: 0;
     border: 0px;
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    transition: all 0.3s;
 }
+.is-tile:after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    transition: all 0.3s;
+}
+.btn-1:hover {
+    background: #2980b9;
+}
+
+.btn-1:active {
+    background: #2980b9;
+    top: 2px;
+}
+
+.btn-1:before {
+    position: absolute;
+    height: 100%;
+    left: 0;
+    top: 0;
+    line-height: 3;
+    font-size: 140%;
+    width: 60px;
+}
+
 .subpage {
     text-align: center;
     margin: 0 auto;
@@ -241,9 +339,23 @@ export default {
     font-size: 1.4vw;
     font-weight: bold;
 }
+.button.solid-tc {
+    background-color: transparent;
+    color: white;
+    border-color: white;
+}
+.button.solid-tc:active, .button.solid-tc.is-active {
+    background-color: #118fe4;
+    border-color: transparent;
+    color: #fff;
+}
 .solid-t {
     background: #0744b4;
 }
+.solid-t2 {
+    background: #118fe4;
+}
+
 .solid-background {
     background: #222122;
 }
@@ -399,5 +511,38 @@ input[type=range].slider+output {
     cursor: pointer;
     color: white;
     font-size: 1.3em;
+}
+
+.printhead {
+  margin: 0 auto;
+  width: 240px;
+  height: 240px;
+  color: white;
+  font-weight: bold;
+  justify-content:center;
+  display: flex;
+  flex-direction: column;
+  margin-top: 2vh;
+}
+.printhead>.phcenter {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin: 0 auto;
+}
+.printhead>.vertical {
+  width: auto;
+  clear: both;
+  justify-content:center;
+  margin-top: 3vh;
+}
+.ctrlbuttons td {
+  padding: 4px;
+}
+.ctrlbutton {
+  max-width: 50px;
+  max-height: 50px;
+  color: white;
+  border: none;
 }
 </style>
