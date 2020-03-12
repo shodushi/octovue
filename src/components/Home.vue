@@ -215,7 +215,7 @@
                                 <div v-for="graph in graphs" v-if="graph.name != 'bed' && graph.name != 'chamber'" style="text-align: left;">
                                     <div style="width: 25%; float: left; text-align: center;">
                                         {{graph.name}}<br />
-                                        <input :id="'slider'+graph.name" class="slider is-fullwidth is-danger is-small is-circle has-output" step="1" min="0" max="250" v-on:mouseup="setExtruderTemp(graph.name)" v-bind:value="temps[graph.name].target" type="range" orient="vertical"><output style="position: relative; top: 8px; padding: 3px;" v-bind:for="'slider'+graph.name">{{ temps[graph.name].target }}</output>
+                                        <input :id="'slider'+graph.name" class="slider is-fullwidth is-danger is-small is-circle has-output" step="1" min="0" max="290" v-on:mouseup="setExtruderTemp(graph.name)" v-bind:value="temps[graph.name].target" type="range" orient="vertical"><output style="position: relative; top: 8px; padding: 3px;" v-bind:for="'slider'+graph.name">{{ temps[graph.name].target }}</output>
                                     </div>
                                     <div style="width: 25%; float: left; text-align: center;">
                                         <p>&nbsp;</p>
@@ -265,7 +265,7 @@
                             <div v-if="graphs.length > 2" style="margin-top: 20px;">
                                 <div v-for="graph in graphs" v-if="graph.name != 'bed' && graph.name != 'chamber'" style="text-align: left;">
                                     {{graph.name}}<br />
-                                    <input :id="'slider'+graph.name" class="slider is-fullwidth is-circle has-output" step="1" min="0" max="250" v-on:mouseup="setExtruderTemp(graph.name)" v-bind:value="temps[graph.name].target" type="range"><output style="position: relative; top: 8px;" v-bind:for="'slider'+graph.name">{{ temps[graph.name].target }}</output>
+                                    <input :id="'slider'+graph.name" class="slider is-fullwidth is-circle has-output" step="1" min="0" max="290" v-on:mouseup="setExtruderTemp(graph.name)" v-bind:value="temps[graph.name].target" type="range"><output style="position: relative; top: 8px;" v-bind:for="'slider'+graph.name">{{ temps[graph.name].target }}</output>
                                 </div>
                                 <div v-for="graph in graphs" v-if="graph.name == 'bed'" style="text-align: left;">
                                     {{graph.name}}<br />

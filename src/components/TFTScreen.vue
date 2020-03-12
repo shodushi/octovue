@@ -37,7 +37,7 @@
                             <tr>
                                 <td style="width: 20%; color: white;">
                                     <div style="width: 240px; float: left; text-align: center;" v-if="selectedTool != 'bed'">
-                                        <input :id="'slider'+selectedTool" class="slider is-danger is-large is-circle" step="1" min="0" max="250" v-on:mouseup="setTemp()" v-bind:value="temps[selectedTool].target" type="range" orient="vertical">
+                                        <input :id="'slider'+selectedTool" class="slider is-danger is-large is-circle" step="1" min="0" max="290" v-on:mouseup="setTemp()" v-bind:value="temps[selectedTool].target" type="range" orient="vertical">
                                         <div class="output">{{selectedTool}}<br />{{ temps[selectedTool].target }} / {{ temps[selectedTool].actual }}</div>
                                     </div>
                                     <div style="width: 240px; float: left; text-align: center;" v-if="selectedTool == 'bed'">
