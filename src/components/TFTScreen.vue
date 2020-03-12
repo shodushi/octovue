@@ -11,13 +11,15 @@
                     <button class="button is-tile solid-t btn-1" v-on:click="showPage('movements')"><div class="gradient"><img src="/img/z-bolt/move.svg"><span>Movements</span></div></button>
                     <button class="button is-tile solid-t btn-1" v-on:click="showPage('job')"><div class="gradient"><img src="/img/z-bolt/print.svg"><span>Job</span></div></button>
                 </td>
-                <td class="top right"><button class="button is-tile solid-t btn-1" v-on:click="refresh()"><div class="gradient"><img src="/img/z-bolt/refresh.svg"><span>refresh</span></div></a></button></td>
+                <td class="top right">
+                    <!--<button class="button is-tile solid-t btn-1" v-on:click="refresh()"><div class="gradient"><img src="/img/z-bolt/refresh.svg"><span>refresh</span></div></a></button>!-->
+                    <button v-if="$localStorage.get('lighthandling') == 'yes'" class="button is-tile solid-t btn-1" v-on:click="lightswitch()"><div class="gradient"><img src="/img/z-bolt/light.svg" style="fill: white"><span>Light</span></div><div id="lightstatus" :class="{'isok': isLight, 'isnok': isNotLight}"></div></button>
+                    </td>
             </tr>
             <tr>
                 <td class="left">
                     <button v-if="$localStorage.get('powerhandling') == 'yes'" class="button is-tile solid-t btn-1" v-on:click="powerswitch()"><div class="gradient"><img src="/img/z-bolt/shutdown.svg"><span>Power</span></div><div id="powerstatus" :class="{'isok': isPower, 'isnok': isNotPower}"></div></button>
                     <button class="button is-tile solid-t btn-1" v-on:click="printerConnection()"><div class="gradient"><img src="/img/z-bolt/network.svg"><span>Connect</span></div><div id="connectionstatus" :class="{'isok': isConnection, 'isnok': isNotConnection, 'isconnecting': isConnecting}"></div></button>
-                    <button v-if="$localStorage.get('lighthandling') == 'yes'" class="button is-tile solid-t btn-1" v-on:click="lightswitch()"><div class="gradient"><img src="/img/z-bolt/light.svg" style="fill: white"><span>Light</span></div><div id="lightstatus" :class="{'isok': isLight, 'isnok': isNotLight}"></div></button>
                 </td>
                 <td class="center" rowspan="2">
                     <div class="subpage" v-if="subPage == 'printer'">
@@ -168,7 +170,7 @@
                 </td>
                 <td class="right">
                     <div v-if="subPage == 'files'">
-                        <button class="button is-tile solid-background  btn-1" v-on:click="showPage()" v-bind:class="{ 'solid-green-2' : this.$store.state.selectedfile != '' }"><div class="gradient"><img src="/img/z-bolt/back.svg"><span class="tile_title">print</span></div></button>
+                        <button class="button is-tile solid-background  btn-1" v-on:click="showPage()" v-bind:class="{ 'solid-green-2' : this.$store.state.selectedfile != '' }"><div class="gradient"><img src="/img/z-bolt/print.svg"><span class="tile_title">print</span></div></button>
                     </div>
                     <div v-if="subPage == 'temperatures'">
                         <button class="button is-tile solid-t btn-1" v-on:click="pcmds('M104 S0')"><div class="gradient"><img src="/img/z-bolt/extruder.svg"><span class="tile_title">Extruder off</span></div></button>
