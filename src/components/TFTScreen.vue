@@ -170,7 +170,7 @@
                 </td>
                 <td class="right">
                     <div v-if="subPage == 'files'">
-                        <button class="button is-tile solid-background  btn-1" v-on:click="showPage()" v-bind:class="{ 'solid-green-2' : this.$store.state.selectedfile != '' }"><div class="gradient"><img src="/img/z-bolt/print.svg"><span class="tile_title">print</span></div></button>
+                        <button class="button is-tile solid-background  btn-1" v-on:click="loadprintFile(true, true)" v-bind:class="{ 'solid-green-2' : this.$store.state.selectedfile != '' }"><div class="gradient"><img src="/img/z-bolt/print.svg"><span class="tile_title">print</span></div></button>
                     </div>
                     <div v-if="subPage == 'temperatures'">
                         <button class="button is-tile solid-t btn-1" v-on:click="pcmds('M104 S0')"><div class="gradient"><img src="/img/z-bolt/extruder.svg"><span class="tile_title">Extruder off</span></div></button>
