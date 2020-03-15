@@ -160,9 +160,36 @@
                     </div>
 
                     <div class="subpage" v-if="subPage == 'job'">
-                        <button class="button is-tile solid-t btn-1" v-on:click="cancelJob()"><div class="gradient"><img src="/img/z-bolt/stop.svg"><span class="tile_title">stop print</span></div></button>
-                        <button class="button is-tile solid-t btn-1" v-on:click="pauseJob()"><div class="gradient"><img src="/img/z-bolt/pause.svg"><span class="tile_title">pause print</span></div></button>
-                        <button class="button is-tile solid-t btn-1" v-on:click="resumeJob()"><div class="gradient"><img src="/img/z-bolt/resume.svg"><span class="tile_title">resume print</span></div></button>
+                        <table width="640" id="jobwrapper">
+                            <tr>
+                                <td style="width: 79%; color: white;">
+                                    <h2>{{ printerState.payload.state_string }}</h2>
+                                    <h3>{{job.printfile}}</h3>
+                                    <div class="columns" style="padding-top: 70px;">
+                                        <div class="column is-one-third">
+                                        <img src="img/layer-time-average-icon2.png" style="height: 46px"><br />
+                                        {{ formatTimeRemaining(job.progress.printTimeLeft) }}
+                                        </div>
+                                        <div class="column is-one-third">
+                                        <img src="img/layers-icon2.png" style="height: 46px"><br />
+                                        {{currentLayer}} / {{totalLayer}}
+                                        </div>
+                                        <div class="column is-one-third">
+                                        <img src="img/layer_height.png" style="height: 46px"><br />
+                                        {{formatDecimal(currentHeight)}} / {{formatDecimal(totalHeight)}} mm
+                                        </div>
+                                    </div>
+
+                                    <div style="text-align: right; margin-top: 50px;" class="pp_boxes">{{formatDecimal(job.progress.completion)}}%</div>
+                                    <progress class="progress is-primary" v-bind:value="job.progress.completion" max="100"></progress>
+                                </td>
+                                <td style="width: 21%; color: white;" class="subpagebuttons">
+                                    <button class="button is-tile solid-t btn-1" v-on:click="cancelJob()"><div class="gradient"><img src="/img/z-bolt/stop.svg"><span class="tile_title">stop print</span></div></button>
+                                    <button class="button is-tile solid-t btn-1" v-on:click="pauseJob()"><div class="gradient"><img src="/img/z-bolt/pause.svg"><span class="tile_title">pause print</span></div></button>
+                                    <button class="button is-tile solid-t btn-1" v-on:click="resumeJob()"><div class="gradient"><img src="/img/z-bolt/resume.svg"><span class="tile_title">resume print</span></div></button>
+                                </td>
+                            </tr>
+                        </table>
                     </div>
 
 
@@ -186,19 +213,6 @@
                 </td>
             </tr>
         </table>
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     </div>
 </template>
@@ -454,9 +468,17 @@ export default {
 #filesource > a > * {
     color: white;
 }
-table#tempwrapper, table#tempwrapper td {
-    padding: 3px;
+table#tempwrapper, table#tempwrapper td, table#jobwrapper, table#jobwrapper td {
+    padding: 10px;
     margin-left: 40px;
+}
+#jobwrapper .column {
+    background-color: #222122 !important;
+    text-align: center;
+}
+.subpagebuttons> button {
+    position: relative;
+    left: 5px;
 }
 .tempsliderwrapper {
     color: white;
