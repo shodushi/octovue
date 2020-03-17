@@ -1,5 +1,5 @@
 <template>
-    <div class="container is-widescreen" style="background-color: #222122 !important;">
+    <div class="container is-widescreen" style="background-color: #222122 !important;" id="tftscreen">
 
         <table id="main" class="" style="width: 100vw; height: 100vh;">
             <tr>
@@ -265,10 +265,13 @@ export default {
 
     },
 }
-
 </script>
 
 <style scoped>
+#tftscreen {
+    overflow-y: hidden;
+    overflow-y: hidden;
+}
 .section {
     margin: 0px !important;
 }
