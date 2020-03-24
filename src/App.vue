@@ -246,7 +246,7 @@
                 <h3>Uploading files</h3>
                 <p>Navigate to the destination folder and just drag and drop the gcode file into this browser window.<br />For now, only uploading to octoprint's local storage is used.</p>
                 <h3>Printer power</h3>
-                <p>For switching the printer on/off I use a &quot;Sonoff POW with tasmota firmware&quot;. If you plan the same/similar setup, add your sonoff's ip-address to config and switch powerhandling on.</p>
+                <p>For switching the printer on/off I use a &quot;Sonoff POW with esphome firmware&quot;. If you plan the same/similar setup, add your sonoff's ip-address to config and switch powerhandling on.</p>
                 <h3>Light control</h3>
                 <p>For switching the enclosure lights on/off I use a &quot;nodemcu flashed with esphome&quot;, integrated into homeassistant. If you plan the same/similar setup, add your led-controlling-device's ip-address and switch lighthandling on.</p>
               </div>
@@ -440,6 +440,12 @@ export default {
   },
   methods: {
     powerswitch: function() {
+      axios({ method: "POST", "url": this.$localStorage.get('tasmota_ip')+this.$localStorage.get('tasmota_toggle') }).then(result => {
+        this.getPowerState();
+      }, error => {
+        console.error(error);
+      });
+      /*
       this.transport("GET", "tasmota_ip", "/cm?cmnd=Power%20TOGGLE", null).then(result => {
         if(typeof(result) == "object") {
           this.$store.state.powerState = result.data.POWER.toLowerCase();
@@ -452,8 +458,29 @@ export default {
           }
         }
       });
+      */
     },
     getPowerState: function() {
+      if(this.$localStorage.get('powerhandling') == "yes") {
+        axios({ method: "GET", "url": this.$localStorage.get('tasmota_ip')+this.$localStorage.get('tasmota_toggle') }).then(result => {
+          if(result.data != null) {
+            if(result.data.state != null) {
+              this.$store.state.powerState = result.data.state.toLowerCase();
+              if(this.powerState == "off") {
+                this.$store.state.isNotPower = true;
+                this.$store.state.isPower = false;
+              } else {
+                this.$store.state.isNotPower = false;
+                this.$store.state.isPower = true;
+              }
+            }
+          }
+          
+        }, error => {
+            console.error(error);
+        });
+      }
+      /*
       if(this.$localStorage.get('powerhandling') == "yes") {
         this.transport("GET", "tasmota_ip", "/cm?cmnd=Status", null).then(result => {
           if(typeof(result) == "object") {
@@ -469,6 +496,7 @@ export default {
           }
         });
       }
+      */
     },
     lightswitch: function() {
       this.transport("POST", "led_ip", "/light/3d_drucker_led/toggle", null).then(result => {

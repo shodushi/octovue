@@ -136,14 +136,14 @@
               <div class="field" v-if="powerhandling" style="text-align: left;">
                 <label class="label has-margin">Powerswitch toggle parameter:</label>
                 <div class="control has-margin">
-                  <input class="input" type="text" v-model="tasmota_toggle" placeholder="/cm?cmnd=Power%20TOGGLE">
+                  <input class="input" type="text" v-model="tasmota_toggle" placeholder="/switch/sonoff_basic_relay/toggle">
                 </div>
               </div>
               
               <div class="field is-separate" v-if="powerhandling" style="text-align: left;">
                 <label class="label has-margin">Powerswitch status parameter:</label>
                 <div class="control has-margin">
-                  <input class="input" type="text" v-model="tasmota_status" placeholder="/cm?cmnd=Status">
+                  <input class="input" type="text" v-model="tasmota_status" placeholder="/switch/sonoff_basic_relay/state">
                 </div>
               </div>
 

@@ -298,6 +298,12 @@ export const globalSettings = {
       }
     },
     powerswitch: function() {
+      axios({ method: "POST", "url": this.$localStorage.get('tasmota_ip')+this.$localStorage.get('tasmota_toggle') }).then(result => {
+        this.getPowerState();
+      }, error => {
+        console.error(error);
+      });
+      /*
       axios({ method: "GET", "url": this.$localStorage.get('tasmota_ip')+this.$localStorage.get('tasmota_toggle') }).then(result => {
         this.$store.state.powerState = result.data.POWER.toLowerCase();
         //this.powerState = result.data.POWER.toLowerCase();
@@ -311,8 +317,29 @@ export const globalSettings = {
       }, error => {
           console.error(error);
       });
+      */
     },
     getPowerState: function() {
+      if(this.$localStorage.get('powerhandling') == "yes") {
+        axios({ method: "GET", "url": this.$localStorage.get('tasmota_ip')+this.$localStorage.get('tasmota_toggle') }).then(result => {
+          if(result.data != null) {
+            if(result.data.state != null) {
+              this.$store.state.powerState = result.data.state.toLowerCase();
+              if(this.powerState == "off") {
+                this.$store.state.isNotPower = true;
+                this.$store.state.isPower = false;
+              } else {
+                this.$store.state.isNotPower = false;
+                this.$store.state.isPower = true;
+              }
+            }
+          }
+          
+        }, error => {
+            console.error(error);
+        });
+      }
+      /*
       if(this.$localStorage.get('powerhandling') == "yes") {
         axios({ method: "GET", "url": this.$localStorage.get('tasmota_ip')+this.$localStorage.get('tasmota_status') }).then(result => {
           if(result.data.Status.Power == 0) {
@@ -328,6 +355,7 @@ export const globalSettings = {
             console.error(error);
         });
       }
+      */
     },
     lightswitch: function() {
       axios({ method: "POST", "url": this.$localStorage.get('led_ip')+this.$localStorage.get('led_toggle') }).then(result => {
