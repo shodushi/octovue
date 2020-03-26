@@ -278,8 +278,8 @@ export default {
 .is-tile {
     text-align: center;
     cursor: pointer;
-    width: 120px;
-    height: 120px;
+    width: 12vw;
+    height: 12vw;
     display: inline-block;
     text-decoration: none;
     margin-right: 5px;
