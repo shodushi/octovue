@@ -3,7 +3,7 @@
 An alternative UI for octoprint based on vue.js and bulma css framework
 
 ## Latest enhancements
- - added Page for external Touchscreen with tile buttons
+ - added page for external touchscreen with tile buttons
  - minor improvements and fixes
  - dashboard:
    - widget for filebrowser
