@@ -3,7 +3,8 @@
 An alternative UI for octoprint based on vue.js and bulma css framework
 
 ## Latest enhancements
- - optimized connection handling
+ - added Page for external Touchscreen with tile buttons
+ - minor improvements and fixes
  - dashboard:
    - widget for filebrowser
    - widget for jobcontrol (resume/pause/cancel job)
@@ -11,6 +12,7 @@ An alternative UI for octoprint based on vue.js and bulma css framework
    - lock/unlock dashboard widgets
 
 ## Functionality
+ - dashboard like page for external touchscreen like octoscreen and others
  - of course upload and print gcodes :-)
  - looking more modern than octoprint :-)
  - customizable drag'n'drop widget dashboard
