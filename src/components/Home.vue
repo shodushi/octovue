@@ -91,7 +91,7 @@
                 <table class="table is-fullwidth is-striped is-hoverable" id="filestable">
                     <tbody id="filesbody">
                     <tr v-on:click="selectFolder(folder.path)" v-for="folder in folders"><td><span class="icon">&#128193;</span></td><td>{{ folder.display }}</td><td></td></tr>
-                    <tr v-on:click="selectFile($event, file)" v-for="file in files">
+                    <tr :id="'filerow'+index" v-on:click="selectFile($event, file, index)" v-for="(file, index) in files">
                         <td>
                         <figure v-if="$localStorage.get('previewimages') == 'yes'" class="image is-128x128"><img :src="file.img" :id="file.thumbid" class="thumb" @error="imgFallback" v-on:mousemove="zoomIn($event, file.thumbid, 'overlay_'+file.imgid)" v-on:mouseleave="zoomOut(''+file.imgid)"></figure>
                         <div class="overlay_wrapper">

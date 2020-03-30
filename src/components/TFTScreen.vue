@@ -66,8 +66,8 @@
                                     <div v-if="selectedfolder != ''" v-on:click="folderup()" style="text-align: left"><span id="backbutton">&#x2190; back</span></div>
                                     <table class="" id="filestable">
                                     <tbody id="filesbody" >
-                                        <tr v-on:click="selectFolder(folder.path)" v-for="folder in folders"><td><span class="icon">&#128193;</span></td><td><span class="filename">{{ folder.display }}</span></td><td></td></tr>
-                                        <tr v-on:click="selectFile($event, file)" v-for="file in files">
+                                        <tr v-on:click="selectFolder(folder.path, index)" v-for="folder in folders"><td><span class="icon">&#128193;</span></td><td><div class="filename">{{ folder.display }}</div></td><td></td></tr>
+                                        <tr :id="'filerow'+index" v-on:click="selectFile($event, file, index)" v-for="(file, index) in files">
                                         
                                         <td v-if="file_origin == 'local'">
                                             <figure v-if="$localStorage.get('previewimages') == 'yes'" class="image is-128x128"><img :src="file.img" :id="file.thumbid" class="thumb" @error="imgFallback" v-on:mousemove="zoomIn($event, file.thumbid, 'overlay_'+file.imgid)" v-on:mouseleave="zoomOut(''+file.imgid)"></figure>
@@ -76,7 +76,7 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <span class="filename">{{ file.display }}</span>&nbsp;
+                                            <div class="filename">{{ file.display }}</div>&nbsp;
                                             <span v-if="file.prints != null">
                                                 <i class="fas" alt="last print" :class="{'fa-thumbs-up': file.prints.last.success}" v-if="file.prints.last.success" style="color: #31cf65;"></i>
                                                 <i class="fas" alt="last print" :class="{'fa-thumbs-down': !file.prints.last.success}" v-if="!file.prints.last.success" style="color: #fc3c63;"></i>
@@ -268,6 +268,9 @@ export default {
 </script>
 
 <style scoped>
+.is-selected {
+    background-color: #96BF01;
+}
 #tftscreen {
     overflow-y: hidden;
     overflow-y: hidden;
@@ -438,7 +441,7 @@ export default {
 }
 #filewrapper {
     height: 70vh;
-    width: 100%;
+    width: 65vw;
     overflow:scroll;
     overflow-x: hidden;
     float: left;
@@ -530,6 +533,8 @@ input[type=range].slider+output {
 }
 .filename {
     font-size: 1.4em;
+    word-wrap: break-word;
+    max-width: 30vw;
 }
 .filedate {
     font-size: 1.4em;

@@ -572,7 +572,7 @@ export const globalSettings = {
       this.$store.state.file_origin = src;
       this.loadFiles('');
     },
-    selectFolder: function(path) {
+    selectFolder: function(path, index) {
       this.$store.state.selectedfolder = path;
       this.loadFiles(path);
     },
@@ -588,11 +588,12 @@ export const globalSettings = {
       this.$store.state.selectedmovefolder = this.$store.state.selectedmovefolder.substring(0, this.$store.state.selectedmovefolder.lastIndexOf('/'));
       this.listMoveFolders();
     },
-    selectFile: function(event, file) {
+    selectFile: function(event, file, index) {
       this.$store.state.selectedfile = file;
       $("#filestable tr").removeClass("is-selected");
       $("#filestable td").removeClass("is-selected");
       $(".file_buttons span").css("display", "none");
+      $("#filerow"+index).addClass("is-selected");
       /*
       if(event.srcElement.parentElement.tagName == "TR") {
         $(event.srcElement.parentElement).addClass("is-selected");
