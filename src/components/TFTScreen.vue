@@ -40,11 +40,11 @@
                                 <td style="width: 20%; color: white;">
                                     <div style="width: 240px; float: left; text-align: center;" v-if="selectedTool != 'bed'">
                                         <input :id="'slider'+selectedTool" class="slider is-danger is-large is-circle" step="1" min="0" max="290" v-on:mouseup="setTemp()" v-bind:value="temps[selectedTool].target" type="range" orient="vertical">
-                                        <div class="output">{{selectedTool}}<br />{{ temps[selectedTool].target }} / {{ temps[selectedTool].actual }}</div>
+                                        <div class="output">{{selectedTool}}<br />{{ temps[selectedTool].actual }} / {{ temps[selectedTool].target }}</div>
                                     </div>
                                     <div style="width: 240px; float: left; text-align: center;" v-if="selectedTool == 'bed'">
                                         <input :id="'slider'+selectedTool" class="slider is-info is-large is-circle" step="1" min="0" max="100" v-on:mouseup="setTemp()" v-bind:value="temps[selectedTool].target" type="range" orient="vertical">
-                                        <div class="output">{{selectedTool}}<br />{{ temps[selectedTool].target }} / {{ temps[selectedTool].actual }}</div>
+                                        <div class="output">{{selectedTool}}<br />{{ temps[selectedTool].actual }} / {{ temps[selectedTool].target }}</div>
                                     </div>
                                 </td>
                                 <td style="width: 80%;">
