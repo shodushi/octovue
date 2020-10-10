@@ -298,7 +298,7 @@ export const globalSettings = {
       }
     },
     powerswitch: function() {
-      axios({ method: "POST", "url": this.$localStorage.get('tasmota_ip')+this.$localStorage.get('tasmota_toggle') }).then(result => {
+      axios({ method: "GET", "url": this.$localStorage.get('tasmota_ip')+this.$localStorage.get('tasmota_toggle') }).then(result => {
         this.getPowerState();
       }, error => {
         console.error(error);
@@ -321,7 +321,7 @@ export const globalSettings = {
     },
     getPowerState: function() {
       if(this.$localStorage.get('powerhandling') == "yes") {
-        axios({ method: "GET", "url": this.$localStorage.get('tasmota_ip')+this.$localStorage.get('tasmota_toggle') }).then(result => {
+        axios({ method: "GET", "url": this.$localStorage.get('tasmota_ip')+this.$localStorage.get('tasmota_status') }).then(result => {
           if(result.data != null) {
             if(result.data.state != null) {
               this.$store.state.powerState = result.data.state.toLowerCase();
@@ -333,8 +333,21 @@ export const globalSettings = {
                 this.$store.state.isPower = true;
               }
             }
+            if(result.data.Status != null) {
+              if(result.data.Status.Power == "0") {
+                this.$store.state.powerState = "off";
+              } else {
+                this.$store.state.powerState = "on";
+              }
+              if(this.powerState == "off") {
+                this.$store.state.isNotPower = true;
+                this.$store.state.isPower = false;
+              } else {
+                this.$store.state.isNotPower = false;
+                this.$store.state.isPower = true;
+              }
+            }
           }
-          
         }, error => {
             console.error(error);
         });
@@ -564,7 +577,7 @@ export const globalSettings = {
       return axios({ method: method, "url": this.$localStorage.get(endpoint)+url, headers: {'X-Api-Key': this.$localStorage.get('apikey'), 'Content-Type': 'application/json;charset=UTF-8'}, data: object }).then(response => {
         return response;
       }, error => {
-        console.log("error in "+endpoint+"/"+url+": ", error);
+        //console.log("error in "+endpoint+"/"+url+": ", error);
         return error;
       });
     },
@@ -810,7 +823,7 @@ export const globalSettings = {
       obj.command = "move";
       obj.destination = destination;
       this.transport("POST", "octo_ip", source, JSON.stringify(obj)).then(result => {
-        console.log(result);
+        //console.log(result);
       });
     },
     cancelJob: function() {

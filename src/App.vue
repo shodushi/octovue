@@ -462,7 +462,7 @@ export default {
     },
     getPowerState: function() {
       if(this.$localStorage.get('powerhandling') == "yes") {
-        axios({ method: "GET", "url": this.$localStorage.get('tasmota_ip')+this.$localStorage.get('tasmota_toggle') }).then(result => {
+        axios({ method: "GET", "url": this.$localStorage.get('tasmota_ip')+this.$localStorage.get('tasmota_status') }).then(result => {
           if(result.data != null) {
             if(result.data.state != null) {
               this.$store.state.powerState = result.data.state.toLowerCase();
@@ -474,6 +474,20 @@ export default {
                 this.$store.state.isPower = true;
               }
             }
+            if(result.data.Status != null) {
+	      if(result.data.Status.Power == "0") {
+		this.$store.state.powerState = "off";
+	      } else {
+	        this.$store.state.powerState = "on";
+	      }
+              if(this.powerState == "off") {
+                this.$store.state.isNotPower = true;
+                this.$store.state.isPower = false;
+              } else {
+                this.$store.state.isNotPower = false;
+                this.$store.state.isPower = true;
+              }
+	    }
           }
           
         }, error => {
