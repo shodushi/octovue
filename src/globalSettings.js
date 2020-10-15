@@ -123,19 +123,11 @@ export const globalSettings = {
                   this.$store.state.connectionState = "off";
               }
             }
-            if(msg.event.type == "DisplayLayerProgress_layerChanged" || msg.event.type == "DisplayLayerProgress_heightChanged") {
+            if(msg.event.type == "DisplayLayerProgress-websocket-payload") {
               this.$store.state.totalLayer = msg.payload.totalLayer;
               this.$store.state.currentLayer = msg.payload.currentLayer;
-              if(msg.payload.totalHeightWithExtrusion.includes("<span")) {
-                this.$store.state.totalHeight = 0;
-              } else {
-                this.$store.state.totalHeight = msg.payload.totalHeightWithExtrusion;
-              }
-              if(msg.payload.currentHeight.includes("<span")) {
-                this.$store.state.currentHeight = 0;
-              } else {
-                this.$store.state.currentHeight = msg.payload.currentHeight;
-              }
+              this.$store.state.totalHeight = msg.payload.totalHeight;
+              this.$store.state.currentHeight = msg.payload.currentHeight;
               //this.currentHeight = msg.currentZ;
             }
             if(msg.event.type == "UpdatedFiles") {
@@ -148,6 +140,7 @@ export const globalSettings = {
           }
       }
       if(msg.plugin != null) {
+	/*
         if(msg.plugin.plugin == "DisplayLayerProgress") {
           if(msg.plugin.data.stateMessage != null) {
             this.$store.state.currentLayer = msg.plugin.data.stateMessage.split(" / ")[0];
@@ -158,6 +151,15 @@ export const globalSettings = {
             this.$store.state.totalHeight = msg.plugin.data.heightMessage.split("/")[1].replace(/mm/i, '');
           }
         }
+	*/
+            if(msg.event.type == "DisplayLayerProgress-websocket-payload") {
+              this.$store.state.totalLayer = msg.payload.totalLayer;
+              this.$store.state.currentLayer = msg.payload.currentLayer;
+              this.$store.state.totalHeight = msg.payload.totalHeight;
+              this.$store.state.currentHeight = msg.payload.currentHeight;
+              //this.currentHeight = msg.currentZ;
+            }
+
       }
       if(msg.current != null) {
         if(msg.current.temps != null) {
@@ -1185,7 +1187,7 @@ export const globalSettings = {
       } else {
         this.$store.state.selectedmovefolder = "";
       }
-      console.log(this.$store.state.folders);
+      //console.log(this.$store.state.folders);
     },
     configFromFile: function() {
       if(this.$localStorage.get('octo_ip') == null || this.$localStorage.get('apikey') == null) {
