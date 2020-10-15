@@ -163,8 +163,8 @@
                         <table width="640" id="jobwrapper">
                             <tr>
                                 <td style="width: 79%; color: white;">
-                                    <h2>{{ printerState.payload.state_string }}</h2>
-                                    <h3>{{job.printfile}}</h3>
+                                    <h2 class="tft_light">{{ printerState.payload.state_string }}</h2>
+                                    <h3 class="tft_light">{{job.printfile}}</h3>
                                     <div class="columns" style="padding-top: 70px;">
                                         <div class="column is-one-third">
                                         <img src="img/layer-time-average-icon2.png" style="height: 46px"><br />
@@ -592,5 +592,8 @@ input[type=range].slider+output {
 }
 .isconnecting {
    background-color: yellow; 
+}
+.tft_light {
+    color: white;
 }
 </style>
