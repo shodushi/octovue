@@ -126,8 +126,16 @@ export const globalSettings = {
             if(msg.event.type == "DisplayLayerProgress_layerChanged" || msg.event.type == "DisplayLayerProgress_heightChanged") {
               this.$store.state.totalLayer = msg.payload.totalLayer;
               this.$store.state.currentLayer = msg.payload.currentLayer;
-              this.$store.state.totalHeight = msg.payload.totalHeightWithExtrusion;
-              this.$store.state.currentHeight = msg.payload.currentHeight;
+              if(msg.payload.totalHeightWithExtrusion.includes("<span")) {
+                this.$store.state.totalHeight = 0;
+              } else {
+                this.$store.state.totalHeight = msg.payload.totalHeightWithExtrusion;
+              }
+              if(msg.payload.currentHeight.includes("<span")) {
+                this.$store.state.currentHeight = 0;
+              } else {
+                this.$store.state.currentHeight = msg.payload.currentHeight;
+              }
               //this.currentHeight = msg.currentZ;
             }
             if(msg.event.type == "UpdatedFiles") {
