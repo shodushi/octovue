@@ -157,6 +157,14 @@
           <div class="textContainer"><h3>uploading...</h3></div>
         </div>
 
+        <div id="burger" style="position: absolute; top: 0px; right: 0px; z-index: 999;">
+          <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" @click="isOpen = !isOpen" v-bind:class="{'is-active': isOpen}">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </a>
+        </div>
+
         <nav class="navbar is-transparent">
           <div class="navbar-brand" style="width: 1px;">
             <a class="navbar-item" href="/">
@@ -164,13 +172,14 @@
             </a>
           </div>
 
-          <div id="navbarExampleTransparentExample" class="navbar-menu">
+                    
+          <div id="navbarExampleTransparentExample" class="navbar-menu" v-bind:class="{'is-active': isOpen}">
             <div class="navbar-start" style="width: 80%;">
-              <div id="meta" class="field is-grouped is-grouped-multiline" style="margin: 14px 0px 0px 20%;">
+              <div id="meta" class="field is-grouped is-grouped-multiline" style="margin: 14px 0px 0px 20%;" v-if="!isOpen">
                 <div class="control" id="control_power" v-if="$localStorage.get('powerhandling') == 'yes'">
                   <div class="tags has-addons">
                     <span class="tag">Power</span>
-                    <a class="tag" :class="{'is-success': isPower, 'is-danger': isNotPower}" id="tag_printer_power" v-on:click="powerswitch">{{ powerState }}</a>
+                    <a class="tag" :class="{'is-success': isPower, 'is-danger': isNotPower}" id="tag_printer_power" v-on:click="powerswitch()">{{ powerState }}</a>
                   </div>
                 </div>
 
@@ -184,23 +193,30 @@
                 <div class="control" id="control_light" v-if="$localStorage.get('lighthandling') == 'yes'">
                   <div class="tags has-addons">
                     <span class="tag">Light</span>
-                    <a class="tag" :class="{'is-success': isLight, 'is-danger': isNotLight}" id="tag_lightswitch" v-on:click="lightswitch">{{ lightState }}</a>
+                    <a class="tag" :class="{'is-success': isLight, 'is-danger': isNotLight}" id="tag_lightswitch" v-on:click="lightswitch()">{{ lightState }}</a>
                   </div>
                 </div>
               </div>
 
+              <div class="nav-divider" v-if="isOpen"></div>
+
+              <a href="" class="navbar-item" v-if="isOpen" v-on:click="powerswitch()">Power ({{ powerState }})</a>
+              <a href="" class="navbar-item" v-if="isOpen" v-on:click="printerConnection()">Connection ({{ connectionState }})</a>
+              <a href="" class="navbar-item" v-if="isOpen" v-on:click="lightswitch()">Light ({{ lightState }})</a>
+
               <div class="nav-divider"></div>
 
-              <router-link class="navbar-item" to='/'>Home</router-link>
-              <router-link class="navbar-item" to='/printpage'>Printpage</router-link>
-              <router-link class="navbar-item" to='/stats'>Stats</router-link>
-              <router-link class="navbar-item" to='/dashboard'>Dashboard</router-link>
+              <router-link class="navbar-item" to='/' @click.native="isOpen = false">Home</router-link>
+              <router-link class="navbar-item" to='/printpage' @click.native="isOpen = false">Printpage</router-link>
+              <router-link class="navbar-item" to='/stats' @click.native="isOpen = false">Stats</router-link>
+              <router-link class="navbar-item" to='/dashboard' @click.native="isOpen = false">Dashboard</router-link>
               <!--<router-link class="navbar-item" to='/live'>Live</router-link>!-->
-              <router-link class="navbar-item" to='/tft'>TFTScreen</router-link>
+              <router-link class="navbar-item" to='/tft' @click.native="isOpen = false">TFTScreen</router-link>
               
             </div>
 
             <div class="navbar-end" style="width: 10%">
+              
               <div class="navbar-item">
                 <div class="field is-grouped">
                   <p class="control">
@@ -299,6 +315,7 @@ export default {
   },
   data() {
     return {
+      isOpen: false,
       next: false,
       octo_ip: "",
       apikey: "",
@@ -344,7 +361,6 @@ export default {
     this.configFromFile();
   },
   mounted: function() {
-    
     //this.$localStorage.set('dashboardLayout', 'undefined');
     if(this.$localStorage.get('theme') != null && this.$localStorage.get('theme') != 'undefined') {
       $("#theme").attr("href", "css/themes/"+this.$localStorage.get('theme')+".css");
