@@ -719,7 +719,8 @@ export const globalSettings = {
           }
         }
       }
-      this.$store.state.files.sort((a, b) => a.name.localeCompare(b.name))
+      this.$store.state.folders.sort((a, b) => a.name.localeCompare(b.name))
+      this.$store.state.files.sort((a, b) => a.name.localeCompare(b.name));
     },
 
 
