@@ -1011,7 +1011,7 @@ export const globalSettings = {
         q = this.$store.state.q.replace(" ", "+");
         url = "http://cststudios.de/thingiverse/?action=search&q="+q+"&page="+this.$store.state.thingpage;
         axios({ method: "GET", url: url}).then(result => {
-          this.$store.state.thingiverse_results = result.data;
+          this.$store.state.thingiverse_results = result.data.hits;
           this.$store.state.searchLoader = false;
         }, error => {
             console.error(error);
@@ -1026,10 +1026,14 @@ export const globalSettings = {
       window.open(url, "_blank");
     },
     prevPage: function() {
-      this.thingpage = this.$store.state.thingpage -1;
+      if(this.$store.state.thingpage > 1) {
+        this.$store.state.thingpage = this.$store.state.thingpage -1;
+      } else {
+        this.$store.state.thingpage = 1
+      }
     },
     nextPage: function() {
-      this.thingpage = this.$store.state.thingpage +1;
+      this.$store.state.thingpage = this.$store.state.thingpage +1;
     },
     nav: function(page) {
       this.$store.state.page = page;
