@@ -87,8 +87,56 @@
 
                 <div v-if="file_origin == 'local' || file_origin == 'sdcard'">
 
+<!---------------------------------------------------- !-->
+                <div id="search">
+                    <div class="field" style="text-align: left;">
+                        <div class="control has-margin">
+                            <input class="input" type="text" v-model="fileq" placeholder="search...">
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="fileSearchResult.length > 0">
+                    <table class="table is-fullwidth is-striped is-hoverable" id="filestable">
+                        <tbody id="filesbody">
+                        <tr :id="'filerow'+index" v-on:click="selectFile($event, file, index)" v-for="(file, index) in fileSearchResult">
+                            <td>
+                                <figure v-if="$localStorage.get('previewimages') == 'yes'" class="image is-128x128"><img :src="file.img" :id="file.thumbid" class="thumb" @error="imgFallback" v-on:mousemove="zoomIn($event, file.thumbid, 'overlay_'+file.imgid)" v-on:mouseleave="zoomOut(''+file.imgid)"></figure>
+                                <div class="overlay_wrapper">
+                                    <div :id="'overlay_'+file.imgid" class="zoomoverlay" v-bind:style="{'background-image': 'url(' + file.img + ')' }"></div>
+                                </div>
+                            </td>
+                            <td>
+                                {{ file.display }} 
+                                <span v-if="file.prints != null">
+                                    <i class="fas" alt="last print" :class="{'fa-thumbs-up': file.prints.last.success}" v-if="file.prints.last.success" style="color: #31cf65;"></i>
+                                    <i class="fas" alt="last print" :class="{'fa-thumbs-down': !file.prints.last.success}" v-if="!file.prints.last.success" style="color: #fc3c63;"></i>
+                                </span><br />
+                                <div class="analysis" style="width: 100%;" v-if="file.gcodeAnalysis != null">
+                                    <div style="width: 23%; float:left; margin-left: 10px;" v-if="file.gcodeAnalysis.dimensions.width != null">Size:</div><div style="width: 100%;" v-if="file.gcodeAnalysis.dimensions.width != null">x: {{ formatLenght(file.gcodeAnalysis.dimensions.width) }} y: {{ formatLenght(file.gcodeAnalysis.dimensions.depth) }} z: {{ formatLenght(file.gcodeAnalysis.dimensions.height) }}</div>
+                                    <div style="width: 23%; float:left; margin-left: 10px;" v-if="file.gcodeAnalysis.estimatedPrintTime != null">PrintTime:</div><div v-if="file.gcodeAnalysis.estimatedPrintTime != null">{{ formatTime(file.gcodeAnalysis.estimatedPrintTime) }}</div>
+                                    <div style="width: 23%; float:left; margin-left: 10px;" v-if="file.gcodeAnalysis.filament.tool0 != null && file.gcodeAnalysis.filament.tool0.length != null">Filament:</div><div v-if="file.gcodeAnalysis.filament.tool0 != null && file.gcodeAnalysis.filament.tool0.length != null">{{ formatLenght(file.gcodeAnalysis.filament.tool0.length) }}</div>
+                                    <div style="width: 23%; float:left; margin-left: 10px;" v-if="file.prints != null">Prints ok/nok:</div><div v-if="file.prints != null">{{ file.prints.success }} / {{ file.prints.failure }}</div>
+                                </div>
+                            </td>
+                            <td>{{formatDate(file.date)}} 
+                                <div class="file_buttons" :id="'fb_'+file.imgid">
+                                    <!-- <span id="btn_load" class="button is-warning is-small" disabled v-on:click="loadprintFile(false)">load</span> !-->
+                                    <span id="btn_print" class="button is-success is-small" disabled v-on:click="loadprintFile(true, true)">print</span> 
+                                    <!-- <span id="btn_delete" class="button is-primary is-small" disabled v-on:click="toggleModalFileMove()">move</span> !-->
+                                    <span id="btn_delete" class="button is-danger is-small" disabled v-on:click="deleteFile()">delete</span>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+<!---------------------------------------------------- !-->
+
+
                 <div v-if="selectedfolder != ''" v-on:click="folderup()" style="text-align: left"><span style="cursor: pointer;">&#x2190; back</span></div>
-                <table class="table is-fullwidth is-striped is-hoverable" id="filestable">
+                <table class="table is-fullwidth is-striped is-hoverable" id="filestable" v-if="fileSearchResult.length < 1">
                     <tbody id="filesbody">
                     <tr v-on:click="selectFolder(folder.path)" v-for="folder in folders"><td><span class="icon">&#128193;</span></td><td>{{ folder.display }}</td><td></td></tr>
                     <tr :id="'filerow'+index" v-on:click="selectFile($event, file, index)" v-for="(file, index) in files">
@@ -308,6 +356,16 @@
 
 <script>
 export default {
+    data() {
+        return {
+            fileq: ""
+        }
+    },
+    watch: {
+        fileq: function (after, before) {
+            this.searchFiles(after);
+        }
+  },
 }
 </script>
 

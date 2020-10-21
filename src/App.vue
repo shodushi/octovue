@@ -378,6 +378,7 @@ export default {
     setTimeout(this.getLightState, 1)
     //if(this.$route.path != '/tft') {
       setTimeout(this.loadFiles(), 1);
+      setTimeout(this.loadAllFiles(), 3);
       setTimeout(this.getStats, 5);
     //}
     setTimeout(this.getOctoprintConnection, 1)

@@ -30,6 +30,8 @@ export const store = new Vuex.Store({
         isNotConnection: true,
         isConnecting: false,
         fileList: [],
+        allFileList: [],
+        fileSearchResult: [],
         selectedfolder: "",
         selectedfile: "",
         selectedmovefolder: "",

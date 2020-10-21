@@ -646,8 +646,93 @@ export const globalSettings = {
           //this.listMoveFolders();
       });
     },
+    loadAllFiles: function(path) {
+      this.transport("GET", "octo_ip", "/api/files?recursive=true", null).then(result => {
+          //this.$store.state.allFileList = [];
+          //this.$store.state.allFileList = result.data;
+          //this.listFiles();
+          //console.log("/api/files/"+this.$store.state.file_origin+path);
+
+          var list  = [];
+          if(result.data != undefined) {
+            list = result.data
+          } else {
+            list = result.data;
+          }
+          //console.log(list);
+          this.findNode(list.files);
+          //console.log(this.$store.state.allFileList);
+          //this.listMoveFolders();
+      });
+    },
     imgFallback(event) {
       event.target.src = "img/placeholder.png"
+    },
+    findNode: function(arr) {
+      for (const node of arr) {
+        if (node.type == "machinecode") {
+          this.$store.state.allFileList.push(node);
+          //console.log(node);
+        }
+        if (node.children) {
+          const child = this.findNode(node.children);
+          if (child) return child;
+        }
+      }
+    },
+    searchFiles: function(q) {
+      if(q.length > 0) {
+        var self = this;
+        var date;
+        var tstamp;
+        var day;
+        var month;
+        var imgid;
+        var img;
+        var download;
+        this.$store.state.fileSearchResult = [];
+        for (var i = 0; i < this.$store.state.allFileList.length; i++) {
+          if(this.$store.state.allFileList[i].name.toLowerCase().includes(q.toLowerCase())) {
+            if(this.$store.state.allFileList[i].refs.resource != null) {
+              if(self.file_origin == "local" && this.$store.state.allFileList[i].refs.resource.includes(".gcode")) {
+                img = this.$store.state.allFileList[i].refs.download.replace(".gcode", ".png");
+                download = this.$store.state.allFileList[i].refs.download;
+              }
+
+              if(self.file_origin == "sdcard" && this.$store.state.allFileList[i].refs.resource.includes(".gco")) {
+                img = this.$store.state.allFileList[i].refs.resource.replace(".gco", ".png");
+                download = this.$store.state.allFileList[i].refs.resource;
+              }
+              imgid = this.$store.state.allFileList[i].display.replace(".", "").replace("~", "");
+              if(this.$store.state.allFileList[i].date != null) {
+                tstamp = new Date(this.$store.state.allFileList[i].date*1000);
+                day = "0"+(tstamp.getDate());
+                month = "0"+(tstamp.getMonth());
+                date = day.slice(-2)+"."+month.slice(-2)+"."+tstamp.getFullYear();
+              } else {
+                date = "";
+              }
+              this.$store.state.allFileList[i].download = download;
+              this.$store.state.allFileList[i].img = img;
+              this.$store.state.allFileList[i].imgid = imgid;
+              this.$store.state.allFileList[i].thumbid = "thumb_"+imgid;
+              this.$store.state.allFileList[i].hr_date = date;
+              if(this.$store.state.allFileList[i].gcodeAnalysis == null) {
+                this.$store.state.allFileList[i].gcodeAnalysis = {};
+                this.$store.state.allFileList[i].gcodeAnalysis.estimatedPrintTime = null;
+                this.$store.state.allFileList[i].gcodeAnalysis.filament = {"tool0": {"length": null, "volume": null}};
+                this.$store.state.allFileList[i].gcodeAnalysis.printingArea = {"maxX": null, "maxY": null, "maxZ": null, "minX": null, "minY": null, "minZ": null};
+              }
+              if(this.$store.state.allFileList[i].gcodeAnalysis.dimensions == null) {
+                this.$store.state.allFileList[i].gcodeAnalysis.dimensions = {"width": null, "depth": null, "height": null};
+              }
+            }
+            this.$store.state.fileSearchResult.push(this.$store.state.allFileList[i]);
+          }
+        }
+      } else {
+        this.$store.state.fileSearchResult = [];
+      } 
     },
     listFiles: function() {
       var self = this;
@@ -1313,6 +1398,8 @@ export const globalSettings = {
       'isNotConnection',
       'isConnecting',
       'fileList',
+      'allFileList',
+      'fileSearchResult',
       'selectedfolder',
       'selectedmovefolder',
       'selectedfile',
