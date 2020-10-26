@@ -37,7 +37,7 @@
       <div v-for="graph in graphs" v-if="graph.name == 'bed'" style="text-align: left;" class="dragSelector" v-bind:style="{'color': graph.datasets[0].backgroundColor[0]}">
       <div style="width: 25%; float: left; text-align: center;" class="dragSelector">
               {{graph.name}}<br />
-              <input :id="'slider'+graph.name" class="slider is-fullwidth is-info is-circle has-output" step="1" min="0" max="100" v-on:mouseup="setBedTemp()" v-bind:value="temps[graph.name].target" type="range" orient="vertical"><output style="position: relative; top: 8px; padding: 3px;" v-bind:for="'slider'+graph.name" v-if="temps[graph.name].target">{{ temps[graph.name].target }}</output>
+              <input :id="'slider'+graph.name" class="slider is-fullwidth is-info is-circle has-output" step="1" min="0" max="115" v-on:mouseup="setBedTemp()" v-bind:value="temps[graph.name].target" type="range" orient="vertical"><output style="position: relative; top: 8px; padding: 3px;" v-bind:for="'slider'+graph.name" v-if="temps[graph.name].target">{{ temps[graph.name].target }}</output>
           </div>
           <div style="width: 25%; float: left; text-align: center;">
               <p>&nbsp;</p>
@@ -47,7 +47,7 @@
       <div v-for="graph in graphs" v-if="graph.name == 'chamber'" style="text-align: left;" class="dragSelector" v-bind:style="{'color': graph.datasets[0].backgroundColor[0]}">
           <div style="width: 25%; float: left; text-align: center;" class="dragSelector">
               {{graph.name}}<br />
-              <input :id="'slider'+graph.name" class="slider is-fullwidth is-circle has-output" step="1" min="0" max="50" v-on:mouseup="setChamberTemp()" v-bind:value="temps[graph.name].target" type="range" ><output style="position: relative; top: 8px; padding: 3px;" v-bind:for="'slider'+graph.name" v-if="temps[graph.name].target">{{ temps[graph.name].target }}</output>
+              <input :id="'slider'+graph.name" class="slider is-fullwidth is-circle has-output" step="1" min="0" max="60" v-on:mouseup="setChamberTemp()" v-bind:value="temps[graph.name].target" type="range" ><output style="position: relative; top: 8px; padding: 3px;" v-bind:for="'slider'+graph.name" v-if="temps[graph.name].target">{{ temps[graph.name].target }}</output>
           </div>
           <div style="width: 25%; float: left; text-align: center;">
               <p>&nbsp;</p>
@@ -67,7 +67,7 @@
       </div>
       <div v-for="graph in graphs" v-if="graph.name == 'chamber'" style="text-align: center; float: left; font-weight: bold;" class="dragSelector" v-bind:style="{'color': graph.datasets[0].backgroundColor[0]}">
           {{graph.name}}<br />
-          <input :id="'slider'+graph.name" class="slider is-fullwidth is-circle has-output" step="1" min="0" max="50" v-on:mouseup="setChamberTemp()" v-bind:value="temps[graph.name].target" type="range" orient="vertical"><output style="position: relative; top: 8px;" v-bind:for="'slider'+graph.name" v-if="temps[graph.name].target">{{ temps[graph.name].target }}</output>
+          <input :id="'slider'+graph.name" class="slider is-fullwidth is-circle has-output" step="1" min="0" max="60" v-on:mouseup="setChamberTemp()" v-bind:value="temps[graph.name].target" type="range" orient="vertical"><output style="position: relative; top: 8px;" v-bind:for="'slider'+graph.name" v-if="temps[graph.name].target">{{ temps[graph.name].target }}</output>
       </div>
     </div>
     

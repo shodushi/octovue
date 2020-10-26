@@ -140,6 +140,7 @@ export const globalSettings = {
           }
       }
       if(msg.plugin != null) {
+        
 	/*
         if(msg.plugin.plugin == "DisplayLayerProgress") {
           if(msg.plugin.data.stateMessage != null) {
@@ -152,11 +153,15 @@ export const globalSettings = {
           }
         }
 	*/
-            if(msg.event.type == "DisplayLayerProgress-websocket-payload") {
-              this.$store.state.totalLayer = msg.payload.totalLayer;
-              this.$store.state.currentLayer = msg.payload.currentLayer;
-              this.$store.state.totalHeight = msg.payload.totalHeight;
-              this.$store.state.currentHeight = msg.payload.currentHeight;
+            if(msg.plugin.plugin == "DisplayLayerProgress-websocket-payload") {
+
+              if(msg.plugin.data.currentLayer) {
+                console.log(msg.plugin.data);
+              }
+              this.$store.state.totalLayer = msg.plugin.data.totalLayer;
+              this.$store.state.currentLayer = msg.plugin.data.currentLayer;
+              //this.$store.state.totalHeight = msg.plugin.data.totalHeight;
+              this.$store.state.currentHeight = msg.plugin.data.currentHeight;
               //this.currentHeight = msg.currentZ;
             }
 
@@ -1071,8 +1076,8 @@ export const globalSettings = {
         if(obj == "bed") {
           for(var i = 0; i< this.$store.state.graphs.length; i++) {
             if(this.$store.state.graphs[i].name == obj) {
-              percent_actual = (100/90)*parseInt(this.$store.state.temps[obj].actual)
-              percent_target = (100/90)*parseInt(this.$store.state.temps[obj].target)
+              percent_actual = (100/115)*parseInt(this.$store.state.temps[obj].actual)
+              percent_target = (100/115)*parseInt(this.$store.state.temps[obj].target)
               target = percent_target-percent_actual;
               if(target < 0) {
                 target = 0;
