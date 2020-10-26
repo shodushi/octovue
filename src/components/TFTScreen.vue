@@ -57,6 +57,7 @@
                     <div class="subpage" v-if="subPage == 'files'">
                         <div id="filewrapper">
                             <div id="filesource">
+                                <a class="filesbutton" v-bind:class="{ 'is-active' : file_origin == 'local' }"><a v-on:click="loadFiles()"> <i class="fas fa-sync"></i>&nbsp;refresh</a></a>
                                 <a class="filesbutton" v-bind:class="{ 'is-active' : file_origin == 'local' }"><a v-on:click="changeFileSource('local')"> <i class="fas fa-hdd"></i>&nbsp;local</a></a>
                                 <a class="filesbutton" v-bind:class="{ 'is-active' : file_origin == 'sdcard' }"><a v-on:click="changeFileSource('sdcard')"><i class="fas fa-sd-card"></i>&nbsp;sdcard</a></a>
                             </div>
