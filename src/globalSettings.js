@@ -458,7 +458,7 @@ export const globalSettings = {
           obj = {
             name: key,
             datasets: [{
-              data: [0, 0, 250],
+              data: [0, 0, 290], // graph.options max value for extruder
               backgroundColor: [
                   colors[i],
                   colors_alpha[i],
@@ -503,7 +503,7 @@ export const globalSettings = {
           obj = {
             name: key,
             datasets: [{
-              data: [0, 0, 100],
+              data: [0, 0, 115], // graph.options max value for heatbed
               backgroundColor: [
                   colors[4],
                   colors_alpha[4],
@@ -1052,8 +1052,8 @@ export const globalSettings = {
         if(obj != "bed" && obj != "chamber") {
           for(var i = 0; i< this.$store.state.graphs.length; i++) {
             if(this.$store.state.graphs[i].name == obj) {
-              percent_actual = (100/250)*parseInt(this.$store.state.temps[obj].actual)
-              percent_target = (100/250)*parseInt(this.$store.state.temps[obj].target)
+              percent_actual = (100/290)*parseInt(this.$store.state.temps[obj].actual)
+              percent_target = (100/290)*parseInt(this.$store.state.temps[obj].target)
               target = percent_target-percent_actual;
               if(target < 0) {
                 target = 0;
